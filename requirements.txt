@@ -24,7 +24,7 @@ linear-tsv==1.1.0
 networkx==2.2
 nose==1.3.7
 numpy==1.15.4
-oemof==0.2.4.dev0
+-e git+git@github.com:oemof/oemof.git@405a67b021081330bfdb67723ad8de153c1773a4#egg=oemof
 -e git+git@github.com:oemof/oemof-tabular.git@4bbeebf0156d74941190f6378f45ac6dec939f6b#egg=oemof.tabular
 openpyxl==2.4.11
 pandas==0.23.4

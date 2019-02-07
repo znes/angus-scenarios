@@ -1,4 +1,4 @@
-# Status-quo-2015 datapackage
+# ANGUS2 Project Scenario Calculations
 
 ## Preparation
 
@@ -30,9 +30,10 @@ create the meta-data file. The output data are stored under:
 
 To compute the datapackages run:
 
-    python scripts/compute.py 
+    python scripts/compute.py
 
   This will create a results directory with all results.
+
 
 # Model assumptions
 
