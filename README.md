@@ -11,11 +11,19 @@ To run the script, make sure the requirements e.g. via pip
 
     pip install --process-dependency-links -U -r requirements.txt
 
-### Scope
+**NOTE**: `--process-dependency-links` requires pip version  < 19.x, you
+can change your pip version as follows:
 
-The spatial resolution is at NUTS 0 level, thus on the level of national states.
+  pip install pip==18
 
-### Build
+### Raw data
+
+To run the build script the required raw data needs to be downloaded. Store the
+data in your home directory under `fuchur-raw-data`. This dire
+
+
+
+## Build
 
 To build the package locally run the python script
 
@@ -26,6 +34,14 @@ create the meta-data file. The output data are stored under:
 
     /datapackages
 
+### Configuration build files
+
+The datapackages are build with the provided .toml-files provided in the
+`/scenarios` folder. You can adapt the configuration files or add new ones to
+your needs. All datapackages are build in parallel. If you want to build single
+datapackages you can use the `build.py` function.
+
+
 ## Compute
 
 To compute the datapackages run:
@@ -33,6 +49,7 @@ To compute the datapackages run:
     python scripts/compute.py
 
   This will create a results directory with all results.
+
 
 
 # Model assumptions
@@ -49,10 +66,7 @@ timeseries for the selected weather year
 TYNDP2016 per country.
 * Fuel and CO2 costs are based on the TYNDP2016  
 * Efficiencies are based on own assumptions
-* `Others-non-res` are modelled with marginal costs of set to zero. The maximum
-full load hours are set to 2000 h for these technologies
-* All other conventional technologies are set to maximum of 85 % of there total
-installed capacities.   
+* `Others-non-res` are modelled with marginal costs of set to zero. 
 
 ## Renewables
 
