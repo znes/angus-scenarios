@@ -1,6 +1,6 @@
 title = ""
 description = ""
-name = "A-1"
+name = "base"
 
 [cost]
 wacc = 0.07

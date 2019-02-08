@@ -4,7 +4,7 @@ import multiprocessing as mp
 
 from oemof.tabular import datapackage
 from fuchur.scripts import bus, capacity_factors, electricity, grid, biomass
-
+from fuchur.cli import Scenario
 
 def build(config):
     """
@@ -99,10 +99,10 @@ def build(config):
 
 
 if __name__ == "__main__":
-
     scenarios= [
-        datapackage.building.read_build_config(os.path.join('scenarios', s))
+        Scenario.from_path(os.path.join('scenarios', s))
         for s in os.listdir('scenarios')]
+
     #build(scenarios[0])
     p = mp.Pool(4)
     p.map(build, scenarios)

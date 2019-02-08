@@ -12,12 +12,11 @@ from oemof.tabular.tools import postprocessing as pp
 import oemof.outputlib as outputlib
 
 
-def compute(datapackage):
+def compute(datapackage, solver="gurobi", temporal_resolution=1,
+            emission_limit=None):
     """
     """
     datapackage_dir = os.path.join("datapackages", datapackage)
-    temporal_resolution = 1
-    emission_limit = None
 
     # create results path
     scenario_path = os.path.join("results", datapackage)
@@ -57,7 +56,7 @@ def compute(datapackage):
 
     m.receive_duals()
 
-    m.solve('cbc')
+    m.solve(solver)
 
     m.results = m.results()
 

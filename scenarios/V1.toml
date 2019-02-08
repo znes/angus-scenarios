@@ -1,0 +1,10 @@
+title = "Western Europe electricity system vision 1"
+description = "Vision 1 Capacities are used in this scenario."
+name = "V1"
+
+parents = [
+  "scenarios/base.toml"
+]
+
+[tyndp]
+generation = 'vision1'
