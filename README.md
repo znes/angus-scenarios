@@ -11,16 +11,15 @@ To run the script, make sure the requirements e.g. via pip
 
     pip install --process-dependency-links -U -r requirements.txt
 
-**NOTE**: `--process-dependency-links` requires pip version  < 19.x, you
-can change your pip version as follows:
+**NOTE**: `--process-dependency-links` requires pip version  `<19.x`, 
+you can change your pip version as follows:
 
-  pip install pip==18
+    pip install pip==18
 
 ### Raw data
 
 To run the build script the required raw data needs to be downloaded. Store the
 data in your home directory under `fuchur-raw-data`. This dire
-
 
 
 ## Build
@@ -50,7 +49,9 @@ To compute the datapackages run:
 
   This will create a results directory with all results.
 
+### Existing Datapackages 
 
+**The provided datapackages in the datapackage directory of this repository may be outdated. Therefore you should rebuild the datapackages based on the provided `scripts/build.py` script.** 
 
 # Model assumptions
 
@@ -64,7 +65,7 @@ timeseries for the selected weather year
 
 * Generation capacities are selected for the vision 1,2,3,4 of the
 TYNDP2016 per country.
-* Fuel and CO2 costs are based on the TYNDP2016  
+* Fuel and CO2 costs are based on the TYNDP2016
 * Efficiencies are based on own assumptions
 * `Others-non-res` are modelled with marginal costs of set to zero. 
 
