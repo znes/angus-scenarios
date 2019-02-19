@@ -4,7 +4,8 @@ import os
 import multiprocessing as mp
 
 from oemof.tabular import datapackage
-from fuchur.scripts import bus, capacity_factors, electricity, grid, biomass
+from fuchur.scripts import (bus, capacity_factors, electricity, grid, biomass,
+                            load, hydro)
 from fuchur.cli import Scenario
 
 import fuchur
@@ -31,22 +32,25 @@ def build(config):
         config=config, directory=datapackage_dir
     )
 
-    bus.add(config["buses"], datapackage_dir, raw_data_path)
-
-    biomass.add(config["buses"], datapackage_dir)
-
-    grid.tyndp_grid(
+    bus.electricity(
         config["buses"]["electricity"],
         datapackage_dir,
         raw_data_path)
 
-    electricity.tyndp_load(
+    biomass.add(config["buses"], datapackage_dir)
+
+    grid.tyndp(
+        config["buses"]["electricity"],
+        datapackage_dir,
+        raw_data_path)
+
+    load.tyndp(
         config["buses"]["electricity"],
         config["tyndp"]["load"],
         datapackage_dir,
         raw_data_path)
 
-    electricity.opsd_load_profile(
+    load.opsd_profile(
         config["buses"]["electricity"],
         config["temporal"]["demand_year"],
         config["temporal"]["scenario_year"],
@@ -63,6 +67,7 @@ def build(config):
     electricity.nep_2019(
         config["temporal"]["scenario_year"],
         datapackage_dir,
+        scenario="B2030",
         bins=2,
         eaf=0.95,
         raw_data_path=raw_data_path)
@@ -71,7 +76,7 @@ def build(config):
 
     electricity.shortage(datapackage_dir)
 
-    electricity.hydro_generation(config, datapackage_dir, raw_data_path)
+    hydro.generation(config, datapackage_dir, raw_data_path)
 
     capacity_factors.pv(
         config["buses"]["electricity"],
@@ -122,7 +127,7 @@ if __name__ == "__main__":
     scenarios= [
         Scenario.from_path(os.path.join('scenarios', s))
         for s in os.listdir('scenarios')]
-    p = mp.Pool(4)
+    p = mp.Pool(10)
     p.map(build, scenarios)
 
-    #build(Scenario.from_path(os.path.join('scenarios', 'V42011.toml')))
+    #build(Scenario.from_path(os.path.join('scenarios', 'V4-2010.toml')))

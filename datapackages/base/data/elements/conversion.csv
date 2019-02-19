@@ -1,0 +1,10 @@
+name;capacity;carrier;carrier_cost;efficiency;from_bus;tech;to_bus;type
+AT-biomass-ce;1200;biomass;20.0;0.45;AT-biomass-bus;ce;AT-electricity;conversion
+BE-biomass-ce;2500;biomass;20.0;0.45;BE-biomass-bus;ce;BE-electricity;conversion
+CH-biomass-ce;1120;biomass;20.0;0.45;CH-biomass-bus;ce;CH-electricity;conversion
+CZ-biomass-ce;1110;biomass;20.0;0.45;CZ-biomass-bus;ce;CZ-electricity;conversion
+DK-biomass-ce;1720;biomass;20.0;0.45;DK-biomass-bus;ce;DK-electricity;conversion
+FR-biomass-ce;4800;biomass;20.0;0.45;FR-biomass-bus;ce;FR-electricity;conversion
+PL-biomass-ce;6450;biomass;20.0;0.45;PL-biomass-bus;ce;PL-electricity;conversion
+SE-biomass-ce;5340;biomass;20.0;0.45;SE-biomass-bus;ce;SE-electricity;conversion
+DE-biomass-ce;6000;biomass;20.0;0.4;DE-biomass-bus;ce;DE-electricity;conversion

@@ -1,0 +1,11 @@
+name;bus;capacity;carrier;output_parameters;type
+AT-biomass-commodity;AT-biomass-bus;23611111.1111111;biomass;{"summed_max": 1};dispatchable
+BE-biomass-commodity;BE-biomass-bus;8083333.333333334;biomass;{"summed_max": 1};dispatchable
+CH-biomass-commodity;CH-biomass-bus;0.0;biomass;{"summed_max": 1};dispatchable
+CZ-biomass-commodity;CZ-biomass-bus;32777777.77777778;biomass;{"summed_max": 1};dispatchable
+DE-biomass-commodity;DE-biomass-bus;150166666.6666666;biomass;{"summed_max": 1};dispatchable
+DK-biomass-commodity;DK-biomass-bus;13555555.555555562;biomass;{"summed_max": 1};dispatchable
+FR-biomass-commodity;FR-biomass-bus;149555555.55555558;biomass;{"summed_max": 1};dispatchable
+NO-biomass-commodity;NO-biomass-bus;0.0;biomass;{"summed_max": 1};dispatchable
+PL-biomass-commodity;PL-biomass-bus;71361111.1111111;biomass;{"summed_max": 1};dispatchable
+SE-biomass-commodity;SE-biomass-bus;86750000.0;biomass;{"summed_max": 1};dispatchable

@@ -1,0 +1,1215 @@
+{
+    "profile": "tabular-data-package",
+    "name": "base",
+    "resources": [
+        {
+            "path": "data/elements/phs.csv",
+            "profile": "tabular-data-resource",
+            "name": "phs",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity_cost",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "efficiency",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "lifetime",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "loss",
+                        "type": "integer",
+                        "format": "default"
+                    },
+                    {
+                        "name": "marginal_cost",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "storage_capacity",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "tech",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/commodity.csv",
+            "profile": "tabular-data-resource",
+            "name": "commodity",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "output_parameters",
+                        "type": "object",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/ror.csv",
+            "profile": "tabular-data-resource",
+            "name": "ror",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity_cost",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "efficiency",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "lifetime",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "profile",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "tech",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    },
+                    {
+                        "fields": "profile",
+                        "reference": {
+                            "resource": "ror_profile"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/load.csv",
+            "profile": "tabular-data-resource",
+            "name": "load",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "2030EU",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "profile",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    },
+                    {
+                        "fields": "profile",
+                        "reference": {
+                            "resource": "load_profile"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/conversion.csv",
+            "profile": "tabular-data-resource",
+            "name": "conversion",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity",
+                        "type": "integer",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier_cost",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "efficiency",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "from_bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "tech",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "to_bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "from_bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    },
+                    {
+                        "fields": "to_bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/excess.csv",
+            "profile": "tabular-data-resource",
+            "name": "excess",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "marginal_cost",
+                        "type": "integer",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/reservoir.csv",
+            "profile": "tabular-data-resource",
+            "name": "reservoir",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity_cost",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "efficiency",
+                        "type": "integer",
+                        "format": "default"
+                    },
+                    {
+                        "name": "lifetime",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "loss",
+                        "type": "integer",
+                        "format": "default"
+                    },
+                    {
+                        "name": "profile",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "storage_capacity",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "tech",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    },
+                    {
+                        "fields": "profile",
+                        "reference": {
+                            "resource": "reservoir_profile"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/storage.csv",
+            "profile": "tabular-data-resource",
+            "name": "storage",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity",
+                        "type": "integer",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "efficiency",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "loss",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "marginal_cost",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "storage_capacity",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "tech",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/bus.csv",
+            "profile": "tabular-data-resource",
+            "name": "bus",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "balanced",
+                        "type": "boolean",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "geometry",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name"
+            }
+        },
+        {
+            "path": "data/elements/shortage.csv",
+            "profile": "tabular-data-resource",
+            "name": "shortage",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "marginal_cost",
+                        "type": "integer",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/dispatchable.csv",
+            "profile": "tabular-data-resource",
+            "name": "dispatchable",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "marginal_cost",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "output_parameters",
+                        "type": "object",
+                        "format": "default"
+                    },
+                    {
+                        "name": "tech",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/link.csv",
+            "profile": "tabular-data-resource",
+            "name": "link",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity",
+                        "type": "integer",
+                        "format": "default"
+                    },
+                    {
+                        "name": "from_bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "loss",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "tech",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "to_bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "from_bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    },
+                    {
+                        "fields": "to_bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/elements/volatile.csv",
+            "profile": "tabular-data-resource",
+            "name": "volatile",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "name",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "bus",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "capacity",
+                        "type": "integer",
+                        "format": "default"
+                    },
+                    {
+                        "name": "carrier",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "profile",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "tech",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ],
+                "primaryKey": "name",
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                        }
+                    },
+                    {
+                        "fields": "profile",
+                        "reference": {
+                            "resource": "volatile_profile"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "path": "data/sequences/reservoir_profile.csv",
+            "profile": "tabular-data-resource",
+            "name": "reservoir_profile",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "timeindex",
+                        "type": "datetime",
+                        "format": "default"
+                    },
+                    {
+                        "name": "AT-electricity-reservoir-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "BE-electricity-reservoir-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "CH-electricity-reservoir-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "CZ-electricity-reservoir-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "DE-electricity-reservoir-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "FR-electricity-reservoir-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "NO-electricity-reservoir-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "PL-electricity-reservoir-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "SE-electricity-reservoir-profile",
+                        "type": "number",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ]
+            }
+        },
+        {
+            "path": "data/sequences/load_profile.csv",
+            "profile": "tabular-data-resource",
+            "name": "load_profile",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "timeindex",
+                        "type": "datetime",
+                        "format": "default"
+                    },
+                    {
+                        "name": "AT-electricity-load-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "BE-electricity-load-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "CH-electricity-load-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "CZ-electricity-load-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "DE-electricity-load-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "DK-electricity-load-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "FR-electricity-load-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "NO-electricity-load-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "PL-electricity-load-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "SE-electricity-load-profile",
+                        "type": "number",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ]
+            }
+        },
+        {
+            "path": "data/sequences/volatile_profile.csv",
+            "profile": "tabular-data-resource",
+            "name": "volatile_profile",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "timeindex",
+                        "type": "datetime",
+                        "format": "default"
+                    },
+                    {
+                        "name": "AT-onshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "AT-pv-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "BE-offshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "BE-onshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "BE-pv-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "CH-onshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "CH-pv-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "CZ-onshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "CZ-pv-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "DE-offshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "DE-onshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "DE-pv-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "DK-offshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "DK-onshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "DK-pv-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "FR-onshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "FR-pv-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "NO-offshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "NO-onshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "NO-pv-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "PL-onshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "PL-pv-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "SE-offshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "SE-onshore-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "SE-pv-profile",
+                        "type": "number",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ]
+            }
+        },
+        {
+            "path": "data/sequences/ror_profile.csv",
+            "profile": "tabular-data-resource",
+            "name": "ror_profile",
+            "format": "csv",
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "timeindex",
+                        "type": "datetime",
+                        "format": "default"
+                    },
+                    {
+                        "name": "AT-electricity-ror-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "BE-electricity-ror-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "CH-electricity-ror-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "CZ-electricity-ror-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "DE-electricity-ror-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "FR-electricity-ror-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "NO-electricity-ror-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "PL-electricity-ror-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "SE-electricity-ror-profile",
+                        "type": "number",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ]
+            }
+        }
+    ]
+}
