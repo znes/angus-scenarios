@@ -13,7 +13,7 @@ datapackage==1.5.1
 decorator==4.3.2
 dill==0.2.8.2
 et-xmlfile==1.0.1
--e git+https://github.com/znes/fuchur.git@9073496565c84cc4447a47a782bd9c50624a45e7#egg=fuchur
+-e git+https://github.com/znes/fuchur.git@b457ba91be115b9ef365733fb41d94f9d1b3d592#egg=fuchur
 geojson==2.4.1
 idna==2.8
 ijson==2.3
