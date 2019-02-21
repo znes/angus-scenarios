@@ -4,16 +4,14 @@ import os
 import multiprocessing as mp
 
 from oemof.tabular import datapackage
-from fuchur.scripts import (bus, capacity_factors, electricity, grid, biomass,
-                            load, hydro)
+import bus, capacity_factors, electricity, grid, biomass, load, hydro
 from fuchur.cli import Scenario
 
-import fuchur
 
 # set raw data path to the default fuchur raw raw_data_path
 # which is: 'home/user/fuchur-raw-data'
 # change this if you have your raw data stored somewhere else
-raw_data_path = fuchur.__RAW_DATA_PATH__
+raw_data_path = os.path.join(os.path.expanduser('~'), 'fuchur-raw-data')
 
 def build(config):
     """
