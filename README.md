@@ -9,12 +9,8 @@ script.
 
 To run the script, make sure the requirements e.g. via pip
 
-    pip install --process-dependency-links -U -r requirements.txt
+    pip install  -U -r requirements.txt
 
-**NOTE**: `--process-dependency-links` requires pip version  `<19.x`, 
-you can change your pip version as follows:
-
-    pip install pip==18
 
 ### Raw data
 
@@ -49,9 +45,11 @@ To compute the datapackages run:
 
   This will create a results directory with all results.
 
-### Existing Datapackages 
+### Existing Datapackages
 
-**The provided datapackages in the datapackage directory of this repository may be outdated. Therefore you should rebuild the datapackages based on the provided `scripts/build.py` script.** 
+**The provided datapackages in the datapackage directory of this repository
+may be outdated. Therefore you should rebuild the datapackages based on the provided
+`scripts/build.py` script.**
 
 # Model assumptions
 
@@ -59,22 +57,23 @@ To compute the datapackages run:
 
 * Demand profiles are calculated from the OPSD dataset of the ENTSOE
 timeseries for the selected weather year
-* The amount of Demand per country is based on TYNDP2016 EU2030 scenario.
+* The amount of Demand per country is based on TYNDP2016 Scenario for 2030 and
+on the E-eHighway2050 demand for the year 2050.
 
 ## Conventional generation
 
 * Generation capacities are selected for the vision 1,2,3,4 of the
 TYNDP2016 per country.
-* Fuel and CO2 costs are based on the TYNDP2016
 * Efficiencies are based on own assumptions
-* `Others-non-res` are modelled with marginal costs of set to zero. 
+* `Others-non-res` are modelled with marginal costs of set to zero.
 
 ## Renewables
 
 * Maximum biomass potential per country the hotmaps potential is used. The
 installed capacity of biomass is assumed to be `biofuels` and `others-res`
 from the TNYDP2016.
-* Renewable capacities for wind and pv are based on the TYNDP2016
+* Renewable capacities for wind and pv are based on the TYNDP2016 for non german
+countries.
 * For the renewable profiles of wind and pv timeseries of renewables ninja are used
 * Hydro capacities are assumend to be the same as in 2015. The inflow in run of river and
 reservoirs is modelled based on the inflow timeseries of the Restore2050 project.  
