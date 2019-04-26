@@ -169,7 +169,7 @@ def tyndp_generation(buses, vision, scenario_year, datapackage_dir,
 
 
 
-def nep_2019(year, datapackage_dir, scenario='B2030', bins=2, eaf=0.95,
+def nep_conventional(year, datapackage_dir, scenario='C2030', bins=2, eaf=0.95,
              raw_data_path=None):
     """
     """
@@ -284,23 +284,33 @@ def nep_2019(year, datapackage_dir, scenario='B2030', bins=2, eaf=0.95,
         pd.DataFrame.from_dict(elements, orient='index'),
         directory=os.path.join(datapackage_dir, 'data', 'elements'))
 
+def DE_renewables(datapackage_dir, onshore=85500, offshore=17000, biomass=6000,
+                  battery=12500, pv=104500):
+    """
+    """
+
+    carriers = pd.DataFrame(
+        #Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
+        Package('https://raw.githubusercontent.com/ZNES-datapackages/technology-cost/master/datapackage.json')
+        .get_resource('carrier').read(keyed=True)).set_index(
+            ['year', 'carrier', 'parameter', 'unit']).sort_index()
     # add renewables
     elements =  {}
 
     b = 'DE'
     for carrier, tech in [('wind', 'offshore'), ('wind', 'onshore'),
-    ('solar', 'pv'), ('biomass', 'ce')]:
+            ('solar', 'pv'), ('biomass', 'ce')]:
         element = {}
         if carrier in ['wind', 'solar']:
             if "onshore" == tech:
                 profile = b + "-onshore-profile"
-                capacity = 85500
+                capacity = onshore
             elif "offshore" == tech:
                 profile = b + "-offshore-profile"
-                capacity = 17000
+                capacity = offshore
             elif "pv" in tech:
                 profile = b + "-pv-profile"
-                capacity = 104500
+                capacity = pv
 
             elements["-".join([b, carrier, tech])] = element
             e = {
@@ -320,7 +330,7 @@ def nep_2019(year, datapackage_dir, scenario='B2030', bins=2, eaf=0.95,
 
             element.update({
                 "carrier": carrier,
-                "capacity": 6000,
+                "capacity": biomass,
                 "to_bus": b + "-electricity",
                 "efficiency": 0.4,
                 "from_bus": b + "-biomass-bus",
@@ -333,8 +343,8 @@ def nep_2019(year, datapackage_dir, scenario='B2030', bins=2, eaf=0.95,
             )
 
     elements['DE-battery'] =    {
-            "storage_capacity": 8 * 10000,  # 8 h
-            "capacity": 10000,
+            "storage_capacity": 5 * battery,  # 8 h
+            "capacity": battery,
             "bus": "DE-electricity",
             "tech": 'battery',
             "carrier": 'electricity',
@@ -355,6 +365,183 @@ def nep_2019(year, datapackage_dir, scenario='B2030', bins=2, eaf=0.95,
             directory=os.path.join(datapackage_dir, "data", "elements"),
         )
 
+def ehighway_generation(
+        buses, scenario_year, datapackage_dir, scenario="100% RES",
+        raw_data_path=None):
+    """
+    """
+
+    scenario_mapper = {
+        "100% RES": 'T54'}
+
+    filename = 'e-Highway_database_per_country-08022016.xlsx'
+
+    df = pd.read_excel(building.download_data(
+        'http://www.e-highway2050.eu/fileadmin/documents/Results/'  +
+        filename,
+        directory=raw_data_path),
+        sheet_name=scenario_mapper[scenario], index_col=[1], skiprows=3,
+        encoding='utf-8')
+
+
+    df = df.loc[buses]
+
+    efficiencies = {
+        'biomass': 0.45,
+        'coal': 0.45,
+        'gas': 0.5,
+        'uranium': 0.35,
+        'oil': 0.35,
+        'lignite': 0.4,
+        'phs': 0.8,
+        'rsv': 0.9}
+
+    max = {
+        'biomass': 0.85,
+        'coal': 0.85,
+        'gas': 0.85,
+        'uranium': 0.85,
+        'oil': 0.85,
+        'lignite': 0.85
+    }
+
+    carriers = pd.DataFrame(
+        Package('https://raw.githubusercontent.com/ZNES-datapackages/technology-cost/master/datapackage.json')
+        .get_resource('carrier').read(keyed=True)).set_index(
+            ['year', 'carrier', 'parameter']).sort_index()
+
+    techs = {
+        'Wind': 'onshore',
+        'Wind         North Sea': 'offshore',
+        'PV': 'pv',
+        'TOTAL GAS': 'ocgt',
+        'TOTAL Biomass': 'biomass',
+        'RoR (MW)': 'ror',
+        'PSP (MW)': 'phs',
+        'Hydro with reservoir (MW)': 'rsv',
+        'Demand (GWh)': 'load'}
+
+    elements = {}
+    for b in df.index:
+        for tech_key, tech in techs.items():
+            element = {}
+
+            if tech in ['onshore', 'offshore', 'pv']:
+                if "onshore" == tech:
+                    profile = b + "-onshore-profile"
+                    carrier = 'wind'
+                    tech = "onshore"
+                elif "offshore" == tech:
+                    profile = b + "-offshore-profile"
+                    carrier = 'wind'
+                    tech = "onshore"
+                elif "pv" == tech:
+                    profile = b + "-pv-profile"
+                    carrier = 'solar'
+                elif "ror" == tech:
+                    profile = b + "-ror-profile"
+                    carrier = 'hydro'
+
+
+                elements['-'.join([b, carrier, tech])] = element
+
+                element.update({
+                    "bus": b + "-electricity",
+                    "tech": tech,
+                    "carrier": carrier,
+                    "capacity": round(df.at[b, tech_key], 4),
+                    "type": "volatile",
+                    "profile": profile,
+                    }
+                )
+
+
+            elif tech in ['ocgt', 'st']:
+                if tech == 'ocgt':
+                    carrier = 'gas'
+                else:
+                    carrier = 'coal'
+                elements['-'.join([b, carrier, tech])] = element
+
+                marginal_cost = float(
+                    carriers.at[(scenario_year, carrier, 'cost'), 'value']
+                    + carriers.at[(2014, carrier, 'emission-factor'), 'value']
+                    * carriers.at[(scenario_year, 'co2', 'cost'), 'value']
+                ) / efficiencies[carrier]
+
+                element.update({
+                    "carrier": carrier,
+                    "capacity": df.at[b, tech_key],
+                    "bus": b + "-electricity",
+                    "type": "dispatchable",
+                    "marginal_cost": marginal_cost,
+                    "output_parameters": json.dumps(
+                        {"max": max[carrier]}
+                    ),
+                    "tech": tech,
+                }
+            )
+
+
+            # elif tech == 'phs':
+            #     elements['-'.join([b, carrier, tech])] = element
+            #
+            #     element.update({
+            #         'type': 'storage',
+            #         'tech': tech,
+            #         'bus': b + '-electricity',
+            #         'marginal_cost': 0,
+            #         'efficiency': efficiencies[tech],
+            #         'loss': 0,
+            #         'power': df.at[b, tech_key],
+            #         'capacity': df.at[b, 'PSP reservoir (GWh)'] * 1000
+            #         }
+            #     )
+            #
+            # elif tech == 'rsv':
+            #     elements['-'.join([b, carrier, tech])] = element
+            #
+            #     element.update({
+            #         'type': 'reservoir',
+            #         'tech': tech,
+            #         'inflow': b + 'electricity-rsv-inflow',
+            #         'bus': b + '-electricity',
+            #         'marginal_cost': 0,
+            #         'efficiency': efficiencies[tech],
+            #         'capacity': df.at[b, tech_key]
+            #     }
+            # )
+
+            elif tech == "biomass":
+                carrier = "biomass"#
+                elements["-".join([b, carrier, 'ce'])] = element
+
+                element.update({
+                    "carrier": carrier,
+                    "capacity": df.at[b, tech_key],
+                    "to_bus": b + "-electricity",
+                    "efficiency": efficiencies[carrier],
+                    "from_bus": b + "-biomass-bus",
+                    "type": "conversion",
+                    "carrier_cost": float(
+                        carriers.at[(2050, carrier, 'cost'), 'value']
+                    ),
+                    "tech": 'ce',
+                    })
+
+
+
+    df = pd.DataFrame.from_dict(elements, orient="index")
+    df = df.fillna(0)
+
+
+    for element_type in ['dispatchable', 'volatile', 'conversion', 'storage',
+                        'reservoir', 'load']:
+        building.write_elements(
+            element_type + ".csv",
+            df.loc[df["type"] == element_type].dropna(how="all", axis=1),
+            directory=os.path.join(datapackage_dir, "data", "elements"),
+        )
 
 def excess(datapackage_dir):
     """
