@@ -434,7 +434,7 @@ def ehighway_generation(
                 elif "offshore" == tech:
                     profile = b + "-offshore-profile"
                     carrier = 'wind'
-                    tech = "onshore"
+                    tech = "offshore"
                 elif "pv" == tech:
                     profile = b + "-pv-profile"
                     carrier = 'solar'
@@ -451,6 +451,7 @@ def ehighway_generation(
                     "carrier": carrier,
                     "capacity": round(df.at[b, tech_key], 4),
                     "type": "volatile",
+                    "output_parameters": json.dumps({}),
                     "profile": profile,
                     }
                 )
@@ -527,12 +528,15 @@ def ehighway_generation(
                         carriers.at[(2050, carrier, 'cost'), 'value']
                     ),
                     "tech": 'ce',
+                    "output_parameters": json.dumps({})
                     })
 
 
 
     df = pd.DataFrame.from_dict(elements, orient="index")
     df = df.fillna(0)
+
+    df = df[df.capacity != 0]
 
 
     for element_type in ['dispatchable', 'volatile', 'conversion', 'storage',
