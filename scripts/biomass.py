@@ -39,6 +39,7 @@ def add(buses, datapackage_dir):
 
             commodities[commodity_name] = {
                 "type": "commodity",
+                "tech": "commodity",
                 "carrier": "biomass",
                 "bus": bus_name,
                 "amount": float(

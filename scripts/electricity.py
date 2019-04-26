@@ -554,6 +554,8 @@ def excess(datapackage_dir):
 
     elements = pd.DataFrame(buses.index)
     elements["type"] = "excess"
+    elements["carrier"] = "electricity"
+    elements["tech"] = "excess"
     elements["name"] = elements["bus"] + "-excess"
     elements["marginal_cost"] = 0
 
@@ -573,6 +575,8 @@ def shortage(datapackage_dir):
     elements = pd.DataFrame(buses.index)
     elements["capacity"] = 10e10
     elements["type"] = "shortage"
+    elements["carrier"] = "electricity"
+    elements["tech"] = "shortage"
     elements["name"] = elements["bus"] + "-shortage"
     elements["marginal_cost"] = 300
 
