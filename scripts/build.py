@@ -37,16 +37,65 @@ def build(config):
 
     biomass.add(config["buses"], datapackage_dir)
 
-    grid.tyndp(
-        config["buses"]["electricity"],
-        datapackage_dir,
-        raw_data_path)
+    if config["temporal"]["scenario_year"] > 2035:
+        grid.ehighway(
+            config["buses"]["electricity"],
+            config["temporal"]["scenario_year"],
+            datapackage_dir,
+            config["ehighway"]["scenario"],
+            raw_data_path)
 
-    load.tyndp(
-        config["buses"]["electricity"],
-        config["tyndp"]["load"],
-        datapackage_dir,
-        raw_data_path)
+        load.ehighway(
+                config["buses"]["electricity"],
+                config["temporal"]["scenario_year"],
+                datapackage_dir,
+                config["ehighway"]["scenario"],
+                raw_data_path)
+
+        electricity.ehighway_generation(
+            config["buses"]["electricity"],
+            config["temporal"]["scenario_year"],
+            datapackage_dir,
+            config["ehighway"]["scenario"],
+            raw_data_path)
+
+    else:
+        grid.tyndp(
+            config["buses"]["electricity"],
+            datapackage_dir,
+            raw_data_path)
+
+        load.tyndp(
+            config["buses"]["electricity"],
+            config["tyndp"]["load"],
+            datapackage_dir,
+            raw_data_path)
+
+        electricity.tyndp_generation(
+            set(config["buses"]["electricity"]) - set(['DE']),
+            config['tyndp']['generation'],
+            config["temporal"]["scenario_year"],
+            datapackage_dir,
+            raw_data_path)
+
+        electricity.nep_conventional(
+            config["temporal"]["scenario_year"],
+            datapackage_dir,
+            scenario="B2030",
+            bins=2,
+            eaf=0.95,
+            raw_data_path=raw_data_path)
+
+        electricity.DE_renewables(
+            datapackage_dir,
+            onshore=85500,
+            offshore=17000,
+            biomass=6000,
+            battery=12500,
+            pv=104500)
+
+    hydro.generation(config, datapackage_dir, raw_data_path)
+
 
     load.opsd_profile(
         config["buses"]["electricity"],
@@ -54,27 +103,6 @@ def build(config):
         config["temporal"]["scenario_year"],
         datapackage_dir,
         raw_data_path)
-
-    electricity.tyndp_generation(
-        set(config["buses"]["electricity"]) - set(['DE']),
-        config['tyndp']['generation'],
-        config["temporal"]["scenario_year"],
-        datapackage_dir,
-        raw_data_path)
-
-    electricity.nep_2019(
-        config["temporal"]["scenario_year"],
-        datapackage_dir,
-        scenario="B2030",
-        bins=2,
-        eaf=0.95,
-        raw_data_path=raw_data_path)
-
-    electricity.excess(datapackage_dir)
-
-    electricity.shortage(datapackage_dir)
-
-    hydro.generation(config, datapackage_dir, raw_data_path)
 
     capacity_factors.pv(
         config["buses"]["electricity"],
@@ -89,6 +117,10 @@ def build(config):
         config["temporal"]["scenario_year"],
         datapackage_dir,
         raw_data_path)
+
+    electricity.excess(datapackage_dir)
+
+    electricity.shortage(datapackage_dir)
 
     datapackage.building.infer_metadata(
         package_name=config["name"],
@@ -109,7 +141,7 @@ def build(config):
                 "load",
                 "volatile",
                 "ror",
-                "reservoir"#
+                "reservoir"
             ],
             "from_to_bus": [
                 "link",
@@ -128,4 +160,4 @@ if __name__ == "__main__":
     p = mp.Pool(10)
     p.map(build, scenarios)
 
-    #build(Scenario.from_path(os.path.join('scenarios', 'V4-2010.toml')))
+    #build(Scenario.from_path(os.path.join('scenarios', 'eHighway2050-100%RES.toml')))
