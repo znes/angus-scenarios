@@ -38,14 +38,13 @@ def add(buses, datapackage_dir):
             commodity_name = '-'.join([b, "biomass", "commodity"])
 
             commodities[commodity_name] = {
-                "type": "dispatchable",
+                "type": "commodity",
                 "carrier": "biomass",
                 "bus": bus_name,
-                "capacity": float(
+                "amount": float(
                     bio_potential["value"].get((b, "biomass"), 0)
                 )
                 * 1e6,  # TWh -> MWh
-                "output_parameters": json.dumps({"summed_max": 1}),
             }
 
             bus_elements[bus_name] = {
