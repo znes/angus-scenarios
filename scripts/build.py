@@ -41,6 +41,7 @@ def build(config):
         grid.ehighway(
             config["buses"]["electricity"],
             config["temporal"]["scenario_year"],
+            config["grid"]["loss"],
             datapackage_dir,
             config["ehighway"]["scenario"],
             raw_data_path)
@@ -54,6 +55,8 @@ def build(config):
 
         electricity.ehighway_generation(
             config["buses"]["electricity"],
+            config["availability_factor"],
+            config["efficiencies"],
             config["temporal"]["scenario_year"],
             datapackage_dir,
             config["ehighway"]["scenario"],
@@ -62,6 +65,7 @@ def build(config):
     else:
         grid.tyndp(
             config["buses"]["electricity"],
+            config["grid"]["loss"],
             datapackage_dir,
             raw_data_path)
 
@@ -73,6 +77,7 @@ def build(config):
 
         electricity.tyndp_generation(
             set(config["buses"]["electricity"]) - set(['DE']),
+            config["availability_factor"],
             config['tyndp']['generation'],
             config["temporal"]["scenario_year"],
             datapackage_dir,
@@ -83,7 +88,7 @@ def build(config):
             datapackage_dir,
             scenario="B2030",
             bins=2,
-            eaf=0.95,
+            avf=0.95,
             raw_data_path=raw_data_path)
 
         electricity.DE_renewables(

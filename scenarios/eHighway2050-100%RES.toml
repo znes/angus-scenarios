@@ -6,10 +6,11 @@ name = "eHighway2050-100%RES"
 [cost]
 wacc = 0.07
 
-
 [ehighway]
 scenario = "100% RES"
 
+[grid]
+loss = 0.05
 
 [temporal]
 scenario_year = 2050
@@ -19,6 +20,24 @@ demand_year = 2012 # 2011, 2012
 [potential]
 #renewables = "LIMES-EU"
 biomass = "hotmaps"
+
+[availability_factor]
+biomass = 0.85
+coal =  0.85
+gas = 0.85
+uranium =  0.85
+oil =  0.85
+lignite =  0.85
+
+[efficiencies]
+biomass = 0.45
+coal = 0.45
+gas = 0.5
+uranium = 0.35
+oil = 0.35
+lignite = 0.4
+phs = 0.8
+rsv = 0.9
 
 [buses]
 

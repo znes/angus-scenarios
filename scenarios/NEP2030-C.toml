@@ -9,6 +9,16 @@ wacc = 0.07
 load = "2030ST"
 generation = 'vision4' # vision1, vision2, vision3, vision4
 
+[grid]
+loss = 0.05
+
+[availability_factor]
+biomass = 0.85
+coal =  0.85
+gas = 0.85
+uranium =  0.85
+oil =  0.85
+lignite =  0.85
 
 [temporal]
 scenario_year = 2030

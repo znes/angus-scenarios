@@ -74,7 +74,7 @@ def ehighway(buses, year, datapackage_dir, scenario="100% RES",
 
     if os.path.exists(filepath):
         df = pd.read_excel(filepath, sheet_name=sheet, index_col=[0],
-                           skiprows=[0,1])
+                           skiprows=[0, 1])
     else:
         raise FileNotFoundError(
             "File for e-Highway loads does not exist. Did you download data?"

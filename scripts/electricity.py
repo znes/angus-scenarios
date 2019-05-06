@@ -14,7 +14,7 @@ from oemof.tabular.datapackage import building
 
 
 
-def tyndp_generation(buses, vision, scenario_year, datapackage_dir,
+def tyndp_generation(buses, avf, vision, scenario_year, datapackage_dir,
                      raw_data_path):
     """
     """
@@ -32,14 +32,7 @@ def tyndp_generation(buses, vision, scenario_year, datapackage_dir,
         'oil': 0.35,
         'lignite': 0.4}
 
-    max = {
-        'biomass': 0.85,
-        'coal': 0.85,
-        'gas': 0.85,
-        'uranium': 0.85,
-        'oil': 0.85,
-        'lignite': 0.85
-    }
+
 
     visions = {
         'vision1': 41,
@@ -116,7 +109,7 @@ def tyndp_generation(buses, vision, scenario_year, datapackage_dir,
                     "type": "dispatchable",
                     "marginal_cost": marginal_cost,
                     "output_parameters": json.dumps(
-                        {"max": max[carrier]}
+                        {"max": avf[carrier]}
                     ),
                     "tech": tech,
                 }
@@ -169,7 +162,7 @@ def tyndp_generation(buses, vision, scenario_year, datapackage_dir,
 
 
 
-def nep_conventional(year, datapackage_dir, scenario='C2030', bins=2, eaf=0.95,
+def nep_conventional(year, datapackage_dir, scenario='C2030', bins=2, avf=0.95,
              raw_data_path=None):
     """
     """
@@ -262,7 +255,7 @@ def nep_conventional(year, datapackage_dir, scenario='C2030', bins=2, eaf=0.95,
 
         marginal_cost = (fuel + vom + co2 * ef) / Decimal(eta)
 
-        output_parameters = {"max": eaf}
+        output_parameters = {"max": avf}
 
         if carrier == "waste":
             output_parameters.update({"summed_max": 2500})
@@ -366,8 +359,8 @@ def DE_renewables(datapackage_dir, onshore=85500, offshore=17000, biomass=6000,
         )
 
 def ehighway_generation(
-        buses, scenario_year, datapackage_dir, scenario="100% RES",
-        raw_data_path=None):
+        buses, avf, efficiencies, scenario_year, datapackage_dir,
+        scenario="100% RES", raw_data_path=None):
     """
     """
 
@@ -386,24 +379,6 @@ def ehighway_generation(
 
     df = df.loc[buses]
 
-    efficiencies = {
-        'biomass': 0.45,
-        'coal': 0.45,
-        'gas': 0.5,
-        'uranium': 0.35,
-        'oil': 0.35,
-        'lignite': 0.4,
-        'phs': 0.8,
-        'rsv': 0.9}
-
-    max = {
-        'biomass': 0.85,
-        'coal': 0.85,
-        'gas': 0.85,
-        'uranium': 0.85,
-        'oil': 0.85,
-        'lignite': 0.85
-    }
 
     carriers = pd.DataFrame(
         Package('https://raw.githubusercontent.com/ZNES-datapackages/technology-cost/master/datapackage.json')
@@ -477,7 +452,7 @@ def ehighway_generation(
                     "type": "dispatchable",
                     "marginal_cost": marginal_cost,
                     "output_parameters": json.dumps(
-                        {"max": max[carrier]}
+                        {"max": avf[carrier]}
                     ),
                     "tech": tech,
                 }

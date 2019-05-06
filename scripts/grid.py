@@ -57,7 +57,7 @@ def _remove_links(row):
         return True
 
 
-def ehighway(buses, year, datapackage_dir, scenario = "100% RES",
+def ehighway(buses, year, grid_loss, datapackage_dir, scenario = "100% RES",
              raw_data_path=None):
     """
     Parameter
@@ -119,7 +119,7 @@ def ehighway(buses, year, datapackage_dir, scenario = "100% RES",
 
             element = {
                 "type": "link",
-                "loss": 0.05,
+                "loss": grid_loss,
                 "from_bus": predecessor,
                 "to_bus": successor,
                 "tech": "transshipment",
@@ -136,7 +136,7 @@ def ehighway(buses, year, datapackage_dir, scenario = "100% RES",
     )
 
 
-def tyndp(buses, datapackage_dir, raw_data_path):
+def tyndp(buses, grid_loss, datapackage_dir, raw_data_path):
     """
     Parameter
     ---------
@@ -179,7 +179,7 @@ def tyndp(buses, datapackage_dir, raw_data_path):
 
             element = {
                 "type": "link",
-                "loss": 0.05,
+                "loss": grid_loss,
                 "from_bus": predecessor,
                 "to_bus": successor,
                 "tech": "transshipment",
