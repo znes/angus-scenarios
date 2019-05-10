@@ -176,20 +176,29 @@ def price_scatter_plot(scenarios, rload, prices):
 
     return dict(data=data, layout=layout)
 
-def merit_order_plot(scenario, rload, prices):
+def merit_order_plot(scenario, prices):
+    prices = prices[scenario]
+    prices = prices.sort_values(by=['shadow_price'])
+    prices['colors'] = [color_dict.get(c, 'black') for c in prices.carrier]
+    # text = [str(t)+' '+str(n) for t in prices.index for n in prices.name]
     data = []
     data.append(
-        go.Scatter(
-            x = rload[scenario],
-            y = prices[scenario],
-            name = scenario,
-            mode = 'markers',
-            marker = dict(
-                size = 10,
-            )
+        go.Bar(
+            y = prices.shadow_price,
+            # text = text,
+            name = 'shadow_price',
+            marker = dict(color = prices.colors)
         )
     )
-    layout = dict(title = 'Residual load vs. Shadow Prices')
+    # data.append(
+    #     go.Scatter(
+    #         y = prices.marginal_cost,
+    #         mode = 'markers',
+    #         name = 'highest marginal cost'
+    #         )
+    #
+    # )
+    layout = dict(title = 'Ordered prices in DE '+scenario)
 
     return dict(data=data, layout=layout)
 

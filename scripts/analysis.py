@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+import datapackage as dp
 
 country = 'DE'
 
@@ -17,21 +18,60 @@ for r in os.listdir("results"):
 #pd.DataFrame(unsorted).to_csv("results/shadow_prices_unsorted.csv")
 
 
-# residual load
+# residual load and more
 renewables = ['wind-onshore', 'wind-offshore', "solar-pv", "hydro-ror"]
 
 if country == 'DE':
     rload = {}
+    marginal_cost = {}
+    shadow_prices = {}
+    prices = {}
     for r in os.listdir("results"):
         path = os.path.join("results", r, "output", country + "-electricity.csv")
-        df = pd.read_csv(path, index_col=[0], parse_dates=True)
+        country_electricity_df = pd.read_csv(path, index_col=[0], parse_dates=True)
 
-        df['rload'] = (
-            df[("-").join([country, 'electricity-load'])] -
-            df[[("-").join([country, i]) for i in renewables]].sum(axis=1)
+        country_electricity_df['rload'] = (
+            country_electricity_df[("-").join([country, 'electricity-load'])] -
+            country_electricity_df[[("-").join([country, i]) for i in renewables]].sum(axis=1)
         )
 
-        rload[r] = df['rload'].values
+        rload[r] = country_electricity_df['rload'].values
+
+        path = os.path.join("results", r, "input", "datapackage.json")
+        input_datapackage = dp.Package(path)
+        dispatchable = input_datapackage.get_resource('dispatchable')
+        df = pd.DataFrame(dispatchable.read(keyed=True))
+        df = df.set_index('name')
+
+        marginal_cost[r] = df
+
+        path = os.path.join("results", r, "output", "shadow_prices.csv")
+        shadow_prices[r] = pd.read_csv(path, index_col=[0], parse_dates=True)["DE-electricity"]
+
+        prices[r] =[]
+        for c in country_electricity_df.iterrows():
+            timestamp = c[0]
+            energy = c[1]
+            energy.name = 'energy'
+            df = pd.concat([c[1], marginal_cost[r]], axis=1, sort=False)
+            df = df.dropna()
+            df = df[df['energy']>0]
+            df = df.sort_values(by='marginal_cost', ascending=False)
+            if df.shape[0] > 1:
+                df_carrier = df.carrier[0]
+                df_marginal_cost = df.marginal_cost[0]
+                df_name = df.index[0]
+            else:
+                df_carrier = 'NONE'
+                df_marginal_cost = -1
+                df_name = 'NONE'
+            temp_dict = dict(timestamp = timestamp,
+                             carrier = df_carrier,
+                             name = df_name,
+                             marginal_cost = df_marginal_cost,
+                             shadow_price = shadow_prices[r][timestamp])
+            prices[r].append(temp_dict)
+        prices[r] = pd.DataFrame(prices[r]).set_index('timestamp')
 
 from plots import hourly_plot, stacked_plot, price_line_plot, price_scatter_plot, merit_order_plot
 import plotly.offline as offline
@@ -39,22 +79,23 @@ import plotly.offline as offline
 if not os.path.exists('plots'):
     os.makedirs('plots')
 #
-for s in os.listdir('results'):
-    offline.plot(
-        stacked_plot(s), filename=os.path.join('plots', s + '-capacities'))
-    offline.plot(
-        hourly_plot(s, 'DE'), filename=os.path.join('plots', s + '-dispatch'))
+# for s in os.listdir('results'):
+#     offline.plot(
+#         stacked_plot(s), filename=os.path.join('plots', s + '-capacities'))
+#     offline.plot(
+#         hourly_plot(s, 'DE'), filename=os.path.join('plots', s + '-dispatch'))
 
 #offline.plot(
 #          price_line_plot(os.listdir('results'), s.index, unsorted),
 #          filename=os.path.join('plots', 'shadow_prices'))
 
 
-offline.plot(
-          price_scatter_plot(os.listdir('results'), rload, unsorted),
-          filename=os.path.join('plots', 'shadow_prices'))
+# offline.plot(
+#           price_scatter_plot(os.listdir('results'), rload, unsorted),
+#           filename=os.path.join('plots', 'shadow_prices'))
 
 for s in os.listdir('results'):
     offline.plot(
-        merit_order_plot(s, rload, unsorted),
-        filename=os.path.join('plots', 'merit_order_'+s))
+        merit_order_plot(s, prices),
+        filename = os.path.join('plots', 'merit_order_'+s+'.html'),
+        auto_open = False)
