@@ -33,7 +33,7 @@ if country == 'DE':
 
         rload[r] = df['rload'].values
 
-from plots import hourly_plot, stacked_plot, price_line_plot, price_scatter_plot
+from plots import hourly_plot, stacked_plot, price_line_plot, price_scatter_plot, merit_order_plot
 import plotly.offline as offline
 
 if not os.path.exists('plots'):
@@ -53,3 +53,8 @@ for s in os.listdir('results'):
 offline.plot(
           price_scatter_plot(os.listdir('results'), rload, unsorted),
           filename=os.path.join('plots', 'shadow_prices'))
+
+for s in os.listdir('results'):
+    offline.plot(
+        merit_order_plot(s, rload, unsorted),
+        filename=os.path.join('plots', 'merit_order_'+s))
