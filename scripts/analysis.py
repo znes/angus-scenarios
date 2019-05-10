@@ -19,7 +19,7 @@ for r in os.listdir("results"):
 
 # residual load
 renewables = ['wind-onshore', 'wind-offshore', "solar-pv", "hydro-ror"]
-
+timestamps = {}
 if country == 'DE':
     rload = {}
     for r in os.listdir("results"):
@@ -32,6 +32,7 @@ if country == 'DE':
         )
 
         rload[r] = df['rload'].values
+        timestamps[r] = df.index
 
 from plots import hourly_plot, stacked_plot, price_line_plot, price_scatter_plot
 import plotly.offline as offline
@@ -39,11 +40,12 @@ import plotly.offline as offline
 if not os.path.exists('plots'):
     os.makedirs('plots')
 #
-for s in os.listdir('results'):
-    offline.plot(
-        stacked_plot(s), filename=os.path.join('plots', s + '-capacities'))
-    offline.plot(
-        hourly_plot(s, 'DE'), filename=os.path.join('plots', s + '-dispatch'))
+if False:
+    for s in os.listdir('results'):
+        offline.plot(
+            stacked_plot(s), filename=os.path.join('plots', s + '-capacities'))
+        offline.plot(
+            hourly_plot(s, 'DE'), filename=os.path.join('plots', s + '-dispatch'))
 
 #offline.plot(
 #          price_line_plot(os.listdir('results'), s.index, unsorted),
@@ -51,5 +53,5 @@ for s in os.listdir('results'):
 
 
 offline.plot(
-          price_scatter_plot(os.listdir('results'), rload, unsorted),
+          price_scatter_plot(os.listdir('results'), rload, unsorted, timestamps),
           filename=os.path.join('plots', 'shadow_prices'))
