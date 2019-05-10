@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
-country = 'DK'
+country = 'DE'
 
 # shadow prices
 sorted = {}
@@ -33,18 +33,23 @@ if country == 'DE':
 
         rload[r] = df['rload'].values
 
-from plots import hourly_plot, stacked_plot, price_line_plot
+from plots import hourly_plot, stacked_plot, price_line_plot, price_scatter_plot
 import plotly.offline as offline
 
 if not os.path.exists('plots'):
     os.makedirs('plots')
-
+#
 for s in os.listdir('results'):
     offline.plot(
         stacked_plot(s), filename=os.path.join('plots', s + '-capacities'))
     offline.plot(
         hourly_plot(s, 'DE'), filename=os.path.join('plots', s + '-dispatch'))
 
+#offline.plot(
+#          price_line_plot(os.listdir('results'), s.index, unsorted),
+#          filename=os.path.join('plots', 'shadow_prices'))
+
+
 offline.plot(
-          price_line_plot(os.listdir('results'), s.index, unsorted),
+          price_scatter_plot(os.listdir('results'), rload, unsorted),
           filename=os.path.join('plots', 'shadow_prices'))
