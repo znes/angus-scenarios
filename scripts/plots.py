@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 
+from plotly import tools
 import plotly.graph_objs as go
 import plotly.offline as offline
 from matplotlib import colors
@@ -33,7 +34,8 @@ color = {
     'import': 'pink',
     'volatile': 'blue',
     'dispatchable': 'red',
-    'storage': 'green'
+    'storage': 'green',
+    'NONE': 'blue'
 }
 
 color_dict = {
@@ -180,31 +182,71 @@ def price_scatter_plot(scenarios, rload, prices, timestamps):
 
     return dict(data=data, layout=layout)
 
-def merit_order_plot(scenario, prices):
+def merit_order_plot(scenario, prices, storages):
     prices = prices[scenario]
     prices = prices.sort_values(by=['shadow_price'])
+
+    storages = storages[scenario]
+    storages = storages.sort_values(by=['shadow_price'])
+
     prices['colors'] = [color_dict.get(c, 'black') for c in prices.carrier]
     # text = [str(t)+' '+str(n) for t in prices.index for n in prices.name]
+
+    fig = tools.make_subplots(rows=2, cols=1)
+
+
     data = []
+
     data.append(
         go.Bar(
             y = prices.shadow_price,
             # text = text,
             name = 'shadow_price',
+            showlegend = False,
             marker = dict(color = prices.colors)
         )
     )
-    # data.append(
-    #     go.Scatter(
-    #         y = prices.marginal_cost,
-    #         mode = 'markers',
-    #         name = 'highest marginal cost'
-    #         )
-    #
-    # )
-    layout = dict(title = 'Ordered prices in DE '+scenario)
 
-    return dict(data=data, layout=layout)
+    fig.append_trace(data[0], 1, 1)
+
+    # just for legend to work
+    for c in prices.carrier.unique():
+        if c != "NONE":
+            fig.append_trace(
+                go.Bar(
+                    y = [0],
+                    # text = text,
+                    name = c.upper(),
+                    marker = dict(color = color_dict.get(c, 'black'))
+                ), 1, 1)
+
+
+    storage_dispatch_ordered = go.Bar(
+            y = storages['storage_dispatch'],
+            # text = text,
+            name = 'Storage Dispatch',
+            marker = dict(color = "magenta")
+        )
+
+    fig.append_trace(storage_dispatch_ordered, 2, 1)
+
+
+
+
+    fig['layout'].update(
+        title = 'Ordered prices in DE '+scenario,
+        yaxis1=dict(
+            title='Shadow Price in € / MWh'
+        ),
+        yaxis2=dict(
+            title='Storage Dispatch in MWh'
+        ),
+        xaxis2=dict(
+            title='Hours of the year'
+        ),
+        showlegend=True)
+
+    return fig
 
 def price_line_plot(scenarios, index, prices):
     data = []

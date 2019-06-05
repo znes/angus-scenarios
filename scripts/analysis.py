@@ -25,11 +25,11 @@ if country == 'DE':
     rload = {}
     marginal_cost = {}
     shadow_prices = {}
+    storages = {}
     prices = {}
     for r in os.listdir("results"):
         path = os.path.join("results", r, "output", country + "-electricity.csv")
         country_electricity_df = pd.read_csv(path, index_col=[0], parse_dates=True)
-
         country_electricity_df['rload'] = (
             country_electricity_df[("-").join([country, 'electricity-load'])] -
             country_electricity_df[[("-").join([country, i]) for i in renewables]].sum(axis=1)
@@ -43,11 +43,20 @@ if country == 'DE':
         dispatchable = input_datapackage.get_resource('dispatchable')
         df = pd.DataFrame(dispatchable.read(keyed=True))
         df = df.set_index('name')
+        # select all storages and sum up
+        storage = [ss for ss in
+                    ['DE-' + s for s in ['hydro-phs', 'hydro-reservoir', 'battery']]
+                    if ss in country_electricity_df.columns]
+        storages[r] = country_electricity_df[storage].sum(axis=1)
 
         marginal_cost[r] = df
 
         path = os.path.join("results", r, "output", "shadow_prices.csv")
         shadow_prices[r] = pd.read_csv(path, index_col=[0], parse_dates=True)["DE-electricity"]
+
+        storages[r] = pd.concat([storages[r], shadow_prices[r]], axis=1)
+        storages[r] = storages[r].rename(
+            columns={0:'storage_dispatch', 'DE-electricity': 'shadow_price'})
 
         prices[r] =[]
         for c in country_electricity_df.iterrows():
@@ -98,6 +107,6 @@ if False:
 
 for s in os.listdir('results'):
     offline.plot(
-        merit_order_plot(s, prices),
+        merit_order_plot(s, prices, storages),
         filename = os.path.join('plots', 'merit_order_'+s+'.html'),
         auto_open = False)
