@@ -31,6 +31,9 @@ color = {
     'waste': 'yellowgreen',
     'oil': 'black',
     'import': 'pink',
+    'volatile': 'blue',
+    'dispatchable': 'red',
+    'storage': 'green'
 }
 
 color_dict = {
@@ -158,7 +161,7 @@ def stacked_plot(scenario, datapath='results'):
        )
     }
 
-def price_scatter_plot(scenarios, rload, prices):
+def price_scatter_plot(scenarios, rload, prices, timestamps):
     data = []
     for s in scenarios:
         data.append(
@@ -166,6 +169,7 @@ def price_scatter_plot(scenarios, rload, prices):
                 x = rload[s],
                 y = prices[s],
                 name = s,
+                text=timestamps[s],
                 mode = 'markers',
                 marker = dict(
                     size = 10,
