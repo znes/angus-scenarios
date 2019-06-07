@@ -11,6 +11,8 @@ To run the script, make sure the requirements e.g. via pip
 
     pip install  -U -r requirements.txt
 
+In addition for some plot `plotly-orca`. Installation instructions can 
+found here: https://github.com/plotly/orca
 
 ### Raw data
 
