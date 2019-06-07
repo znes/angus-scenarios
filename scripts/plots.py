@@ -28,7 +28,7 @@ color = {
     'solar': 'gold',
     'gas': 'lightgray',
     'lignite': "chocolate",
-    'coal': "darkgray",
+    'coal': "dimgrey",
     'waste': 'yellowgreen',
     'oil': 'black',
     'import': 'pink',
@@ -201,8 +201,10 @@ def merit_order_plot(scenario, prices, storages):
         go.Bar(
             y = prices.shadow_price,
             # text = text,
+            opacity = 1,
             name = 'shadow_price',
             showlegend = False,
+            width=1.05,
             marker = dict(color = prices.colors)
         )
     )
@@ -211,12 +213,20 @@ def merit_order_plot(scenario, prices, storages):
 
     # just for legend to work
     for c in prices.carrier.unique():
-        if c != "NONE":
+        if c == "NONE":
             fig.append_trace(
                 go.Bar(
                     y = [0],
                     # text = text,
-                    name = c.upper(),
+                    name = "NONE",
+                    marker = dict(color = color_dict.get(c, 'black'))
+                ), 1, 1)
+        else:
+            fig.append_trace(
+                go.Bar(
+                    y = [0],
+                    # text = text,
+                    name = c.title(),
                     marker = dict(color = color_dict.get(c, 'black'))
                 ), 1, 1)
 
@@ -225,6 +235,8 @@ def merit_order_plot(scenario, prices, storages):
             y = storages['storage_dispatch'],
             # text = text,
             name = 'Storage Dispatch',
+            width=1.04,
+            opacity=1,
             marker = dict(color = "magenta")
         )
 
@@ -234,17 +246,19 @@ def merit_order_plot(scenario, prices, storages):
 
 
     fig['layout'].update(
-        title = 'Ordered prices in DE '+scenario,
+        title = 'Ordered prices and storage dispatch in DE '+scenario,
         yaxis1=dict(
-            title='Shadow Price in € / MWh'
+            title='Shadow price in € / MWh'
         ),
         yaxis2=dict(
-            title='Storage Dispatch in MWh'
+            title='Storage dispatch in MWh'
         ),
         xaxis2=dict(
             title='Hours of the year'
         ),
-        showlegend=True)
+        showlegend=True,
+        #legend=dict(x=0, y=-0),
+        bargap=0)
 
     return fig
 

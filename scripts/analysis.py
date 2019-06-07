@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import datapackage as dp
+import plotly.io as pio
 
 country = 'DE'
 
@@ -110,3 +111,7 @@ for s in os.listdir('results'):
         merit_order_plot(s, prices, storages),
         filename = os.path.join('plots', 'merit_order_'+s+'.html'),
         auto_open = False)
+
+    pio.write_image(
+        merit_order_plot(s, prices, storages),
+        os.path.join('plots', 'merit_order_'+s+'.pdf'))
