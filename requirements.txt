@@ -2,6 +2,7 @@ appdirs==1.4.3
 asn1crypto==0.24.0
 backcall==0.1.0
 bcrypt==3.1.6
+blinker==1.4
 cchardet==2.1.4
 certifi==2018.11.29
 cffi==1.11.5
@@ -33,8 +34,8 @@ nbformat==4.4.0
 networkx==2.2
 nose==1.3.7
 numpy==1.15.4
--e git+git@github.com:oemof/oemof.git@ecac61bf1f141000d2ec070ba5562db309ffef77#egg=oemof
--e git+git@github.com:oemof/oemof-tabular.git@a969c2bf8865d9687abe3e828400139cb8f3c40b#egg=oemof.tabular
+oemof==0.3.1
+-e git+git@github.com:oemof/oemof-tabular.git@d22080a2438fdb2a61fa37e26649e77a5fd6f18c#egg=oemof.tabular
 openpyxl==2.4.11
 pandas==0.23.4
 paramiko==2.4.2
@@ -62,6 +63,7 @@ retrying==1.3.3
 rfc3986==1.2.0
 scikit-learn==0.20.2
 scipy==1.2.0
+seaborn==0.9.0
 Shapely==1.6.4.post2
 six==1.12.0
 sklearn==0.0
