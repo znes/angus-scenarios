@@ -142,6 +142,9 @@ def tyndp(buses, grid_loss, datapackage_dir, raw_data_path):
     ---------
     buses: array like
         List with buses represented by iso country code
+    grid_loss: numeric
+        Loss for transshipment model (oemof.tabular.facades.Link component
+        attribute)
     datapackage_dir: string
         Directory for tabular resource
     raw_data_path: string

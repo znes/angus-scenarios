@@ -39,6 +39,7 @@ electricity = [
     "DE",
     "DK",
     "FR",
+    "NL",
     "NO",
     "PL",
     "SE"
@@ -52,6 +53,7 @@ biomass = [
   "DE",
   "DK",
   "FR",
+  "NL",
   "NO",
   "PL",
   "SE"
