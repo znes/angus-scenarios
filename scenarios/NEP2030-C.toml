@@ -7,7 +7,8 @@ wacc = 0.07
 
 [tyndp]
 load = "2030ST"
-generation = 'vision4' # vision1, vision2, vision3, vision4
+generation = 'vision4'
+cost = "2030ST"
 
 [grid]
 loss = 0.05
@@ -19,6 +20,20 @@ gas = 0.85
 uranium =  0.85
 oil =  0.85
 lignite =  0.85
+
+[efficiencies]
+biomass = 0.35
+coal =  0.45
+gas = 0.5
+uranium = 0.35
+oil = 0.35
+lignite = 0.38
+battery = 0.9
+
+[max_fulloadhours]
+waste = 2500
+other_non_renewables = 2000
+
 
 [temporal]
 scenario_year = 2030

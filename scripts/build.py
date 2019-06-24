@@ -80,15 +80,20 @@ def build(config):
             config["availability_factor"],
             config['tyndp']['generation'],
             config["temporal"]["scenario_year"],
+            config['tyndp']["cost"],
+            config["efficiencies"],
+            config["max_fulloadhours"],
             datapackage_dir,
             raw_data_path)
 
         electricity.nep_conventional(
             config["temporal"]["scenario_year"],
             datapackage_dir,
-            scenario="B2030",
+            scenario="C2030",
             bins=2,
             avf=0.95,
+            max_fulloadhours=config["max_fulloadhours"],
+            cost_scenario=config['tyndp']['cost'],
             raw_data_path=raw_data_path)
 
         electricity.DE_renewables(
@@ -97,7 +102,8 @@ def build(config):
             offshore=17000,
             biomass=6000,
             battery=12500,
-            pv=104500)
+            pv=104500,
+            efficiencies=config["efficiencies"])
 
     hydro.generation(config, datapackage_dir, raw_data_path)
 
@@ -162,7 +168,7 @@ if __name__ == "__main__":
     scenarios= [
         Scenario.from_path(os.path.join('scenarios', s))
         for s in os.listdir('scenarios')]
-    p = mp.Pool(10)
-    p.map(build, scenarios)
+    #p = mp.Pool(10)
+    #p.map(build, scenarios)
 
-    #build(Scenario.from_path(os.path.join('scenarios', 'eHighway2050-100%RES.toml')))
+    build(Scenario.from_path(os.path.join('scenarios', 'NEP2030-C.toml')))

@@ -14,24 +14,18 @@ from oemof.tabular.datapackage import building
 
 
 
-def tyndp_generation(buses, avf, vision, scenario_year, datapackage_dir,
-                     raw_data_path):
+def tyndp_generation(buses, avf, vision, scenario_year, scenario,
+                     efficiencies, max_fulloadhours,
+                     datapackage_dir, raw_data_path):
     """
+
     """
+
     filepath = building.download_data(
         "https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP%202016/rgips/"
         "TYNDP2016%20market%20modelling%20data.xlsx",
         directory=raw_data_path)
     df = pd.read_excel(filepath, sheet_name="NGC")
-
-    efficiencies = {
-        'biomass': 0.45,
-        'coal': 0.45,
-        'gas': 0.5,
-        'uranium': 0.35,
-        'oil': 0.35,
-        'lignite': 0.4}
-
 
 
     visions = {
@@ -62,7 +56,7 @@ def tyndp_generation(buses, avf, vision, scenario_year, datapackage_dir,
     carriers = pd.DataFrame(
         Package('https://raw.githubusercontent.com/ZNES-datapackages/technology-cost/master/datapackage.json')
         .get_resource('carrier').read(keyed=True)).set_index(
-            ['year', 'carrier', 'parameter']).sort_index()
+            ['year', 'carrier', 'parameter', 'scenario']).sort_index()
 
     elements = {}
 
@@ -97,9 +91,9 @@ def tyndp_generation(buses, avf, vision, scenario_year, datapackage_dir,
                     tech = 'st'
                 elements['-'.join([b, carrier, tech])] = element
                 marginal_cost = float(
-                    carriers.at[(scenario_year, carrier, 'cost'), 'value']
-                    + carriers.at[(2014, carrier, 'emission-factor'), 'value']
-                    * carriers.at[(scenario_year, 'co2', 'cost'), 'value']
+                    carriers.at[(scenario_year, carrier, 'cost', scenario), 'value']
+                    + carriers.at[(2014, carrier, 'emission-factor', None), 'value']
+                    * carriers.at[(scenario_year, 'co2', 'cost', scenario), 'value']
                 ) / efficiencies[carrier]
 
                 element.update({
@@ -126,7 +120,7 @@ def tyndp_generation(buses, avf, vision, scenario_year, datapackage_dir,
                     "marginal_cost": 0,
                     "tech": 'other',
                     "output_parameters": json.dumps(
-                        {"summed_max": 2000}
+                        {"summed_max": max_fulloadhours['other_non_renewables']}
                     )
                 }
             )
@@ -142,7 +136,7 @@ def tyndp_generation(buses, avf, vision, scenario_year, datapackage_dir,
                     "from_bus": b + "-biomass-bus",
                     "type": "conversion",
                     "carrier_cost": float(
-                        carriers.at[(2030, carrier, 'cost'), 'value']
+                        carriers.at[(2030, carrier, 'cost', scenario), 'value']
                     ),
                     "tech": 'ce',
                     }
@@ -162,8 +156,8 @@ def tyndp_generation(buses, avf, vision, scenario_year, datapackage_dir,
 
 
 
-def nep_conventional(year, datapackage_dir, scenario='C2030', bins=2, avf=0.95,
-             raw_data_path=None):
+def nep_conventional(year, datapackage_dir, scenario, bins, avf,
+                     max_fulloadhours, cost_scenario, raw_data_path=None):
     """
     """
 
@@ -177,7 +171,7 @@ def nep_conventional(year, datapackage_dir, scenario='C2030', bins=2, avf=0.95,
         #Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
         Package('https://raw.githubusercontent.com/ZNES-datapackages/technology-cost/master/datapackage.json')
         .get_resource('carrier').read(keyed=True)).set_index(
-            ['year', 'carrier', 'parameter', 'unit']).sort_index()
+            ['year', 'carrier', 'parameter', 'scenario', 'unit']).sort_index()
 
     sq = pd.read_csv(building.download_data(
         "https://data.open-power-system-data.org/conventional_power_plants/"
@@ -244,21 +238,22 @@ def nep_conventional(year, datapackage_dir, scenario='C2030', bins=2, avf=0.95,
 
     elements = {}
 
-    co2 = carriers.at[(year, 'co2', 'cost', 'EUR/t'), 'value']
+    co2 = carriers.at[(year, 'co2', 'cost', cost_scenario, 'EUR/t'), 'value']
 
     for (country, carrier, tech, bins), (capacity, eta) in s.iterrows():
         name = country + '-' + carrier + '-' + tech + '-' + str(bins)
 
         vom = technologies.at[(year, carrier, tech, 'vom'), 'value']
-        ef = carriers.at[(2015, carrier, 'emission-factor', 't (CO2)/MWh'), 'value']
-        fuel = carriers.at[(year, carrier, 'cost', 'EUR/MWh'), 'value']
+        ef = carriers.at[(2015, carrier, 'emission-factor', None, 't (CO2)/MWh'), 'value']
+        fuel = carriers.at[(year, carrier, 'cost', '2030ST', 'EUR/MWh'), 'value']
 
         marginal_cost = (fuel + vom + co2 * ef) / Decimal(eta)
 
         output_parameters = {"max": avf}
 
         if carrier == "waste":
-            output_parameters.update({"summed_max": 2500})
+            output_parameters.update(
+                {"summed_max": max_fulloadhours["waste"]})
 
         element = {
             'bus': country + '-electricity',
@@ -277,8 +272,8 @@ def nep_conventional(year, datapackage_dir, scenario='C2030', bins=2, avf=0.95,
         pd.DataFrame.from_dict(elements, orient='index'),
         directory=os.path.join(datapackage_dir, 'data', 'elements'))
 
-def DE_renewables(datapackage_dir, onshore=85500, offshore=17000, biomass=6000,
-                  battery=12500, pv=104500):
+def DE_renewables(datapackage_dir, onshore, offshore, biomass,
+                  battery, pv, efficiencies):
     """
     """
 
@@ -286,7 +281,7 @@ def DE_renewables(datapackage_dir, onshore=85500, offshore=17000, biomass=6000,
         #Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
         Package('https://raw.githubusercontent.com/ZNES-datapackages/technology-cost/master/datapackage.json')
         .get_resource('carrier').read(keyed=True)).set_index(
-            ['year', 'carrier', 'parameter', 'unit']).sort_index()
+            ['year', 'carrier', 'parameter', 'scenario', 'unit']).sort_index()
     # add renewables
     elements =  {}
 
@@ -325,25 +320,24 @@ def DE_renewables(datapackage_dir, onshore=85500, offshore=17000, biomass=6000,
                 "carrier": carrier,
                 "capacity": biomass,
                 "to_bus": b + "-electricity",
-                "efficiency": 0.4,
+                "efficiency": efficiencies['biomass'],
                 "from_bus": b + "-biomass-bus",
                 "type": "conversion",
                 "carrier_cost": float(
-                    carriers.at[(2030, carrier, 'cost'), 'value']
+                    carriers.at[(2030, carrier, 'cost', '2030ST'), 'value']
                 ),
                 "tech": 'ce',
                 }
             )
 
     elements['DE-battery'] =    {
-            "storage_capacity": 5 * battery,  # 8 h
+            "storage_capacity": 5 * battery,  # 5 h
             "capacity": battery,
             "bus": "DE-electricity",
             "tech": 'battery',
             "carrier": 'electricity',
             "type": "storage",
-            "efficiency": 0.9
-            ** 0.5,  # convert roundtrip to input / output efficiency
+            "efficiency": efficiencies['battery']** 0.5,  # convert roundtrip to input / output efficiency
             "marginal_cost": 0.0000001,
             "loss": 0.01
         }
