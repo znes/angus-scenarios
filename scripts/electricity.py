@@ -102,10 +102,9 @@ def tyndp_generation(buses, avf, vision, scenario_year, scenario,
                     "bus": b + "-electricity",
                     "type": "dispatchable",
                     "marginal_cost": marginal_cost,
-                    "output_parameters": json.dumps(
-                        {"max": avf[carrier]}
-                    ),
+                    "profile": avf[carrier],
                     "tech": tech,
+                    "output_parameters": json.dumps({})
                 }
             )
 
@@ -119,6 +118,7 @@ def tyndp_generation(buses, avf, vision, scenario_year, scenario,
                     "type": "dispatchable",
                     "marginal_cost": 0,
                     "tech": 'other',
+                    "profile": 1,
                     "output_parameters": json.dumps(
                         {"summed_max": max_fulloadhours['other_non_renewables']}
                     )
@@ -249,7 +249,7 @@ def nep_conventional(year, datapackage_dir, scenario, bins, avf,
 
         marginal_cost = (fuel + vom + co2 * ef) / Decimal(eta)
 
-        output_parameters = {"max": avf}
+        output_parameters = {}
 
         if carrier == "waste":
             output_parameters.update(
@@ -261,6 +261,7 @@ def nep_conventional(year, datapackage_dir, scenario, bins, avf,
             'carrier': carrier,
             'capacity': capacity,
             'marginal_cost': float(marginal_cost),
+            "profile": avf,
             'output_parameters': json.dumps(output_parameters),
             'type': 'dispatchable'}
 
