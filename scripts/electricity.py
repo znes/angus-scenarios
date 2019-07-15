@@ -156,7 +156,7 @@ def tyndp_generation(buses, avf, vision, scenario_year, scenario,
 
 
 
-def nep_conventional(year, datapackage_dir, scenario, bins, avf,
+def DE_nep_conventional(year, datapackage_dir, scenario, bins, avf,
                      max_fulloadhours, cost_scenario, raw_data_path=None):
     """
     """
@@ -273,10 +273,11 @@ def nep_conventional(year, datapackage_dir, scenario, bins, avf,
         pd.DataFrame.from_dict(elements, orient='index'),
         directory=os.path.join(datapackage_dir, 'data', 'elements'))
 
-def DE_renewables(datapackage_dir, onshore, offshore, biomass,
-                  battery, pv, efficiencies):
+def DE_nep(datapackage_dir, raw_data_path, nep_scenario, efficiencies):
     """
     """
+    data = pd.read_csv(
+            os.path.join(raw_data_path, 'nep2019_data.csv'), index_col=0 )
 
     carriers = pd.DataFrame(
         #Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
@@ -293,13 +294,13 @@ def DE_renewables(datapackage_dir, onshore, offshore, biomass,
         if carrier in ['wind', 'solar']:
             if "onshore" == tech:
                 profile = b + "-onshore-profile"
-                capacity = onshore
+                capacity = data.loc[nep_scenario, "onshore"]
             elif "offshore" == tech:
                 profile = b + "-offshore-profile"
-                capacity = offshore
+                capacity = data.loc[nep_scenario, "offshore"]
             elif "pv" in tech:
                 profile = b + "-pv-profile"
-                capacity = pv
+                capacity = data.loc[nep_scenario, "pv"]
 
             elements["-".join([b, carrier, tech])] = element
             e = {
@@ -319,7 +320,7 @@ def DE_renewables(datapackage_dir, onshore, offshore, biomass,
 
             element.update({
                 "carrier": carrier,
-                "capacity": biomass,
+                "capacity": data.loc[nep_scenario, "biomass"],
                 "to_bus": b + "-electricity",
                 "efficiency": efficiencies['biomass'],
                 "from_bus": b + "-biomass-bus",
@@ -332,8 +333,8 @@ def DE_renewables(datapackage_dir, onshore, offshore, biomass,
             )
 
     elements['DE-battery'] =    {
-            "storage_capacity": 5 * battery,  # 5 h
-            "capacity": battery,
+            "storage_capacity": 5 * data.loc[nep_scenario, "battery"],  # 5 h
+            "capacity": data.loc[nep_scenario, "battery"],
             "bus": "DE-electricity",
             "tech": 'battery',
             "carrier": 'electricity',
@@ -343,10 +344,15 @@ def DE_renewables(datapackage_dir, onshore, offshore, biomass,
             "loss": 0.01
         }
 
+    load = building.read_elements(
+        "load.csv",
+        directory=os.path.join(datapackage_dir, "data", "elements"))
+
+    load.loc['DE-electricity-load', 'amount'] = data.loc[nep_scenario, "demand"]
 
     df = pd.DataFrame.from_dict(elements, orient="index")
 
-    for element_type in ['volatile', 'conversion', 'storage']:
+    for element_type in ['volatile', 'conversion', 'storage', 'load']:
         building.write_elements(
             element_type + ".csv",
             df.loc[df["type"] == element_type].dropna(how="all", axis=1),

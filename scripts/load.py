@@ -8,8 +8,7 @@ from oemof.tabular.datapackage import building
 import pandas as pd
 
 
-def tyndp(buses, scenario, datapackage_dir,
-               raw_data_path):
+def tyndp(buses, scenario, datapackage_dir, raw_data_path):
     """
     """
     filepath = building.download_data(

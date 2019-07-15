@@ -86,23 +86,20 @@ def build(config):
             datapackage_dir,
             raw_data_path)
 
-        electricity.nep_conventional(
+        electricity.DE_nep_conventional(
             config["temporal"]["scenario_year"],
             datapackage_dir,
-            scenario="C2030",
+            scenario=config["nep_scenario"],
             bins=2,
             avf=0.95,
             max_fulloadhours=config["max_fulloadhours"],
             cost_scenario=config['tyndp']['cost'],
             raw_data_path=raw_data_path)
 
-        electricity.DE_renewables(
+        electricity.DE_nep(
             datapackage_dir,
-            onshore=85500,
-            offshore=17000,
-            biomass=6000,
-            battery=12500,
-            pv=104500,
+            raw_data_path,
+            nep_scenario=config["nep_scenario"],
             efficiencies=config["efficiencies"])
 
     hydro.generation(config, datapackage_dir, raw_data_path)
