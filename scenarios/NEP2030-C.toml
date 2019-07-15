@@ -33,9 +33,7 @@ lignite = 0.38
 battery = 0.9
 
 [max_fulloadhours]
-waste = 2500
-other_non_renewables = 2000
-
+other_non_renewables = 4000
 
 [temporal]
 scenario_year = 2030
