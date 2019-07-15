@@ -187,7 +187,43 @@ def DE_nep_conventional(year, datapackage_dir, scenario, bins, avf,
         directory=raw_data_path)
         , encoding='utf-8')
 
-    pp = nep.loc[nep["Nettonennleistung " + scenario + " [MW]"] != 0]["BNetzA-ID"]
+    pp = nep.loc[
+            (nep["Nettonennleistung " + scenario + " [MW]"] != 0) &
+            (nep["Kraftwerkskategorie gemäß Annahme ÜNB (Szenario " + scenario.strip('2030') +")"] !=
+                "Kraft-Wärme-Kopplung (KWK)")]["BNetzA-ID"]
+
+    chp = nep.loc[
+            (nep["Nettonennleistung " + scenario + " [MW]"] != 0) &
+            (nep["Kraftwerkskategorie gemäß Annahme ÜNB (Szenario " + scenario.strip('2030') +")"] ==
+                "Kraft-Wärme-Kopplung (KWK)")]["BNetzA-ID"]
+
+    chp_df = nep.loc[chp.index]
+    chp_df = chp_df.groupby('Energieträger').sum(axis=1)
+
+    carrier_mapper = {
+        "Braunkohle": "lignite",
+        "Steinkohle": "coal",
+        "Erdgas": "gas",
+        "Mineralölprodukte": "oil",
+        "Abfall": "waste",
+        "Sonstige": "other-non-res"
+    }
+    elements = {}
+
+    for carrier, row in chp_df.iterrows():
+        element = {
+            'bus': 'DE-electricity',
+            'tech': "bp",
+            'carrier': carrier_mapper[carrier],
+            'capacity': row["Nettonennleistung " + scenario + " [MW]"],
+            'marginal_cost': 0,
+            'output_parameters': json.dumps(
+                {'min': 0.9}),
+            'type': 'dispatchable'}
+
+        elements["DE-" + carrier_mapper[carrier] + "-chp"] = element
+
+
     pp = list(set([i for i in pp.values if  not pd.isnull(i)]))
     df = sq.loc[pp]
 
@@ -236,8 +272,6 @@ def DE_nep_conventional(year, datapackage_dir, scenario, bins, avf,
     s = df.groupby(['country_code', 'carrier', 'tech', 'bins']).\
         agg({'capacity_net_bnetza': sum, 'efficiency_estimate': np.mean})
 
-    elements = {}
-
     co2 = carriers.at[(year, 'co2', 'cost', cost_scenario, 'EUR/t'), 'value']
 
     for (country, carrier, tech, bins), (capacity, eta) in s.iterrows():
@@ -251,9 +285,9 @@ def DE_nep_conventional(year, datapackage_dir, scenario, bins, avf,
 
         output_parameters = {}
 
-        if carrier == "waste":
-            output_parameters.update(
-                {"summed_max": max_fulloadhours["waste"]})
+        # if carrier == "waste":
+        #     output_parameters.update(
+        #         {"summed_max": max_fulloadhours["waste"]})
 
         element = {
             'bus': country + '-electricity',
