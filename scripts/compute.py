@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+import pandas as pd
 
 import multiprocessing as mp
 
@@ -100,6 +101,30 @@ def compute(datapackage, solver="gurobi", temporal_resolution=1,
     )
     supply_sum.columns = supply_sum.columns.droplevel(0)
     summary = supply_sum  # pd.concat([supply_sum, excess_share], axis=1)
+
+    ## grid
+    imports = pd.DataFrame()
+    link_results = pp.component_results(m.es, m.results).get("link")
+    for b in [b.label for b in es.nodes if isinstance(b, Bus)]:
+        if link_results is not None and m.es.groups[b] in list(
+            link_results.columns.levels[0]
+        ):
+            ex = link_results.loc[
+                :, (m.es.groups[b], slice(None), "flow")
+            ].sum(axis=1)
+            im = link_results.loc[
+                :, (slice(None), m.es.groups[b], "flow")
+            ].sum(axis=1)
+
+            net_import = im - ex
+            net_import.name = m.es.groups[b]
+            imports = pd.concat([imports, net_import], axis=1)
+
+    summary["import"] = imports[imports > 0].sum() / 1e6 * temporal_resolution
+    summary["export"] = imports[imports < 0].sum() / 1e6 * temporal_resolution
+
+    summary["total_supply"] = summary.sum(axis=1)
+
     summary.to_csv(os.path.join(scenario_path, 'summary.csv'))
 
 if __name__ == "__main__":
