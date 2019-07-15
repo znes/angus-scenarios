@@ -90,7 +90,7 @@ def build(config):
             config["temporal"]["scenario_year"],
             datapackage_dir,
             scenario=config["nep_scenario"],
-            bins=2,
+            bins=1,
             avf=0.95,
             max_fulloadhours=config["max_fulloadhours"],
             cost_scenario=config['tyndp']['cost'],

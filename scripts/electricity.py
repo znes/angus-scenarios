@@ -344,19 +344,27 @@ def DE_nep(datapackage_dir, raw_data_path, nep_scenario, efficiencies):
             "loss": 0.01
         }
 
+    # update DE load in the load.csv resource
     load = building.read_elements(
         "load.csv",
         directory=os.path.join(datapackage_dir, "data", "elements"))
 
-    load.loc['DE-electricity-load', 'amount'] = data.loc[nep_scenario, "demand"]
+    load.loc['DE-electricity-load', 'amount'] = data.loc[nep_scenario, "demand"] * 1000
+
+    building.write_elements(
+        "load.csv", load,
+        directory=os.path.join(datapackage_dir, "data", "elements"),
+        replace=True
+    )
 
     df = pd.DataFrame.from_dict(elements, orient="index")
 
-    for element_type in ['volatile', 'conversion', 'storage', 'load']:
+
+    for element_type in ['volatile', 'conversion', 'storage']:
         building.write_elements(
             element_type + ".csv",
             df.loc[df["type"] == element_type].dropna(how="all", axis=1),
-            directory=os.path.join(datapackage_dir, "data", "elements"),
+            directory=os.path.join(datapackage_dir, "data", "elements")
         )
 
 def ehighway_generation(

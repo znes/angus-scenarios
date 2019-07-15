@@ -11,7 +11,7 @@ To run the script, make sure the requirements e.g. via pip
 
     pip install  -U -r requirements.txt
 
-In addition for some plot `plotly-orca`. Installation instructions can 
+In addition for some plot `plotly-orca`. Installation instructions can
 found here: https://github.com/plotly/orca
 
 ### Raw data
@@ -55,19 +55,30 @@ may be outdated. Therefore you should rebuild the datapackages based on the prov
 
 # Model assumptions
 
+The Model is based on the NEP2030.  
+
+
 ## Demand
 
 * Demand profiles are calculated from the OPSD dataset of the ENTSOE
-timeseries for the selected weather year
-* The amount of Demand per country is based on TYNDP2016 Scenario for 2030 and
-on the E-eHighway2050 demand for the year 2050.
+timeseries for the selected weather year (2012)
+* German demand is based on the NEP2030 scenarios (A2030, B2030, C2030)
+* The amount of demand of the neigbouring countries is based on the TYNDP2016
+scenario for 2030 'Sustainable Transition'
+
 
 ## Conventional generation
 
-* Generation capacities are selected for the vision 1,2,3,4 of the
-TYNDP2016 per country.
-* Efficiencies are based on own assumptions
-* `Others-non-res` are modelled with marginal costs of set to zero.
+* Generation capacities are based on for the Vision 4 of the
+TYNDP2016 for neigbouring countries
+* German generation is derived from the NEP2030 scenarios
+* Efficiencies are based on own assumptions for non-german countries. For
+germany the OPSD powerplant register is used to calculate efficiencies for
+the conventional powerplants in 2030
+* Costs are based on the TYNDP cost assumptions
+* `Others-non-res` are modelled with marginal costs of set to zero and
+with max. fulloadhours of 2000h
+* Waste is modelled with maximum of 2500h max. fulloadhours
 
 ## Renewables
 
