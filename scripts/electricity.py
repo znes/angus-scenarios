@@ -255,21 +255,39 @@ def DE_nep_conventional(datapackage_dir, nep_scenario, bins=0,
         "Abfall": "waste",
         "Sonstige": "other-non-res"
     }
-    elements = {}
+    chp_elements = {}
+
+    volatile_profiles = building.read_sequences('volatile_profile.csv',
+        directory=os.path.join(datapackage_dir, "data", "sequences"))
 
     for carrier, row in chp_df.iterrows():
+        name = "-".join(["DE", carrier_mapper[carrier], "chp"])
         element = {
             'bus': 'DE-electricity',
             'tech': "bp",
             'carrier': carrier_mapper[carrier],
             'capacity': row["Nettonennleistung " + nep_scenario + " [MW]"],
-            'marginal_cost': 0,
-            'output_parameters': json.dumps(
-                {'min': 0.9}),
-            'type': 'dispatchable'}
+            'profile': name + "-profile",
+            'type': 'volatile'}
 
-        elements["DE-" + carrier_mapper[carrier] + "-chp"] = element
+        chp_elements[name] = element
 
+        volatile_profiles[name + "-profile"] = pd.read_csv(
+            os.path.join(raw_data_path, 'decentral_heat_load_profiles.csv'))['DE'] * 2300 # fix for normalizing to max value of 0.8653
+
+    volatile_profiles.index = building.timeindex(
+        year=str(2030)
+    )
+
+    building.write_elements(
+        'volatile.csv',
+        pd.DataFrame.from_dict(chp_elements, orient='index'),
+        directory=os.path.join(datapackage_dir, 'data', 'elements'))
+
+    building.write_sequences(
+        'volatile_profile.csv',
+        volatile_profiles,
+        directory=os.path.join(datapackage_dir, "data", "sequences"))
 
     pp = list(set([i for i in pp.values if  not pd.isnull(i)]))
     df = sq.loc[pp]
@@ -321,6 +339,7 @@ def DE_nep_conventional(datapackage_dir, nep_scenario, bins=0,
 
     co2 = carrier_cost.at[(cost_scenario, 'co2'), 'value']
 
+    elements = {}
     for (country, carrier, tech, bins), (capacity, eta) in s.iterrows():
         name = "-".join([country, carrier, tech, str(bins)])
 
@@ -369,8 +388,9 @@ def DE_nep(datapackage_dir, raw_data_path, nep_scenario, cost_scenario):
         .get_resource('technology').read(keyed=True)).set_index(
             ['year', 'parameter', 'carrier', 'tech' ])
 
-    data = pd.read_csv(
-            os.path.join(raw_data_path, 'nep2019_data.csv'), index_col=0 )
+    data = pd.DataFrame(
+        Package('https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/capacities/datapackage.json').
+        get_resource('DE_system').read(keyed=True)).set_index(["scenario"])
 
     carrier_package = Package(
         'https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/carrier/datapackage.json')
