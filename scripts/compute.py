@@ -120,10 +120,11 @@ def compute(datapackage, solver="gurobi", temporal_resolution=1,
             net_import.name = m.es.groups[b]
             imports = pd.concat([imports, net_import], axis=1)
 
+    summary["total_supply"] = summary.sum(axis=1)
+
     summary["import"] = imports[imports > 0].sum() / 1e6 * temporal_resolution
     summary["export"] = imports[imports < 0].sum() / 1e6 * temporal_resolution
 
-    summary["total_supply"] = summary.sum(axis=1)
 
     summary.to_csv(os.path.join(scenario_path, 'summary.csv'))
 
