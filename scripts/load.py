@@ -41,7 +41,7 @@ def tyndp(buses, scenario, datapackage_dir, raw_data_path):
         directory=os.path.join(datapackage_dir, "data", "elements"),
     )
 
-def ehighway(buses, year, datapackage_dir, scenario="100% RES",
+def ehighway(buses, year, scenario="100% RES", datapackage_dir=None,
              raw_data_path=None):
     """
     Parameter

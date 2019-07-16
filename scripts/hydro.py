@@ -112,7 +112,7 @@ def generation(config, datapackage_dir, raw_data_path):
     )
 
     inflows = inflows.loc[
-        inflows.index.year == config["temporal"]["weather_year"], :
+        inflows.index.year == config["scenario"]["weather_year"], :
     ]
     inflows["DK"], inflows["LU"] = 0, inflows["BE"]
 
@@ -209,7 +209,7 @@ def generation(config, datapackage_dir, raw_data_path):
     building.write_sequences(
         "reservoir_profile.csv",
         rsv_sequences.set_index(
-            building.timeindex(year=str(config["temporal"]["scenario_year"]))
+            building.timeindex(year=str(config["scenario"]["year"]))
         ),
         directory=os.path.join(datapackage_dir, "data", "sequences"),
     )
@@ -217,7 +217,7 @@ def generation(config, datapackage_dir, raw_data_path):
     building.write_sequences(
         "ror_profile.csv",
         ror_sequences.set_index(
-            building.timeindex(year=str(config["temporal"]["scenario_year"]))
+            building.timeindex(year=str(config["scenario"]["year"]))
         ),
         directory=os.path.join(datapackage_dir, "data", "sequences"),
     )

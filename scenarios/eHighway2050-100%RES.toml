@@ -1,26 +1,16 @@
-
 title = ""
 description = ""
 name = "eHighway2050-100%RES"
 
-[cost]
-scenario = "2030ST"
-
-[ehighway]
-scenario = "100% RES"
-
-[grid]
-loss = 0.05
-
-[temporal]
-scenario_year = 2050
+[scenario]
+EU_load = "100% RES" # european load
+EU_generation = "100% RES" # european generation mix based on TYNDP
+cost = "2030ST" # carrier cost (gas, co2, etc.)
+grid = "100% RES"
+year = 2050
 weather_year = 2012 # 2011, 2012
 demand_year = 2012 # 2011, 2012
-
-[potential]
-#renewables = "LIMES-EU"
-biomass = "hotmaps"
-
+grid_loss = 0.05
 
 [buses]
 
@@ -32,6 +22,8 @@ electricity = [
     "DE",
     "DK",
     "FR",
+    "IT",
+    "NL",
     "NO",
     "PL",
     "SE"
@@ -45,6 +37,8 @@ biomass = [
   "DE",
   "DK",
   "FR",
+  "IT",
+  "NL",
   "NO",
   "PL",
   "SE"

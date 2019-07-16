@@ -605,6 +605,7 @@ def ehighway_generation(
             # )
 
             elif tech == "biomass":
+                # tech is actually 'ce', kind of hackisch works for now
                 carrier = "biomass"#
                 elements["-".join([b, carrier, 'ce'])] = element
 
@@ -612,8 +613,8 @@ def ehighway_generation(
                     "carrier": carrier,
                     "capacity": df.at[b, tech_key],
                     "to_bus": b + "-electricity",
-                    "efficiency": technologies.loc[(2050, 'efficiency', carrier, tech), "value"],
-                    "marginal_cost": technologies.loc[(2050, 'vom', carrier, tech), "value"],
+                    "efficiency": technologies.loc[(2050, 'efficiency', carrier, 'ce'), "value"],
+                    "marginal_cost": technologies.loc[(2050, 'vom', carrier, 'ce'), "value"],
                     "from_bus": b + "-biomass-bus",
                     "type": "conversion",
                     "carrier_cost": float(

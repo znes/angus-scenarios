@@ -3,24 +3,15 @@ description = ""
 name = "NEP2030-C"
 
 [scenario]
-nep = "C2030" # german data (generation, load, etc.)
+DE_system = "C2030" # german data (generation, load, etc.)
+EU_load = "2030ST" # european load
+EU_generation = "vision4" # european generation mix based on TYNDP
 cost = "2030ST" # carrier cost (gas, co2, etc.)
-load = "2030ST" # european load
-generation = "vision4" # european generation mix based on TYNDP
 grid = ""
-year = 2030 
-
-
-[grid]
-loss = 0.05
-
-[temporal]
+year = 2030
 weather_year = 2012 # 2011, 2012
 demand_year = 2012 # 2011, 2012
-
-[potential]
-renewables = "LIMES-EU"
-biomass = "hotmaps"
+grid_loss = 0.05
 
 [buses]
 
