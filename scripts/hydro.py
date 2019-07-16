@@ -143,6 +143,8 @@ def generation(config, datapackage_dir, raw_data_path):
         * 1000,
         'hydro'
     )
+    # only select ror shares if exist to avoid errors with profiles etc...
+    ror = ror[ror["capacity"] > 0]
 
     ror['efficiency'] = technologies.at[(int(scenario_year), 'efficiency', 'hydro', 'ror'), 'value']
     ror["profile"] = ror["bus"] + "-" + ror["tech"] + "-profile"
