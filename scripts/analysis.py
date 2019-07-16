@@ -90,7 +90,7 @@ import plotly.offline as offline
 if not os.path.exists('plots'):
     os.makedirs('plots')
 #
-if False:
+if True:
     for s in os.listdir('results'):
         offline.plot(
             stacked_plot(s), filename=os.path.join('plots', s + '-capacities'))

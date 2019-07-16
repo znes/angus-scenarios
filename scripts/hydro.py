@@ -87,11 +87,10 @@ def _get_hydro_inflow(inflow_dir=None):
     return hydro
 
 
-def generation(config, datapackage_dir,
-                     raw_data_path):
+def generation(config, datapackage_dir, raw_data_path):
     """
     """
-    countries, year = (
+    countries, scenario_year = (
         config["buses"]["electricity"],
         config["temporal"]["scenario_year"],
     )
@@ -118,20 +117,10 @@ def generation(config, datapackage_dir,
     inflows["DK"], inflows["LU"] = 0, inflows["BE"]
 
     technologies = pd.DataFrame(
-        Package(
-            "https://raw.githubusercontent.com/ZNES-datapackages"
-            "/technology-cost/master/datapackage.json"
-        )
-        .get_resource("electricity")
-        .read(keyed=True)
-    )
-    technologies = (
-        technologies.groupby(["year", "tech", "carrier"])
-        .apply(lambda x: dict(zip(x.parameter, x.value)))
-        .reset_index("carrier")
-        .apply(lambda x: dict({"carrier": x.carrier}, **x[0]), axis=1)
-    )
-    technologies = technologies.loc[year].to_dict()
+        #Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
+        Package('https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/technology/datapackage.json')
+        .get_resource('technology').read(keyed=True)).set_index(
+            ['year', 'parameter', 'carrier', 'tech'])
 
     ror_shares = pd.read_csv(
         os.path.join(raw_data_path, "ror_ENTSOe_Restore2050.csv"),
@@ -155,7 +144,7 @@ def generation(config, datapackage_dir,
         'hydro'
     )
 
-    ror = ror.assign(**technologies["ror"])[ror["capacity"] > 0].dropna()
+    ror['efficiency'] = technologies.at[(int(scenario_year), 'efficiency', 'hydro', 'ror'), 'value']
     ror["profile"] = ror["bus"] + "-" + ror["tech"] + "-profile"
 
     ror_sequences = (inflows[ror.index] * ror_shares[ror.index] * 1000) / ror[
@@ -173,14 +162,16 @@ def generation(config, datapackage_dir,
         0,
         capacities.loc[phs.index, " installed pumped hydro capacities [GW]"]
         * 1000,
-        0.0000001,
+        0,
         "hydro"
     )
 
-    phs["storage_capacity"] = phs["capacity"] * 6  # Brown et al.
+    phs["storage_capacity"] = phs["capacity"] * float(
+        technologies.at[(int(scenario_year), 'storage_capacity', 'hydro', 'phs'), 'value'])
+
     # as efficieny in data is roundtrip use sqrt of roundtrip
-    phs["efficiency"] = float(technologies["phs"]["efficiency"]) ** 0.5
-    phs = phs.assign(**technologies["phs"])[phs["capacity"] > 0].dropna()
+    phs["efficiency"] = float(
+        technologies.at[(int(scenario_year), 'efficiency', 'hydro', 'phs'), 'value'])**0.5
 
     # other hydro / reservoir
     rsv = pd.DataFrame(index=countries)
@@ -202,7 +193,6 @@ def generation(config, datapackage_dir,
         "hydro"
     )  # to MWh
 
-    rsv = rsv.assign(**technologies["rsv"])[rsv["capacity"] > 0].dropna()
     rsv["profile"] = rsv["bus"] + "-" + rsv["tech"] + "-profile"
     rsv[
         "efficiency"
@@ -234,14 +224,14 @@ def generation(config, datapackage_dir,
 
     for fn, df in zip(filenames, [ror, phs, rsv]):
         df.index = df.index.astype(str) + "-hydro-" + df["tech"]
-        df["capacity_cost"] = df.apply(
-            lambda x: annuity(
-                float(x["capacity_cost"]) * 1000,
-                float(x["lifetime"]),
-                config["cost"]["wacc"],
-            ),
-            axis=1,
-        )
+        # df["capacity_cost"] = df.apply(
+        #     lambda x: annuity(
+        #         float(x["capacity_cost"]) * 1000,
+        #         float(x["lifetime"]),
+        #         config["cost"]["wacc"],
+        #     ),
+        #     axis=1,
+        # )
         building.write_elements(
             fn, df, directory=os.path.join(datapackage_dir, "data", "elements")
         )

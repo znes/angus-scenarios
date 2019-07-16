@@ -55,9 +55,7 @@ def build(config):
 
         electricity.ehighway_generation(
             config["buses"]["electricity"],
-            config["availability_factor"],
-            config["efficiencies"],
-            config["temporal"]["scenario_year"],
+            config["cost"]["scenario"],
             datapackage_dir,
             config["ehighway"]["scenario"],
             raw_data_path)
@@ -77,30 +75,22 @@ def build(config):
 
         electricity.tyndp_generation(
             set(config["buses"]["electricity"]) - set(['DE']),
-            config["availability_factor"],
             config['tyndp']['generation'],
-            config["temporal"]["scenario_year"],
-            config['tyndp']["cost"],
-            config["efficiencies"],
-            config["max_fulloadhours"],
+            config["cost"]["scenario"],
             datapackage_dir,
             raw_data_path)
 
         electricity.DE_nep_conventional(
-            config["temporal"]["scenario_year"],
             datapackage_dir,
-            scenario=config["nep_scenario"],
-            bins=1,
-            avf=0.95,
-            max_fulloadhours=config["max_fulloadhours"],
-            cost_scenario=config['tyndp']['cost'],
+            nep_scenario=config["nep_scenario"],
+            cost_scenario=config["cost"]["scenario"],
             raw_data_path=raw_data_path)
 
         electricity.DE_nep(
             datapackage_dir,
             raw_data_path,
             nep_scenario=config["nep_scenario"],
-            efficiencies=config["efficiencies"])
+            cost_scenario=config["cost"]["scenario"])
 
     hydro.generation(config, datapackage_dir, raw_data_path)
 

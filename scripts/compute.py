@@ -128,7 +128,7 @@ def compute(datapackage, solver="gurobi", temporal_resolution=1,
     summary.to_csv(os.path.join(scenario_path, 'summary.csv'))
 
 if __name__ == "__main__":
-    #compute('V4-A', 'gurobi')
-    datapackages = [d for d in os.listdir('datapackages')]
-    p = mp.Pool(2)
-    p.map(compute, datapackages)
+    compute('NEP2030-C', 'gurobi')
+    # datapackages = [d for d in os.listdir('datapackages')]
+    # p = mp.Pool(2)
+    # p.map(compute, datapackages)

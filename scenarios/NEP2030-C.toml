@@ -3,37 +3,15 @@ description = ""
 name = "NEP2030-C"
 nep_scenario = "C2030"
 
-
 [cost]
-wacc = 0.07
+scenario = "2030ST"
 
 [tyndp]
 load = "2030ST"
 generation = 'vision4'
-cost = "2030ST"
 
 [grid]
 loss = 0.05
-
-[availability_factor]
-biomass = 0.85
-coal =  0.85
-gas = 0.85
-uranium =  0.85
-oil =  0.85
-lignite =  0.85
-
-[efficiencies]
-biomass = 0.35
-coal =  0.45
-gas = 0.5
-uranium = 0.35
-oil = 0.35
-lignite = 0.38
-battery = 0.9
-
-[max_fulloadhours]
-other_non_renewables = 4000
 
 [temporal]
 scenario_year = 2030
@@ -54,6 +32,7 @@ electricity = [
     "DE",
     "DK",
     "FR",
+    "IT",
     "NL",
     "NO",
     "PL",
@@ -68,6 +47,7 @@ biomass = [
   "DE",
   "DK",
   "FR",
+  "IT",
   "NL",
   "NO",
   "PL",
