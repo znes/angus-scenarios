@@ -1,20 +1,20 @@
 title = ""
 description = ""
 name = "NEP2030-C"
-nep_scenario = "C2030"
 
-[cost]
-scenario = "2030ST"
+[scenario]
+nep = "C2030" # german data (generation, load, etc.)
+cost = "2030ST" # carrier cost (gas, co2, etc.)
+load = "2030ST" # european load
+generation = "vision4" # european generation mix based on TYNDP
+grid = ""
+year = 2030 
 
-[tyndp]
-load = "2030ST"
-generation = 'vision4'
 
 [grid]
 loss = 0.05
 
 [temporal]
-scenario_year = 2030
 weather_year = 2012 # 2011, 2012
 demand_year = 2012 # 2011, 2012
 

@@ -57,8 +57,8 @@ def _remove_links(row):
         return True
 
 
-def ehighway(buses, year, grid_loss, datapackage_dir, scenario = "100% RES",
-             raw_data_path=None):
+def ehighway(buses, year, grid_loss, scenario = "100% RES",
+            datapackage_dir=None, raw_data_path=None):
     """
     Parameter
     ---------

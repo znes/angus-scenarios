@@ -92,7 +92,7 @@ def generation(config, datapackage_dir, raw_data_path):
     """
     countries, scenario_year = (
         config["buses"]["electricity"],
-        config["temporal"]["scenario_year"],
+        config["scenario"]["year"],
     )
 
     filepath = building.download_data(

@@ -466,8 +466,8 @@ def DE_nep(datapackage_dir, raw_data_path, nep_scenario, cost_scenario):
         )
 
 def ehighway_generation(
-    buses, cost_scenario,
-    datapackage_dir, scenario="100% RES", raw_data_path=None):
+    buses, cost_scenario, scenario="100% RES", datapackage_dir=None,
+    raw_data_path=None):
     """
     """
     scenario_mapper = {

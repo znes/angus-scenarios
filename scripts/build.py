@@ -37,27 +37,27 @@ def build(config):
 
     biomass.add(config["buses"], datapackage_dir)
 
-    if config["temporal"]["scenario_year"] > 2035:
+    if config["scenario"]["year"] > 2035:
         grid.ehighway(
             config["buses"]["electricity"],
-            config["temporal"]["scenario_year"],
+            config["scenario"]["year"],
             config["grid"]["loss"],
+            config["scenario"]["grid"],
             datapackage_dir,
-            config["ehighway"]["scenario"],
             raw_data_path)
 
         load.ehighway(
                 config["buses"]["electricity"],
-                config["temporal"]["scenario_year"],
+                config["scenario"]["year"],
+                config["scenario"]["load"],
                 datapackage_dir,
-                config["ehighway"]["scenario"],
                 raw_data_path)
 
         electricity.ehighway_generation(
             config["buses"]["electricity"],
-            config["cost"]["scenario"],
+            config["scenario"]["cost"],
+            config["scenario"]["generation"],
             datapackage_dir,
-            config["ehighway"]["scenario"],
             raw_data_path)
 
     else:
@@ -69,50 +69,49 @@ def build(config):
 
         load.tyndp(
             config["buses"]["electricity"],
-            config["tyndp"]["load"],
+            config["scenario"]["load"],
             datapackage_dir,
             raw_data_path)
 
         electricity.tyndp_generation(
             set(config["buses"]["electricity"]) - set(['DE']),
-            config['tyndp']['generation'],
-            config["cost"]["scenario"],
+            config['scenario']['generation'],
+            config["scenario"]["cost"],
             datapackage_dir,
             raw_data_path)
 
         electricity.DE_nep_conventional(
             datapackage_dir,
-            nep_scenario=config["nep_scenario"],
-            cost_scenario=config["cost"]["scenario"],
+            nep_scenario=config["scenario"]["nep"],
+            cost_scenario=config["scenario"]["cost"],
             raw_data_path=raw_data_path)
 
         electricity.DE_nep(
             datapackage_dir,
             raw_data_path,
-            nep_scenario=config["nep_scenario"],
-            cost_scenario=config["cost"]["scenario"])
+            nep_scenario=config["scenario"]["nep"],
+            cost_scenario=config["scenario"]["cost"])
 
     hydro.generation(config, datapackage_dir, raw_data_path)
-
 
     load.opsd_profile(
         config["buses"]["electricity"],
         config["temporal"]["demand_year"],
-        config["temporal"]["scenario_year"],
+        config["scenario"]["year"],
         datapackage_dir,
         raw_data_path)
 
     capacity_factors.pv(
         config["buses"]["electricity"],
         config["temporal"]["weather_year"],
-        config["temporal"]["scenario_year"],
+        config["scenario"]["year"],
         datapackage_dir,
         raw_data_path)
 
     capacity_factors.wind(
         config["buses"]["electricity"],
         config["temporal"]["weather_year"],
-        config["temporal"]["scenario_year"],
+        config["scenario"]["year"],
         datapackage_dir,
         raw_data_path)
 
