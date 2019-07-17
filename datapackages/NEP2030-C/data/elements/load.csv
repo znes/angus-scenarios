@@ -1,0 +1,13 @@
+name;2030ST;amount;bus;carrier;profile;type
+AT-electricity-load;76552.42107474557;76552421.07474557;AT-electricity;electricity;AT-electricity-load-profile;load
+BE-electricity-load;88777.167679922;88777167.679922;BE-electricity;electricity;BE-electricity-load-profile;load
+CH-electricity-load;58278.261715195236;58278261.71519524;CH-electricity;electricity;CH-electricity-load-profile;load
+CZ-electricity-load;70858.18143673814;70858181.43673815;CZ-electricity;electricity;CZ-electricity-load-profile;load
+DE-electricity-load;547274.8739731258;547274873.9731258;DE-electricity;electricity;DE-electricity-load-profile;load
+DK-electricity-load;46959.903398803726;46959903.398803726;DK-electricity;electricity;DK-electricity-load-profile;load
+FR-electricity-load;466741.0489600238;466741048.9600238;FR-electricity;electricity;FR-electricity-load-profile;load
+IT-electricity-load;362307.73239294277;362307732.3929428;IT-electricity;electricity;IT-electricity-load-profile;load
+NL-electricity-load;118534.16431929702;118534164.31929702;NL-electricity;electricity;NL-electricity-load-profile;load
+NO-electricity-load;149925.18548465817;149925185.48465818;NO-electricity;electricity;NO-electricity-load-profile;load
+PL-electricity-load;206679.4439767574;206679443.9767574;PL-electricity;electricity;PL-electricity-load-profile;load
+SE-electricity-load;143043.42051515856;143043420.51515856;SE-electricity;electricity;SE-electricity-load-profile;load

@@ -1,0 +1,13 @@
+name;bus;carrier;marginal_cost;tech;type
+AT-electricity-excess;AT-electricity;electricity;0;excess;excess
+BE-electricity-excess;BE-electricity;electricity;0;excess;excess
+CH-electricity-excess;CH-electricity;electricity;0;excess;excess
+CZ-electricity-excess;CZ-electricity;electricity;0;excess;excess
+DE-electricity-excess;DE-electricity;electricity;0;excess;excess
+DK-electricity-excess;DK-electricity;electricity;0;excess;excess
+FR-electricity-excess;FR-electricity;electricity;0;excess;excess
+IT-electricity-excess;IT-electricity;electricity;0;excess;excess
+NL-electricity-excess;NL-electricity;electricity;0;excess;excess
+NO-electricity-excess;NO-electricity;electricity;0;excess;excess
+PL-electricity-excess;PL-electricity;electricity;0;excess;excess
+SE-electricity-excess;SE-electricity;electricity;0;excess;excess

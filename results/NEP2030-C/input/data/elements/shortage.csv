@@ -1,0 +1,13 @@
+name;bus;capacity;carrier;marginal_cost;tech;type
+AT-electricity-shortage;AT-electricity;100000000000.0;electricity;3000;shortage;shortage
+BE-electricity-shortage;BE-electricity;100000000000.0;electricity;3000;shortage;shortage
+CH-electricity-shortage;CH-electricity;100000000000.0;electricity;3000;shortage;shortage
+CZ-electricity-shortage;CZ-electricity;100000000000.0;electricity;3000;shortage;shortage
+DE-electricity-shortage;DE-electricity;100000000000.0;electricity;3000;shortage;shortage
+DK-electricity-shortage;DK-electricity;100000000000.0;electricity;3000;shortage;shortage
+FR-electricity-shortage;FR-electricity;100000000000.0;electricity;3000;shortage;shortage
+IT-electricity-shortage;IT-electricity;100000000000.0;electricity;3000;shortage;shortage
+NL-electricity-shortage;NL-electricity;100000000000.0;electricity;3000;shortage;shortage
+NO-electricity-shortage;NO-electricity;100000000000.0;electricity;3000;shortage;shortage
+PL-electricity-shortage;PL-electricity;100000000000.0;electricity;3000;shortage;shortage
+SE-electricity-shortage;SE-electricity;100000000000.0;electricity;3000;shortage;shortage

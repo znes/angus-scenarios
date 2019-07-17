@@ -1,0 +1,12 @@
+name;capacity;carrier;carrier_cost;efficiency;from_bus;maringal_cost;tech;to_bus;type
+AT-biomass-ce;1200;biomass;0.0;0.3;AT-biomass-bus;;ce;AT-electricity;conversion
+BE-biomass-ce;2500;biomass;0.0;0.3;BE-biomass-bus;;ce;BE-electricity;conversion
+CH-biomass-ce;1120;biomass;0.0;0.3;CH-biomass-bus;;ce;CH-electricity;conversion
+CZ-biomass-ce;1110;biomass;0.0;0.3;CZ-biomass-bus;;ce;CZ-electricity;conversion
+DK-biomass-ce;1720;biomass;0.0;0.3;DK-biomass-bus;;ce;DK-electricity;conversion
+FR-biomass-ce;4800;biomass;0.0;0.3;FR-biomass-bus;;ce;FR-electricity;conversion
+IT-biomass-ce;10750;biomass;0.0;0.3;IT-biomass-bus;;ce;IT-electricity;conversion
+NL-biomass-ce;5080;biomass;0.0;0.3;NL-biomass-bus;;ce;NL-electricity;conversion
+PL-biomass-ce;6450;biomass;0.0;0.3;PL-biomass-bus;;ce;PL-electricity;conversion
+SE-biomass-ce;5340;biomass;0.0;0.3;SE-biomass-bus;;ce;SE-electricity;conversion
+DE-biomass-ce;6000;biomass;0.0;0.3;DE-biomass-bus;3;ce;DE-electricity;conversion

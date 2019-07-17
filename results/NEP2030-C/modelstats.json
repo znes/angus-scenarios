@@ -1,0 +1,17 @@
+{
+    "objective": 56743591739.896736,
+    "problem": {
+        "Name": "x2899586_copy",
+        "Lower bound": 56743591739.9,
+        "Upper bound": 56743591739.9,
+        "Number of objectives": 1,
+        "Number of constraints": 981158,
+        "Number of variables": 2444066,
+        "Number of binary variables": 0,
+        "Number of integer variables": 0,
+        "Number of continuous variables": 2444066,
+        "Number of nonzeros": 4204851
+    },
+    "temporal_resolution": 1,
+    "emission_limit": null
+}
