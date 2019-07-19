@@ -96,19 +96,28 @@ def build(config):
 
     load.opsd_profile(
         config["buses"]["electricity"],
-        config["scenario"]["demand_year"],
+        config["scenario"]["weather_year"],
         config["scenario"]["year"],
         datapackage_dir,
         raw_data_path)
 
-    capacity_factors.pv(
+    if config['renewable_profiles'] == 'ninja':
+        pv_profiles = capacity_factors.ninja_pv_profiles
+        wind_profiles = capacity_factors.ninja_wind_profiles
+    elif config['renewable_profiles'] == 'emhires':
+        pv_profiles = capacity_factors.emhires_pv_profiles
+        wind_profiles = capacity_factors.emhires_wind_profiles
+    else:
+        pass
+
+    pv_profiles(
         config["buses"]["electricity"],
         config["scenario"]["weather_year"],
         config["scenario"]["year"],
         datapackage_dir,
         raw_data_path)
 
-    capacity_factors.wind(
+    wind_profiles(
         config["buses"]["electricity"],
         config["scenario"]["weather_year"],
         config["scenario"]["year"],

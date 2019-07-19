@@ -2,12 +2,13 @@
 """
 """
 import os
+from datetime import datetime
 
 from oemof.tabular.datapackage import building
 import pandas as pd
 
 
-def pv(buses, weather_year, scenario_year, datapackage_dir,
+def ninja_pv_profiles(buses, weather_year, scenario_year, datapackage_dir,
        raw_data_path):
     """
     Parameter
@@ -57,7 +58,7 @@ def pv(buses, weather_year, scenario_year, datapackage_dir,
     )
 
 
-def wind(buses, weather_year, scenario_year, datapackage_dir,
+def ninja_wind_profiles(buses, weather_year, scenario_year, datapackage_dir,
          raw_data_path):
     """
     Parameter
@@ -80,7 +81,7 @@ def wind(buses, weather_year, scenario_year, datapackage_dir,
         unzip_file= "ninja_wind_europe_v1.1_current_national.csv",
         directory=raw_data_path)
 
-    off_filepath = building.download_data(
+    onoff_filepath = building.download_data(
         "https://www.renewables.ninja/static/downloads/ninja_europe_wind_v1.1.zip",
         unzip_file= "ninja_wind_europe_v1.1_future_nearterm_on-offshore.csv",
         directory=raw_data_path)
@@ -93,9 +94,9 @@ def wind(buses, weather_year, scenario_year, datapackage_dir,
         ~((near_term.index.month == 2) & (near_term.index.day == 29))
     ]
 
-    offshore_data = pd.read_csv(off_filepath, index_col=[0], parse_dates=True)
-    offshore_data = offshore_data[
-        ~((offshore_data.index.month == 2) & (offshore_data.index.day == 29))
+    on_off_data = pd.read_csv(onoff_filepath, index_col=[0], parse_dates=True)
+    on_off_data = on_off_data[
+        ~((on_off_data.index.month == 2) & (on_off_data.index.day == 29))
     ]
 
     sequences_df = pd.DataFrame(index=near_term.loc[year].index)
@@ -106,12 +107,20 @@ def wind(buses, weather_year, scenario_year, datapackage_dir,
         # add offshore profile if country exists in offshore data columns
         # and if its in NorthSea
         if [
-            col for col in offshore_data.columns if c + "_OFF" in col
+            col for col in on_off_data.columns if c + "_OFF" in col
         ] and c in NorthSea:
-            sequences_df[c + "-offshore-profile"] = offshore_data[c + "_OFF"]
+            sequences_df[c + "-offshore-profile"] = on_off_data[c + "_OFF"]
 
-        sequence_name = c + "-onshore-profile"
-        sequences_df[sequence_name] = near_term.loc[year][c].values
+            if c + "_ON" in on_off_data.columns:
+                sequence_name = c + "-onshore-profile"
+                sequences_df[sequence_name] = on_off_data[c + "_ON"]
+
+            else:
+                # for all countries that are not in the on/off data set use current
+                # national
+                sequence_name = c + "-onshore-profile"
+                sequences_df[sequence_name] = near_term.loc[year][c].values
+
 
     sequences_df.index = building.timeindex(
         year=str(scenario_year)
