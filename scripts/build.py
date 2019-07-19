@@ -101,10 +101,10 @@ def build(config):
         datapackage_dir,
         raw_data_path)
 
-    if config['renewable_profiles'] == 'ninja':
+    if config['scenario']['renewable_profiles'] == 'ninja':
         pv_profiles = capacity_factors.ninja_pv_profiles
         wind_profiles = capacity_factors.ninja_wind_profiles
-    elif config['renewable_profiles'] == 'emhires':
+    elif config['scenario']['renewable_profiles'] == 'emhires':
         pv_profiles = capacity_factors.emhires_pv_profiles
         wind_profiles = capacity_factors.emhires_wind_profiles
     else:
