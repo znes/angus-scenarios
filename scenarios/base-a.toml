@@ -1,0 +1,8 @@
+title = "Base A variant of base scenario for 2030"
+description = "Based on NEP2019 Scenario 2030C with emhires wind and solar profiles"
+name = "base-a"
+
+parents = ["scenarios/base.toml"]
+
+[scenario]
+renewable_profiles = "emhires" # ninja
