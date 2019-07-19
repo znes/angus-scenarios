@@ -1,0 +1,46 @@
+title = "Base scenario for 2030"
+description = "Based on NEP2019 Scenario 2030C"
+name = "base"
+
+[scenario]
+DE_system = "C2030" # german data (generation, load, etc.)
+EU_load = "2030ST" # european load
+EU_generation = "vision4" # european generation mix based on TYNDP
+cost = "2030C" # carrier cost (gas, co2, etc.)
+grid = ""
+year = 2030
+weather_year = 2012 # 2011, 2012
+grid_loss = 0.05
+renewable_profiles = "ninja" # emhires
+
+[buses]
+
+electricity = [
+    "AT",
+    "BE",
+    "CH",
+    "CZ",
+    "DE",
+    "DK",
+    "FR",
+    "IT",
+    "NL",
+    "NO",
+    "PL",
+    "SE"
+]
+
+biomass = [
+  "AT",
+  "BE",
+  "CH",
+  "CZ",
+  "DE",
+  "DK",
+  "FR",
+  "IT",
+  "NL",
+  "NO",
+  "PL",
+  "SE"
+]
