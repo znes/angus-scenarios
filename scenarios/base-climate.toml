@@ -1,0 +1,8 @@
+title = "Variant of base scenario for 2030 with high CO2 price"
+description = "Based on NEP2019 Scenario 2030C"
+name = "base-climate"
+
+parents = ["scenarios/base.toml"]
+
+[scenario]
+cost = "climate" # ninja
