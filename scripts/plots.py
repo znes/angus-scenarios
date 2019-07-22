@@ -35,6 +35,9 @@ color = {
     'volatile': 'blue',
     'dispatchable': 'red',
     'storage': 'green',
+    'other': 'red',
+    'mixed': 'red',
+    'chp': 'red',
     'NONE': 'blue'
 }
 
@@ -163,7 +166,7 @@ def stacked_plot(scenario, datapath='results'):
        )
     }
 
-def price_scatter_plot(scenarios, rload, prices, timestamps):
+def price_scatter_plot(scenarios, rload, prices, timestamps, country):
     data = []
     for s in scenarios:
         data.append(
@@ -178,9 +181,14 @@ def price_scatter_plot(scenarios, rload, prices, timestamps):
                 )
             )
         )
-    layout = dict(title = 'Residual load vs. Shadow Prices')
+    layout = dict(
+                title = 'Residual load vs. Shadow Prices {}'.format(country),
+                yaxis1=dict(title='Shadow price in € / MWh'),
+                xaxis=dict(title='Residual load in MW')
+            )
 
     return dict(data=data, layout=layout)
+
 
 def merit_order_plot(scenario, prices, storages):
     prices = prices[scenario]
@@ -242,11 +250,8 @@ def merit_order_plot(scenario, prices, storages):
 
     fig.append_trace(storage_dispatch_ordered, 2, 1)
 
-
-
-
     fig['layout'].update(
-        title = 'Ordered prices and storage dispatch in DE '+scenario,
+        title = 'Ordered prices and storage dispatch in DE ' + scenario,
         yaxis1=dict(
             title='Shadow price in € / MWh'
         ),
@@ -262,7 +267,8 @@ def merit_order_plot(scenario, prices, storages):
 
     return fig
 
-def price_line_plot(scenarios, index, prices):
+
+def price_line_plot(scenarios, index, prices, country):
     data = []
     for s in scenarios:
         data.append(
@@ -273,6 +279,10 @@ def price_line_plot(scenarios, index, prices):
                 line=dict(width=2)
             )
         )
-    layout = dict(title = 'Shadow Prices')
+    layout = dict(
+                title = 'Shadow Prices for country {}'.format(country),
+                yaxis1=dict(title='Shadow price in € / MWh'),
+                xaxis=dict(title='Hours of the year')
+            )
 
     return dict(data=data, layout=layout)
