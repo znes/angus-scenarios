@@ -274,7 +274,7 @@ def DE_nep_conventional(datapackage_dir, nep_scenario, bins=0,
         chp_elements[name] = element
 
         volatile_profiles[name + "-profile"] = pd.read_csv(
-            os.path.join(raw_data_path, 'decentral_heat_load_profiles.csv'))['DE'] * 2300 # fix for normalizing to max value of 0.8653
+            os.path.join(raw_data_path, 'synthetic-heat-load-profile.csv'))['DE']
 
     volatile_profiles.index = building.timeindex(
         year=str(2030)
