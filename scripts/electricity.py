@@ -137,17 +137,18 @@ def tyndp_generation(buses, vision, scenario, datapackage_dir, raw_data_path):
             )
 
             elif carrier == 'others-non-res':
+                carrier = "mixed"
                 elements[b + "-" + carrier] = element
 
                 element.update({
-                    "carrier": 'other',
-                    "capacity": x.at[b, carrier],
+                    "carrier": carrier,
+                    "capacity": x.at[b, 'others-non-res'],
                     "bus": b + "-electricity",
                     "type": "dispatchable",
                     "output_parameters": json.dumps({}),
                     "marginal_cost": 0,
-                    "tech": 'other',
-                    "profile": 0.85
+                    "tech": 'gt',
+                    "profile": technologies.loc[(2030, "avf", carrier, 'gt'), "value"]
                 }
             )
 
@@ -253,7 +254,7 @@ def DE_nep_conventional(datapackage_dir, nep_scenario, bins=0,
         "Erdgas": "gas",
         "Mineralölprodukte": "oil",
         "Abfall": "waste",
-        "Sonstige": "other-non-res"
+        "Sonstige": "mixed"
     }
     chp_elements = {}
 
@@ -264,7 +265,7 @@ def DE_nep_conventional(datapackage_dir, nep_scenario, bins=0,
         name = "-".join(["DE", carrier_mapper[carrier], "chp"])
         element = {
             'bus': 'DE-electricity',
-            'tech': "bp",
+            'tech': "chp",
             'carrier': carrier_mapper[carrier],
             'capacity': row["Nettonennleistung " + nep_scenario + " [MW]"],
             'profile': name + "-profile",

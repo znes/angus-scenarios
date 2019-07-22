@@ -163,7 +163,7 @@ if __name__ == "__main__":
     scenarios= [
         Scenario.from_path(os.path.join('scenarios', s))
         for s in os.listdir('scenarios')]
-    #p = mp.Pool(10)
-    #p.map(build, scenarios)
+    p = mp.Pool(10)
+    p.map(build, scenarios)
 
-    build(Scenario.from_path(os.path.join('scenarios', 'eHighway2050-100%RES.toml')))
+    #build(Scenario.from_path(os.path.join('scenarios', 'base.toml')))

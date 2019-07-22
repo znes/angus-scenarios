@@ -235,6 +235,19 @@ def emhires_pv_profiles(
         directory=os.path.join(datapackage_dir, "data", "sequences"))
 
 
+
+
+
+if __name__ == "__main__":
+    year='2012'
+    profiles = ninja_wind_profiles
+    profiles(
+        ["DE"], year, 2030,
+        os.path.join("datapackages", "ninja"),
+        os.path.join(os.expanduser("~", "fuchur-raw-data"))
+    )
+
+
 #
 # from oemof.tabular.datapackage import building
 # import pandas as pd
@@ -247,15 +260,6 @@ def emhires_pv_profiles(
 #     os.path.join(seq, "FlEnS-master", "Socio-ecologic", "2050_seq.csv"),
 #     header=[0,1,2,3,4,5], parse_dates=True, index_col=0)
 # long.columns = long.columns.droplevel([0,2,3,4])
-
-
-
-
-year='2012'
-profiles = ninja_wind_profiles
-profiles(["DE"], year, 2030, os.path.join("datapackages", "ninja"), "/home/admin/fuchur-raw-data")
-
-
 # import pandas as pd
 # from oemof.tabular.datapackage import building
 # heat_path = building.download_data(
