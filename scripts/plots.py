@@ -32,11 +32,11 @@ color = {
     'waste': 'yellowgreen',
     'oil': 'black',
     'import': 'pink',
-    'volatile': 'blue',
-    'dispatchable': 'red',
     'storage': 'green',
     'other': 'red',
-    'mixed': 'red',
+    'mixed': 'saddlebrown',
+    'mixed-gt': 'darkcyan',
+    'mixed-chp': 'saddlebrown',
     'chp': 'red',
     'NONE': 'blue'
 }
@@ -56,7 +56,7 @@ def hourly_plot(scenario, bus, datapath='results'):
         index_col=[0], parse_dates=True)
 
 
-    for i in ['coal', 'lignite', 'oil', 'gas', 'waste', 'uranium']:
+    for i in ['coal', 'lignite', 'oil', 'gas', 'waste', 'uranium', 'mixed']:
         group = [c for c in df.columns if i in c]
         df[i] = df[group].sum(axis=1)
         df.drop(group, axis=1, inplace=True)
@@ -98,11 +98,15 @@ def hourly_plot(scenario, bus, datapath='results'):
                     line=dict(width=0, color=color_dict.get(c, 'black'))
                 )
             )
+            if c == 'import':
+                name = 'export'
+            else:
+                name = c+'-charge'
             data.append(
                 go.Scatter(
                     x = x,
                             y = df[c].clip(upper=0),
-                    name=c+'-charge',
+                    name=name,
                     stackgroup='negative',
                     line=dict(width=0, color=color_dict.get(c, 'black')),
                     showlegend= False

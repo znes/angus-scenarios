@@ -456,7 +456,7 @@ def DE_nep(datapackage_dir, raw_data_path, nep_scenario, cost_scenario):
             "capacity": data.loc[nep_scenario, "battery"],
             "bus": "DE-electricity",
             "tech": 'battery',
-            "carrier": 'electricity',
+            "carrier": 'lithium',
             "type": "storage",
             "efficiency": float(technologies.loc[(2030, 'efficiency', 'lithium', 'battery'), 'value'])**0.5,  # convert roundtrip to input / output efficiency
             "marginal_cost": 0,

@@ -9,9 +9,9 @@ from fuchur.cli import Scenario
 
 
 # set raw data path to the default fuchur raw raw_data_path
-# which is: 'home/user/fuchur-raw-data'
+# which is: 'home/user/oemof-raw-data'
 # change this if you have your raw data stored somewhere else
-raw_data_path = os.path.join(os.path.expanduser('~'), 'fuchur-raw-data')
+raw_data_path = os.path.join(os.path.expanduser('~'), 'oemof-raw-data')
 
 def build(config):
     """

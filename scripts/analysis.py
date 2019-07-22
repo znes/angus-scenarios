@@ -8,12 +8,15 @@ import plotly.offline as offline
 from plots import (hourly_plot, stacked_plot, price_line_plot,
                    price_scatter_plot, merit_order_plot)
 
+results = [r for r in os.listdir('results') if 'plots' not in r]
+
+
 country = 'DE'
 
 # shadow prices
 sorted = {}
 unsorted = {}
-for r in os.listdir("results"):
+for r in results:
     path = os.path.join("results", r, "output", "shadow_prices.csv")
     sprices = pd.read_csv(path, index_col=[0], parse_dates=True)[country + "-electricity"]
     sorted[r] = sprices.sort_values().values
@@ -29,7 +32,7 @@ shadow_prices = {}
 storages = {}
 prices = {}
 rload = {}
-for r in os.listdir("results"):
+for r in results:
 
     path = os.path.join("results", r, "output", country + "-electricity.csv")
     country_electricity_df = pd.read_csv(path, index_col=[0], parse_dates=True)
@@ -89,7 +92,6 @@ for r in os.listdir("results"):
 
 prices = {r: pd.DataFrame(prices[r]).set_index('timestamp') for r in prices}
 
-results = [r for r in os.listdir('results') if 'plots' not in r]
 
 if not os.path.exists('results/plots'):
     os.makedirs('results/plots')
