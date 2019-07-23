@@ -1,2 +1,0 @@
-name;bus;capacity;carrier;efficiency;loss;marginal_cost;storage_capacity;tech;type
-DE-battery;DE-electricity;12500;electricity;0.9219544457292888;0.0;0.0;10625.00;battery;storage
