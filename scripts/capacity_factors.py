@@ -101,14 +101,14 @@ def ninja_wind_profiles(buses, weather_year, scenario_year, datapackage_dir,
 
     sequences_df = pd.DataFrame(index=near_term.loc[year].index)
 
-    NorthSea = ["DE", "DK", "NO", "NL", "BE", "GB", "SE"]
+    OFFSHORE = ["DE", "DK", "NO", "NL", "BE", "GB", "SE", "IT"]
 
     for c in buses:
         # add offshore profile if country exists in offshore data columns
         # and if its in NorthSea
         if [
             c + "_OFF" in on_off_data.columns
-        ] and c in NorthSea:
+        ] and c in OFFSHORE:
             sequences_df[c + "-offshore-profile"] = on_off_data[c + "_OFF"]
 
             if c + "_ON" in on_off_data.columns:

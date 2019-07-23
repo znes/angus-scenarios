@@ -73,7 +73,7 @@ def build(config):
             datapackage_dir,
             raw_data_path)
 
-        electricity.tyndp_generation(
+        electricity.tyndp_generation_2018(
             set(config["buses"]["electricity"]) - set(['DE']),
             config['scenario']['EU_generation'],
             config["scenario"]["cost"],
