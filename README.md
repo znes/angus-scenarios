@@ -2,8 +2,9 @@
 
 ## Preparation
 
-If you want to build the packages for scenarios all you need to do is run one
-script.
+If you want to build the packages for scenarios all you need to do is run some
+scripts. Clone the directory and `cd` to the root diectory. From here all
+commands are to be executed from the console.
 
 ### Requirements
 
@@ -11,15 +12,17 @@ To run the script, make sure the requirements e.g. via pip
 
     pip install  -U -r requirements.txt
 
-In addition for some plot `plotly-orca`. Installation instructions can
+In addition for some plots `plotly-orca`. Installation instructions can
 found here: [orca](https://github.com/plotly/orca)
 
 ### Raw data
 
-To run the build script the required raw data needs to be downloaded. Store the
-data in your home directory under `oemof-raw-data`. The required data sets can
-be found in the sources. 
+To run the build script the required raw data needs to be downloaded. Generally,
+the data will be downloaded automatically. You have to create an  `oemof-raw-data`
+directory in your home folder:
 
+
+    mkdir /home/user/oemof-raw-data
 
 ## Build
 
@@ -115,4 +118,5 @@ CHP Power plant smaller 10MW are modelled as must-run with a seasonal profile.
 * [OPSDb](https://data.open-power-system-data.org/conventional_power_plants/2018-12-20/conventional_power_plants_DE.csv)
 * [NEP2019a](https://www.netzentwicklungsplan.de/sites/default/files/paragraphs-files/NEP_2030_V2019_2_Entwurf_Teil1.pdf)
 * [NEP2019b](https://www.netzentwicklungsplan.de/sites/default/files/paragraphs-files/Kraftwerksliste_%C3%9CNB_Entwurf_Szenariorahmen_2030_V2019_0_0.xlsx)
-* [Restore2050](https://zenodo.org/record/804244/files/hydropower.csv?download=1)
+* [Restore2050](https://zenodo.org/record/804244/#.XTcUhfyxUax)
+* [Brown](https://zenodo.org/record/1146666#.XTcTdvyxUaw)
