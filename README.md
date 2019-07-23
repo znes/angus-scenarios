@@ -18,7 +18,7 @@ found here: [orca](https://github.com/plotly/orca)
 
 To run the build script the required raw data needs to be downloaded. Store the
 data in your home directory under `oemof-raw-data`. The required data sets can
-be found in the sources. 
+be found in the sources.
 
 
 ## Build
@@ -115,4 +115,5 @@ CHP Power plant smaller 10MW are modelled as must-run with a seasonal profile.
 * [OPSDb](https://data.open-power-system-data.org/conventional_power_plants/2018-12-20/conventional_power_plants_DE.csv)
 * [NEP2019a](https://www.netzentwicklungsplan.de/sites/default/files/paragraphs-files/NEP_2030_V2019_2_Entwurf_Teil1.pdf)
 * [NEP2019b](https://www.netzentwicklungsplan.de/sites/default/files/paragraphs-files/Kraftwerksliste_%C3%9CNB_Entwurf_Szenariorahmen_2030_V2019_0_0.xlsx)
-* [Restore2050](https://zenodo.org/record/804244/files/hydropower.csv?download=1)
+* [Restore2050](https://zenodo.org/record/804244/#.XTcUhfyxUax)
+* [Brown](https://zenodo.org/record/1146666#.XTcTdvyxUaw)
