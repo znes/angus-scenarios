@@ -101,30 +101,22 @@ def ninja_wind_profiles(buses, weather_year, scenario_year, datapackage_dir,
 
     sequences_df = pd.DataFrame(index=near_term.loc[year].index)
 
-    OFFSHORE = ["DE", "DK", "NO", "NL", "BE", "GB", "SE", "IT"]
-
     for c in buses:
-        # add offshore profile if country exists in offshore data columns
-        # and if its in NorthSea
-        if [
-            c + "_OFF" in on_off_data.columns
-        ] and c in OFFSHORE:
-            sequences_df[c + "-offshore-profile"] = on_off_data[c + "_OFF"]
 
-            if c + "_ON" in on_off_data.columns:
-                sequence_name = c + "-onshore-profile"
-                sequences_df[sequence_name] = on_off_data[c + "_ON"]
-            else:
-                # for all countries that are not in the on/off data set use current
-                # national
-                sequence_name = c + "-onshore-profile"
-                sequences_df[sequence_name] = near_term.loc[year][c].values
+        if c + "_ON" in on_off_data.columns:
+            sequence_name = c + "-onshore-profile"
+            sequences_df[sequence_name] = on_off_data[c + "_ON"]
         else:
             # for all countries that are not in the on/off data set use current
             # national
             sequence_name = c + "-onshore-profile"
             sequences_df[sequence_name] = near_term.loc[year][c].values
 
+    for c in buses:
+        if c + "_OFF" in on_off_data.columns:
+            sequences_df[c + "-offshore-profile"] = on_off_data[c + "_OFF"]
+        elif c == "PL":
+            sequences_df[c + "-offshore-profile"] = on_off_data["SE_OFF"]
 
     sequences_df.index = building.timeindex(
         year=str(scenario_year)
