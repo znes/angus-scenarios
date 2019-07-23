@@ -3,8 +3,8 @@
 ## Preparation
 
 If you want to build the packages for scenarios all you need to do is run some
-scripts. Clone the directory and `cd` to the root diectory. From here all commands
-are to be executed from the console.
+scripts. Clone the directory and `cd` to the root diectory. From here all
+commands are to be executed from the console.
 
 ### Requirements
 
@@ -17,10 +17,12 @@ found here: [orca](https://github.com/plotly/orca)
 
 ### Raw data
 
-To run the build script the required raw data needs to be downloaded. Store the
-data in your home directory under `oemof-raw-data`. The required data sets can
-be found in the sources.
+To run the build script the required raw data needs to be downloaded. Generally,
+the data will be downloaded automatically. You have to create an  `oemof-raw-data`
+directory in your home folder:
 
+
+    mkdir /home/user/oemof-raw-data
 
 ## Build
 
