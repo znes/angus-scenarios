@@ -360,12 +360,15 @@ def DE_nep_conventional(datapackage_dir, nep_scenario, bins=0,
 
     technologies = pd.DataFrame(
         #Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
-        Package('https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/technology/datapackage.json')
-        .get_resource('technology').read(keyed=True)).set_index(
-            ['year', 'parameter', 'carrier', 'tech' ])
+        Package(
+            'https://raw.githubusercontent.com/ZNES-datapackages/'
+            'angus-input-data/master/technology/datapackage.json')
+            .get_resource('technology').read(keyed=True)).set_index(
+                ['year', 'parameter', 'carrier', 'tech' ])
 
     carrier_package = Package(
-        'https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/carrier/datapackage.json')
+        'https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data'
+        '/master/carrier/datapackage.json')
 
     carrier_cost = pd.DataFrame(
         carrier_package.get_resource('carrier-cost').read(keyed=True)).set_index(
@@ -385,7 +388,8 @@ def DE_nep_conventional(datapackage_dir, nep_scenario, bins=0,
 
     nep = pd.read_excel(building.download_data(
         "https://www.netzentwicklungsplan.de/sites/default/files/"
-        "paragraphs-files/Kraftwerksliste_%C3%9CNB_Entwurf_Szenariorahmen_2030_V2019_0_0.xlsx",
+        "paragraphs-files/Kraftwerksliste_%C3%9CNB_Entwurf_Szenariorahmen_"
+        "2030_V2019_0_0.xlsx",
         directory=raw_data_path)
         , encoding='utf-8')
 
@@ -427,8 +431,14 @@ def DE_nep_conventional(datapackage_dir, nep_scenario, bins=0,
 
         chp_elements[name] = element
 
-        volatile_profiles[name + "-profile"] = pd.read_csv(
-            os.path.join(raw_data_path, 'synthetic-heat-load-profile.csv'))['DE']
+        heat_profiles = pd.DataFrame(
+            Package(
+                'https://raw.githubusercontent.com/ZNES-datapackages/'
+                'angus-input-data/master/heat-profiles/datapackage.json')
+                .get_resource('synthetic-heat-load-profile')
+                .read(keyed=True)).set_index('hour')
+
+        volatile_profiles[name + "-profile"] = heat_profiles['DE']
 
     volatile_profiles.index = building.timeindex(
         year=str(2030)
