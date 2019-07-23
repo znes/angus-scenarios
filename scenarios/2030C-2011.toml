@@ -1,0 +1,8 @@
+title = "Variant of base scenario for 2030 with 2011 weather year"
+description = "Based on NEP2019 Scenario 2030C"
+name = "2030C-2011"
+
+parents = ["scenarios/2030C.toml"]
+
+[scenario]
+weather_year = 2011

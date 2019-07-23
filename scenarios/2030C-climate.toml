@@ -1,0 +1,8 @@
+title = "Cimate variant scenario for 2030C"
+description = "Based on NEP2019 Scenario 2030C with higher CO2 price"
+name = "2030C-climate"
+
+parents = ["scenarios/2030C.toml"]
+
+[scenario]
+cost = "climate" # ninja
