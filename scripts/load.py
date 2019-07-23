@@ -133,7 +133,7 @@ def opsd_profile(buses, demand_year, scenario_year, datapackage_dir,
             "File for OPSD loads does not exist. Did you download data?"
         )
 
-    suffix = "_load_old"
+    suffix = "_load_entsoe_power_statistics"
 
     countries = buses
 

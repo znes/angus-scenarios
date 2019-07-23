@@ -95,6 +95,16 @@ def generation(config, datapackage_dir, raw_data_path):
         config["scenario"]["year"],
     )
 
+    building.download_data(
+        'https://zenodo.org/record/1146666/files/sector-zenodo.tar.gz?download=1',
+        directory=raw_data_path, unzip_file='data/hydro/ror_ENTSOe_Restore2050.csv')
+
+
+
+    building.download_data(
+        'https://zenodo.org/record/804244/files/Hydro_Inflow.zip?download=1',
+        directory=raw_data_path, unzip_file='Hydro_Inflow/')
+
     filepath = building.download_data(
         'https://zenodo.org/record/804244/files/hydropower.csv?download=1',
         directory=raw_data_path)
@@ -123,7 +133,7 @@ def generation(config, datapackage_dir, raw_data_path):
             ['year', 'parameter', 'carrier', 'tech'])
 
     ror_shares = pd.read_csv(
-        os.path.join(raw_data_path, "ror_ENTSOe_Restore2050.csv"),
+        os.path.join(raw_data_path, "data", "hydro", "ror_ENTSOe_Restore2050.csv"),
         index_col="Country Code (ISO 3166-1)",
     )["ror ENTSO-E\n+ Restore"]
 
