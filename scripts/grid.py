@@ -58,7 +58,7 @@ def _remove_links(row):
 
 
 def ehighway(buses, year, grid_loss, scenario = "100% RES",
-            datapackage_dir=None, raw_data_path=None):
+             datapackage_dir=None, raw_data_path=None):
     """
     Parameter
     ---------
@@ -80,11 +80,9 @@ def ehighway(buses, year, grid_loss, scenario = "100% RES",
     """
 
     filename = "e-Highway_database_per_country-08022016.xlsx"
-
-    filepath = os.path.join(raw_data_path, filename)
+    filepath = building.download_data(filename, directory=raw_data_path)
 
     if os.path.exists(filepath):
-        # if file exist in archive use this file
         df_2030 = pd.read_excel(
             filepath, sheet_name="T93", index_col=[1], skiprows=[0, 1, 3]
         ).fillna(0)
@@ -96,6 +94,7 @@ def ehighway(buses, year, grid_loss, scenario = "100% RES",
         raise FileNotFoundError(
             "File for e-Highway capacities does not exist. Did you download?"
         )
+
 
     df_2050 = _prepare_frame(df_2050).set_index(["Links"])
     df_2030 = _prepare_frame(df_2030).set_index(["Links"])

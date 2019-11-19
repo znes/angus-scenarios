@@ -117,6 +117,8 @@ def tyndp_generation_2018(buses, vision, scenario, datapackage_dir, raw_data_pat
 
                 element.update({
                     "carrier": carrier,
+                    "carrier_cost": carrier_cost.at[(scenario, carrier), 'value'],
+                    "efficiency": float(technologies.loc[(2030, "efficiency", carrier, tech), "value"]),
                     "capacity": df.at[b, col],
                     "bus": b + "-electricity",
                     "type": "dispatchable",
@@ -281,6 +283,9 @@ def tyndp_generation_2016(buses, vision, scenario, datapackage_dir, raw_data_pat
 
                 element.update({
                     "carrier": carrier,
+                    "carrier_cost": carrier_cost.at[(scenario, carrier), 'value'],
+                    "efficiency": float(
+                        technologies.loc[(2030, "efficiency", carrier, tech), "value"]),
                     "capacity": x.at[b, carrier],
                     "bus": b + "-electricity",
                     "type": "dispatchable",
@@ -517,6 +522,8 @@ def DE_nep_conventional(datapackage_dir, nep_scenario, bins=0,
         element = {
             'bus': country + '-electricity',
             'tech': tech,
+            "carrier_cost": fuel,
+            "efficiency": Decimal(eta),
             'carrier': carrier,
             'capacity': capacity,
             'marginal_cost': float(marginal_cost),
@@ -673,7 +680,6 @@ def ehighway_generation(
         .get_resource('technology').read(keyed=True)).set_index(
             ['year', 'parameter', 'carrier', 'tech' ])
 
-
     carrier_package = Package(
         'https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/carrier/datapackage.json')
 
@@ -684,7 +690,6 @@ def ehighway_generation(
     emission_factors = pd.DataFrame(
         carrier_package.get_resource('emission-factor').read(keyed=True)).set_index(
         ['carrier']).sort_index()
-
     techs = {
         'Wind': 'onshore',
         'Wind         North Sea': 'offshore',
@@ -753,6 +758,7 @@ def ehighway_generation(
                     "bus": b + "-electricity",
                     "type": "dispatchable",
                     "marginal_cost": marginal_cost,
+                    "output_parameters": json.dumps({}),
                     "profile": technologies.loc[(2050, 'avf', carrier, tech), "value"],
                     "tech": tech,
                 }
@@ -810,11 +816,9 @@ def ehighway_generation(
 
 
 
+
     df = pd.DataFrame.from_dict(elements, orient="index")
-    df = df.fillna(0)
-
     df = df[df.capacity != 0]
-
 
     for element_type in ['dispatchable', 'volatile', 'conversion', 'storage',
                         'reservoir', 'load']:
