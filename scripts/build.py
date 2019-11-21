@@ -4,6 +4,7 @@ import os
 import multiprocessing as mp
 
 from oemof.tabular import datapackage
+from oemof.tabular.datapackage import building
 import bus, capacity_factors, electricity, grid, biomass, load, hydro
 from fuchur.cli import Scenario
 
@@ -16,6 +17,9 @@ raw_data_path = os.path.join(os.path.expanduser('~'), 'oemof-raw-data')
 def build(config):
     """
     """
+    building.download_data(
+        "https://zenodo.org/record/3549531/files/angus-raw-data.zip?download=1",
+        directory=raw_data_path, unzip_file="")
 
     datapackage_dir = os.path.join("datapackages", config["name"])
 
