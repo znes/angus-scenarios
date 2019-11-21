@@ -4,22 +4,14 @@ import os
 import multiprocessing as mp
 
 from oemof.tabular import datapackage
-from oemof.tabular.datapackage import building
 import bus, capacity_factors, electricity, grid, biomass, load, hydro
 from fuchur.cli import Scenario
+from prepare import raw_data_path
 
-
-# set raw data path to the default fuchur raw raw_data_path
-# which is: 'home/user/oemof-raw-data'
-# change this if you have your raw data stored somewhere else
-raw_data_path = os.path.join(os.path.expanduser('~'), 'oemof-raw-data')
 
 def build(config):
     """
     """
-    building.download_data(
-        "https://zenodo.org/record/3549531/files/angus-raw-data.zip?download=1",
-        directory=raw_data_path, unzip_file="")
 
     datapackage_dir = os.path.join("datapackages", config["name"])
 
@@ -40,6 +32,9 @@ def build(config):
         raw_data_path)
 
     biomass.add(config["buses"], datapackage_dir)
+
+    # must come before generation of others because later manipulation below...
+    hydro.generation(config, datapackage_dir, raw_data_path)
 
     if config["scenario"]["year"] > 2035:
         grid.ehighway(
@@ -96,7 +91,6 @@ def build(config):
             nep_scenario=config["scenario"]["DE_system"],
             cost_scenario=config["scenario"]["cost"])
 
-    hydro.generation(config, datapackage_dir, raw_data_path)
 
     load.opsd_profile(
         config["buses"]["electricity"],

@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 
 from oemof.tabular.datapackage import building
-
+from hydro import pumped_hydro
 
 def tyndp_generation_2018(buses, vision, scenario, datapackage_dir, raw_data_path):
     """Extracts TYNDP2018 generation data and writes to datapackage for oemof
@@ -701,6 +701,8 @@ def ehighway_generation(
         'Hydro with reservoir (MW)': 'rsv',
         'Demand (GWh)': 'load'}
 
+
+
     elements = {}
     for b in df.index:
         for tech_key, tech in techs.items():
@@ -815,7 +817,18 @@ def ehighway_generation(
                     })
 
 
+    phs = building.read_elements(
+        'phs.csv',
+        directory=os.path.join(datapackage_dir, "data", "elements"))
 
+    phs["capacity"] = df["PSP"].values
+    phs["storage_capacity"] = df["PSP"].values * 6
+    building.write_elements(
+        'phs.csv',
+        phs,
+        directory=os.path.join(datapackage_dir, "data", "elements"),
+        replace=True
+    )
 
     df = pd.DataFrame.from_dict(elements, orient="index")
     df = df[df.capacity != 0]

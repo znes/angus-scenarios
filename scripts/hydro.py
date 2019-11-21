@@ -164,26 +164,6 @@ def generation(config, datapackage_dir, raw_data_path):
     ]
     ror_sequences.columns = ror_sequences.columns.map(ror["profile"])
 
-    # phs
-    phs = pd.DataFrame(index=countries)
-    phs["type"], phs["tech"], phs["bus"], phs["loss"], phs["capacity"], phs[
-        "marginal_cost"], phs['carrier'] = (
-        "storage",
-        "phs",
-        phs.index.astype(str) + "-electricity",
-        0,
-        capacities.loc[phs.index, " installed pumped hydro capacities [GW]"]
-        * 1000,
-        0,
-        "hydro"
-    )
-
-    phs["storage_capacity"] = phs["capacity"] * float(
-        technologies.at[(int(scenario_year), 'storage_capacity', 'hydro', 'phs'), 'value'])
-
-    # as efficieny in data is roundtrip use sqrt of roundtrip
-    phs["efficiency"] = float(
-        technologies.at[(int(scenario_year), 'efficiency', 'hydro', 'phs'), 'value'])**0.5
 
     # other hydro / reservoir
     rsv = pd.DataFrame(index=countries)
@@ -214,6 +194,8 @@ def generation(config, datapackage_dir, raw_data_path):
     )  # GWh -> MWh
     rsv_sequences.columns = rsv_sequences.columns.map(rsv["profile"])
 
+
+
     # write sequences to different files for better automatic foreignKey
     # handling in meta data
     building.write_sequences(
@@ -232,6 +214,13 @@ def generation(config, datapackage_dir, raw_data_path):
         directory=os.path.join(datapackage_dir, "data", "sequences"),
     )
 
+    # add pumped hydro capacities from ENTSOe_Restore2050 project if 'current'
+    phs_capacities = capacities.loc[countries, " installed pumped hydro capacities [GW]"]
+    phs = pumped_hydro(
+        technologies, phs_capacities, 6, countries, scenario_year,
+        config["scenario"]["phs_capacity"])
+
+
     filenames = ["ror.csv", "phs.csv", "reservoir.csv"]
 
     for fn, df in zip(filenames, [ror, phs, rsv]):
@@ -247,3 +236,44 @@ def generation(config, datapackage_dir, raw_data_path):
         building.write_elements(
             fn, df, directory=os.path.join(datapackage_dir, "data", "elements")
         )
+
+
+def pumped_hydro(technologies, capacities, storage_capacity,
+                 buses, scenario_year, phs_capacity_scenario):
+    """
+
+    Parameters
+    -----------
+    phs_capacity: str
+        String indicating what capacity to use: 'current', '100%RE' or other
+        E highway scenario names.
+    """
+
+    if phs_capacity_scenario == 'current':
+        # phs
+        phs = pd.DataFrame(index=buses)
+        phs["type"], phs["tech"], phs["bus"], phs["loss"], phs[
+        "capacity"], phs["storage_capacity"], phs["marginal_cost"], phs[
+        'carrier'] = (
+            "storage",
+            "phs",
+            phs.index.astype(str) + "-electricity",
+            0,
+            capacities
+            * 1000,
+            capacities * storage_capacity * 1000,
+            0,
+            "hydro"
+        )
+
+        phs["storage_capacity"] = phs["capacity"] * float(
+            technologies.at[(int(scenario_year), 'storage_capacity', 'hydro', 'phs'), 'value'])
+
+        # as efficieny in data is roundtrip use sqrt of roundtrip
+        phs["efficiency"] = float(
+            technologies.at[(int(scenario_year), 'efficiency', 'hydro', 'phs'), 'value'])**0.5
+
+    elif phs_capacity_scenario == "100 % RE":
+        pass
+
+    return phs
