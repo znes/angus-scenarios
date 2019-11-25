@@ -621,7 +621,7 @@ def DE_nep(datapackage_dir, raw_data_path, nep_scenario, cost_scenario):
 
     elements['DE-battery'] =    {
             "storage_capacity": technologies.loc[
-                (2030, 'efficiency', 'lithium', 'battery'), 'value'] * \
+                (2030, 'storage_capacity', 'lithium', 'battery'), 'value'] * \
                 data.loc[nep_scenario, "battery"],
             "capacity": data.loc[nep_scenario, "battery"],
             "bus": "DE-electricity",
