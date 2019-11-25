@@ -57,8 +57,14 @@ def _remove_links(row):
         return True
 
 
-def ehighway(buses, year, grid_loss, scenario = "100% RES",
-             datapackage_dir=None, raw_data_path=None):
+def ehighway(
+    buses,
+    year,
+    grid_loss,
+    scenario="100% RES",
+    datapackage_dir=None,
+    raw_data_path=None,
+):
     """
     Parameter
     ---------
@@ -95,16 +101,12 @@ def ehighway(buses, year, grid_loss, scenario = "100% RES",
             "File for e-Highway capacities does not exist. Did you download?"
         )
 
-
     df_2050 = _prepare_frame(df_2050).set_index(["Links"])
     df_2030 = _prepare_frame(df_2030).set_index(["Links"])
 
     elements = {}
     for idx, row in df_2030.iterrows():
-        if (
-            row["from"] in buses
-            and row["to"] in buses
-        ):
+        if row["from"] in buses and row["to"] in buses:
 
             predecessor = row["from"] + "-electricity"
             successor = row["to"] + "-electricity"
@@ -113,8 +115,9 @@ def ehighway(buses, year, grid_loss, scenario = "100% RES",
             if year == 2030:
                 capacity = row[scenario]
             elif year == 2050:
-                capacity = (row[scenario]
-                + df_2050.to_dict()[scenario].get(idx, 0))
+                capacity = row[scenario] + df_2050.to_dict()[scenario].get(
+                    idx, 0
+                )
 
             element = {
                 "type": "link",
@@ -123,7 +126,7 @@ def ehighway(buses, year, grid_loss, scenario = "100% RES",
                 "to_bus": successor,
                 "tech": "transshipment",
                 "capacity": capacity,
-                #"length": row["Length"],
+                # "length": row["Length"],
             }
 
             elements[element_name] = element
@@ -152,28 +155,36 @@ def tyndp(buses, grid_loss, datapackage_dir, raw_data_path):
     filepath = building.download_data(
         "https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP2018/"
         "Scenarios%20Data%20Sets/Input%20Data.xlsx",
-        directory=raw_data_path)
+        directory=raw_data_path,
+    )
 
-    df = pd.read_excel(filepath, sheet_name='NTC', index_col=[0],
-                       skiprows=[1,2])[["CBA Capacities", "Unnamed: 3"]]
+    df = pd.read_excel(
+        filepath, sheet_name="NTC", index_col=[0], skiprows=[1, 2]
+    )[["CBA Capacities", "Unnamed: 3"]]
     df.columns = ["=>", "<="]
     df["links"] = df.index.astype(str)
-    df["links"] =  df["links"].apply(
-        lambda row: (row.split('-')[0][0:2], row.split('-')[1][0:2]))
+    df["links"] = df["links"].apply(
+        lambda row: (row.split("-")[0][0:2], row.split("-")[1][0:2])
+    )
     df = df.groupby(df["links"]).sum()
     df.reset_index(inplace=True)
 
-    df = pd.concat([
-        pd.DataFrame(df["links"].apply(lambda row: [row[0], row[1]]).tolist(),
-                     columns=['from', 'to']),
-        df[["=>", "<="]]], axis=1)
+    df = pd.concat(
+        [
+            pd.DataFrame(
+                df["links"].apply(lambda row: [row[0], row[1]]).tolist(),
+                columns=["from", "to"],
+            ),
+            df[["=>", "<="]],
+        ],
+        axis=1,
+    )
 
     elements = {}
     for idx, row in df.iterrows():
-        if (
-            row["from"] in buses
-            and row["to"] in buses
-        ) and row["from"] != row["to"]:
+        if (row["from"] in buses and row["to"] in buses) and row[
+            "from"
+        ] != row["to"]:
 
             predecessor = row["from"] + "-electricity"
             successor = row["to"] + "-electricity"
@@ -185,7 +196,7 @@ def tyndp(buses, grid_loss, datapackage_dir, raw_data_path):
                 "from_bus": predecessor,
                 "to_bus": successor,
                 "tech": "transshipment",
-                "capacity": row["=>"]  # still need to think how to
+                "capacity": row["=>"],  # still need to think how to
             }
 
             elements[element_name] = element

@@ -1,5 +1,3 @@
-
-
 import json
 import os
 
@@ -34,17 +32,15 @@ def add(buses, datapackage_dir):
 
     if buses.get("biomass"):
         for b in buses["biomass"]:
-            bus_name = '-'.join([b,"biomass", "bus"])
-            commodity_name = '-'.join([b, "biomass", "commodity"])
+            bus_name = "-".join([b, "biomass", "bus"])
+            commodity_name = "-".join([b, "biomass", "commodity"])
 
             commodities[commodity_name] = {
                 "type": "commodity",
                 "tech": "commodity",
                 "carrier": "biomass",
                 "bus": bus_name,
-                "amount": float(
-                    bio_potential["value"].get((b, "biomass"), 0)
-                )
+                "amount": float(bio_potential["value"].get((b, "biomass"), 0))
                 * 1e6,  # TWh -> MWh
             }
 

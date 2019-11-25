@@ -14,12 +14,13 @@ def tyndp(buses, scenario, datapackage_dir, raw_data_path):
     filepath = building.download_data(
         "https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP2018/"
         "Scenarios%20Data%20Sets/Input%20Data.xlsx",
-        directory=raw_data_path)
+        directory=raw_data_path,
+    )
 
-    df = pd.read_excel(filepath, sheet_name='Demand')
-    df['countries'] = [i[0:2] for i in df.index]  # for aggregation by country
+    df = pd.read_excel(filepath, sheet_name="Demand")
+    df["countries"] = [i[0:2] for i in df.index]  # for aggregation by country
 
-    elements = df.groupby('countries').sum()[scenario].to_frame()
+    elements = df.groupby("countries").sum()[scenario].to_frame()
     elements.index.name = "bus"
     elements = elements.loc[buses]
     elements.reset_index(inplace=True)
@@ -33,7 +34,7 @@ def tyndp(buses, scenario, datapackage_dir, raw_data_path):
     elements["carrier"] = "electricity"
     elements.set_index("name", inplace=True)
     elements.bus = [b + "-electricity" for b in elements.bus]
-    elements["amount"] = elements[scenario] * 1000   # MWh -> GWh
+    elements["amount"] = elements[scenario] * 1000  # MWh -> GWh
 
     building.write_elements(
         "load.csv",
@@ -41,8 +42,10 @@ def tyndp(buses, scenario, datapackage_dir, raw_data_path):
         directory=os.path.join(datapackage_dir, "data", "elements"),
     )
 
-def ehighway(buses, year, scenario="100% RES", datapackage_dir=None,
-             raw_data_path=None):
+
+def ehighway(
+    buses, year, scenario="100% RES", datapackage_dir=None, raw_data_path=None
+):
     """
     Parameter
     ---------
@@ -69,11 +72,13 @@ def ehighway(buses, year, scenario="100% RES", datapackage_dir=None,
         sheet = "T39"
     else:
         raise ValueError(
-            "Value of argument `year` must be integer 2040 or 2050!")
+            "Value of argument `year` must be integer 2040 or 2050!"
+        )
 
     if os.path.exists(filepath):
-        df = pd.read_excel(filepath, sheet_name=sheet, index_col=[0],
-                           skiprows=[0, 1])
+        df = pd.read_excel(
+            filepath, sheet_name=sheet, index_col=[0], skiprows=[0, 1]
+        )
     else:
         raise FileNotFoundError(
             "File for e-Highway loads does not exist. Did you download data?"
@@ -103,8 +108,9 @@ def ehighway(buses, year, scenario="100% RES", datapackage_dir=None,
     building.write_elements("load.csv", elements, directory=path)
 
 
-def opsd_profile(buses, demand_year, scenario_year, datapackage_dir,
-                 raw_data_path):
+def opsd_profile(
+    buses, demand_year, scenario_year, datapackage_dir, raw_data_path
+):
     """
     Parameter
     ---------
@@ -123,7 +129,7 @@ def opsd_profile(buses, demand_year, scenario_year, datapackage_dir,
 
     filepath = building.download_data(
         "https://data.open-power-system-data.org/time_series/2018-06-30/time_series_60min_singleindex.csv",
-        directory=raw_data_path
+        directory=raw_data_path,
     )
 
     if os.path.exists(filepath):
@@ -171,9 +177,7 @@ def opsd_profile(buses, demand_year, scenario_year, datapackage_dir,
             ~((sequences_df.index.month == 2) & (sequences_df.index.day == 29))
         ]
 
-    sequences_df.index = building.timeindex(
-        year=str(scenario_year)
-    )
+    sequences_df.index = building.timeindex(year=str(scenario_year))
 
     building.write_sequences(
         "load_profile.csv",

@@ -96,23 +96,23 @@ def generation(config, datapackage_dir, raw_data_path):
     )
 
     building.download_data(
-        'https://zenodo.org/record/1146666/files/sector-zenodo.tar.gz?download=1',
-        directory=raw_data_path, unzip_file='data/hydro/ror_ENTSOe_Restore2050.csv')
-
-
+        "https://zenodo.org/record/1146666/files/sector-zenodo.tar.gz?download=1",
+        directory=raw_data_path,
+        unzip_file="data/hydro/ror_ENTSOe_Restore2050.csv",
+    )
 
     building.download_data(
-        'https://zenodo.org/record/804244/files/Hydro_Inflow.zip?download=1',
-        directory=raw_data_path, unzip_file='Hydro_Inflow/')
+        "https://zenodo.org/record/804244/files/Hydro_Inflow.zip?download=1",
+        directory=raw_data_path,
+        unzip_file="Hydro_Inflow/",
+    )
 
     filepath = building.download_data(
-        'https://zenodo.org/record/804244/files/hydropower.csv?download=1',
-        directory=raw_data_path)
-
-    capacities = pd.read_csv(
-        filepath,
-        index_col=["ctrcode"],
+        "https://zenodo.org/record/804244/files/hydropower.csv?download=1",
+        directory=raw_data_path,
     )
+
+    capacities = pd.read_csv(filepath, index_col=["ctrcode"])
     capacities.rename(index={"UK": "GB"}, inplace=True)  # for iso code
 
     capacities.loc["CH"] = [8.8, 12, 1.9]  # add CH elsewhere
@@ -127,19 +127,24 @@ def generation(config, datapackage_dir, raw_data_path):
     inflows["DK"], inflows["LU"] = 0, inflows["BE"]
 
     technologies = pd.DataFrame(
-        #Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
-        Package('https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/technology/datapackage.json')
-        .get_resource('technology').read(keyed=True)).set_index(
-            ['year', 'parameter', 'carrier', 'tech'])
+        Package(
+            "https://raw.githubusercontent.com/ZNES-datapackages/"
+            "angus-input-data/master/technology/datapackage.json"
+        )
+        .get_resource("technology")
+        .read(keyed=True)
+    ).set_index(["year", "parameter", "carrier", "tech"])
 
     ror_shares = pd.read_csv(
-        os.path.join(raw_data_path, "data", "hydro", "ror_ENTSOe_Restore2050.csv"),
+        os.path.join(
+            raw_data_path, "data", "hydro", "ror_ENTSOe_Restore2050.csv"
+        ),
         index_col="Country Code (ISO 3166-1)",
     )["ror ENTSO-E\n+ Restore"]
 
     # ror
     ror = pd.DataFrame(index=countries)
-    ror["type"], ror["tech"], ror["bus"], ror["capacity"], ror['carrier'] = (
+    ror["type"], ror["tech"], ror["bus"], ror["capacity"], ror["carrier"] = (
         "volatile",
         "ror",
         ror.index.astype(str) + "-electricity",
@@ -151,12 +156,14 @@ def generation(config, datapackage_dir, raw_data_path):
         )
         * ror_shares[ror.index]
         * 1000,
-        'hydro'
+        "hydro",
     )
     # only select ror shares if exist to avoid errors with profiles etc...
     ror = ror[ror["capacity"] > 0]
 
-    ror['efficiency'] = technologies.at[(int(scenario_year), 'efficiency', 'hydro', 'ror'), 'value']
+    ror["efficiency"] = technologies.at[
+        (int(scenario_year), "efficiency", "hydro", "ror"), "value"
+    ]
     ror["profile"] = ror["bus"] + "-" + ror["tech"] + "-profile"
 
     ror_sequences = (inflows[ror.index] * ror_shares[ror.index] * 1000) / ror[
@@ -164,11 +171,11 @@ def generation(config, datapackage_dir, raw_data_path):
     ]
     ror_sequences.columns = ror_sequences.columns.map(ror["profile"])
 
-
     # other hydro / reservoir
     rsv = pd.DataFrame(index=countries)
     rsv["type"], rsv["tech"], rsv["bus"], rsv["loss"], rsv["capacity"], rsv[
-        "storage_capacity"], rsv['carrier'] = (
+        "storage_capacity"
+    ], rsv["carrier"] = (
         "reservoir",
         "reservoir",
         rsv.index.astype(str) + "-electricity",
@@ -182,7 +189,7 @@ def generation(config, datapackage_dir, raw_data_path):
         * (1 - ror_shares[ror.index])
         * 1000,
         capacities.loc[rsv.index, " reservoir capacity [TWh]"] * 1e6,
-        "hydro"
+        "hydro",
     )  # to MWh
 
     rsv["profile"] = rsv["bus"] + "-" + rsv["tech"] + "-profile"
@@ -193,8 +200,6 @@ def generation(config, datapackage_dir, raw_data_path):
         inflows[rsv.index] * (1 - ror_shares[rsv.index]) * 1000
     )  # GWh -> MWh
     rsv_sequences.columns = rsv_sequences.columns.map(rsv["profile"])
-
-
 
     # write sequences to different files for better automatic foreignKey
     # handling in meta data
@@ -215,10 +220,12 @@ def generation(config, datapackage_dir, raw_data_path):
     )
 
     # add pumped hydro capacities from ENTSOe_Restore2050 project if 'current'
-    phs_capacities = capacities.loc[countries, " installed pumped hydro capacities [GW]"]
+    phs_capacities = capacities.loc[
+        countries, " installed pumped hydro capacities [GW]"
+    ]
     phs = pumped_hydro(
-        technologies, phs_capacities, 6, countries, scenario_year)
-
+        technologies, phs_capacities, 6, countries, scenario_year
+    )
 
     filenames = ["ror.csv", "storage.csv", "reservoir.csv"]
 
@@ -237,34 +244,42 @@ def generation(config, datapackage_dir, raw_data_path):
         )
 
 
-def pumped_hydro(technologies, capacities, storage_capacity,
-                 buses, scenario_year):
+def pumped_hydro(
+    technologies, capacities, storage_capacity, buses, scenario_year
+):
     """
 
     """
 
     # phs
     phs = pd.DataFrame(index=buses)
-    phs["type"], phs["tech"], phs["bus"], phs["loss"], phs[
-    "capacity"], phs["storage_capacity"], phs["marginal_cost"], phs[
-    'carrier'] = (
+    phs["type"], phs["tech"], phs["bus"], phs["loss"], phs["capacity"], phs[
+        "storage_capacity"
+    ], phs["marginal_cost"], phs["carrier"] = (
         "storage",
         "phs",
         phs.index.astype(str) + "-electricity",
         0,
-        capacities
-        * 1000,
+        capacities * 1000,
         capacities * storage_capacity * 1000,
         0,
-        "hydro"
+        "hydro",
     )
 
     phs["storage_capacity"] = phs["capacity"] * float(
-        technologies.at[(int(scenario_year), 'storage_capacity', 'hydro', 'phs'), 'value'])
+        technologies.at[
+            (int(scenario_year), "storage_capacity", "hydro", "phs"), "value"
+        ]
+    )
 
     # as efficieny in data is roundtrip use sqrt of roundtrip
-    phs["efficiency"] = float(
-        technologies.at[(int(scenario_year), 'efficiency', 'hydro', 'phs'), 'value'])**0.5
-
+    phs["efficiency"] = (
+        float(
+            technologies.at[
+                (int(scenario_year), "efficiency", "hydro", "phs"), "value"
+            ]
+        )
+        ** 0.5
+    )
 
     return phs
