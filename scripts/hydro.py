@@ -217,11 +217,10 @@ def generation(config, datapackage_dir, raw_data_path):
     # add pumped hydro capacities from ENTSOe_Restore2050 project if 'current'
     phs_capacities = capacities.loc[countries, " installed pumped hydro capacities [GW]"]
     phs = pumped_hydro(
-        technologies, phs_capacities, 6, countries, scenario_year,
-        config["scenario"]["phs_capacity"])
+        technologies, phs_capacities, 6, countries, scenario_year)
 
 
-    filenames = ["ror.csv", "phs.csv", "reservoir.csv"]
+    filenames = ["ror.csv", "storage.csv", "reservoir.csv"]
 
     for fn, df in zip(filenames, [ror, phs, rsv]):
         df.index = df.index.astype(str) + "-hydro-" + df["tech"]
@@ -239,41 +238,33 @@ def generation(config, datapackage_dir, raw_data_path):
 
 
 def pumped_hydro(technologies, capacities, storage_capacity,
-                 buses, scenario_year, phs_capacity_scenario):
+                 buses, scenario_year):
     """
 
-    Parameters
-    -----------
-    phs_capacity: str
-        String indicating what capacity to use: 'current', '100%RE' or other
-        E highway scenario names.
     """
 
-    if phs_capacity_scenario == 'current':
-        # phs
-        phs = pd.DataFrame(index=buses)
-        phs["type"], phs["tech"], phs["bus"], phs["loss"], phs[
-        "capacity"], phs["storage_capacity"], phs["marginal_cost"], phs[
-        'carrier'] = (
-            "storage",
-            "phs",
-            phs.index.astype(str) + "-electricity",
-            0,
-            capacities
-            * 1000,
-            capacities * storage_capacity * 1000,
-            0,
-            "hydro"
-        )
+    # phs
+    phs = pd.DataFrame(index=buses)
+    phs["type"], phs["tech"], phs["bus"], phs["loss"], phs[
+    "capacity"], phs["storage_capacity"], phs["marginal_cost"], phs[
+    'carrier'] = (
+        "storage",
+        "phs",
+        phs.index.astype(str) + "-electricity",
+        0,
+        capacities
+        * 1000,
+        capacities * storage_capacity * 1000,
+        0,
+        "hydro"
+    )
 
-        phs["storage_capacity"] = phs["capacity"] * float(
-            technologies.at[(int(scenario_year), 'storage_capacity', 'hydro', 'phs'), 'value'])
+    phs["storage_capacity"] = phs["capacity"] * float(
+        technologies.at[(int(scenario_year), 'storage_capacity', 'hydro', 'phs'), 'value'])
 
-        # as efficieny in data is roundtrip use sqrt of roundtrip
-        phs["efficiency"] = float(
-            technologies.at[(int(scenario_year), 'efficiency', 'hydro', 'phs'), 'value'])**0.5
+    # as efficieny in data is roundtrip use sqrt of roundtrip
+    phs["efficiency"] = float(
+        technologies.at[(int(scenario_year), 'efficiency', 'hydro', 'phs'), 'value'])**0.5
 
-    elif phs_capacity_scenario == "100 % RE":
-        pass
 
     return phs
