@@ -1,4 +1,3 @@
-
 import json
 import logging
 import os
@@ -13,8 +12,9 @@ from oemof.tabular.tools import postprocessing as pp
 import oemof.outputlib as outputlib
 
 
-def compute(datapackage, solver="gurobi", temporal_resolution=1,
-            emission_limit=None):
+def compute(
+    datapackage, solver="gurobi", temporal_resolution=1, emission_limit=None
+):
     """
     """
     datapackage_dir = os.path.join("datapackages", datapackage)
@@ -35,7 +35,7 @@ def compute(datapackage, solver="gurobi", temporal_resolution=1,
             os.path.join(datapackage_dir, "datapackage.json"),
             temporal_resolution,
             path=scenario_path,
-            name="input"
+            name="input",
         )
     else:
         path = processing.copy_datapackage(
@@ -125,11 +125,11 @@ def compute(datapackage, solver="gurobi", temporal_resolution=1,
     summary["import"] = imports[imports > 0].sum() / 1e6 * temporal_resolution
     summary["export"] = imports[imports < 0].sum() / 1e6 * temporal_resolution
 
+    summary.to_csv(os.path.join(scenario_path, "summary.csv"))
 
-    summary.to_csv(os.path.join(scenario_path, 'summary.csv'))
 
 if __name__ == "__main__":
-    #compute('base-a', 'gurobi')
-    datapackages = [d for d in os.listdir('datapackages')]
+    # compute('base-a', 'gurobi')
+    datapackages = [d for d in os.listdir("datapackages")]
     p = mp.Pool(1)
     p.map(compute, datapackages)

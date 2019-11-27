@@ -77,12 +77,13 @@ timeseries for the selected weather year.
 * German demand is based on the NEP2030 scenarios (A2030, B2030, C2030)
 * The amount of demand of the neigbouring countries is based on the TYNDP2018
 scenario for 2030 'Sustainable Transition'. For the NEP2030C, the TYNDP
-*Vision 2030 DG* has been chosen, for NEP2030C *VisionEU* has been used.
+*Vision 2030 DG* has been chosen, for NEP2030A *VisionEU* has been used.
 
 
 ## Conventional generation
 
-* Generation capacities are based on for the Vision 2030DG and 2030 EUCO of the TYNDP2018 for neigbouring countries
+* Generation capacities are based on for the Vision 2030DG and 2030 EUCO of
+the TYNDP2018 for neigbouring countries
 * German generation is derived from the NEP2030 scenarios
 * Efficiencies are based on own assumptions for non-german countries. However,
 the data of the TYNDP2018 has been used as a foundation. For
@@ -104,7 +105,11 @@ reservoirs is modelled based on the inflow timeseries of the Restore2050 project
 
 ## Must Run
 
-CHP Power plant smaller 10MW are modelled as must-run with a seasonal profile.
+* For the NEP2030C scenario, CHP power plants smaller 10MW are modelled as must-run
+with a seasonal profile.
+* For the NEP2030A scenario, > 30 GW installed conventional powerplants are must
+run with the seasonal profile.
+* Must run plants are modelled with marginal cost of zero.
 
 
 
@@ -113,10 +118,11 @@ CHP Power plant smaller 10MW are modelled as must-run with a seasonal profile.
 * [TYNDP2018a](https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP2018/Scenarios%20Data%20Sets/Input%20Data.xlsx)
 * [TYNDP2018b](https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP2018/Scenarios%20Data%20Sets/ENTSO%20Scenario%202018%20Generation%20Capacities.xlsm)
 * [NinjaWind](https://www.renewables.ninja/static/downloads/ninja_europe_wind_v1.1.zip)
-* [NinjaPV]("https://www.renewables.ninja/static/downloads/ninja_europe_pv_v1.1.zip")
+* [NinjaPV](https://www.renewables.ninja/static/downloads/ninja_europe_pv_v1.1.zip)
 * [OPSDa](https://data.open-power-system-data.org/time_series/2018-06-30/time_series_60min_singleindex.csv)
 * [OPSDb](https://data.open-power-system-data.org/conventional_power_plants/2018-12-20/conventional_power_plants_DE.csv)
 * [NEP2019a](https://www.netzentwicklungsplan.de/sites/default/files/paragraphs-files/NEP_2030_V2019_2_Entwurf_Teil1.pdf)
 * [NEP2019b](https://www.netzentwicklungsplan.de/sites/default/files/paragraphs-files/Kraftwerksliste_%C3%9CNB_Entwurf_Szenariorahmen_2030_V2019_0_0.xlsx)
 * [Restore2050](https://zenodo.org/record/804244/#.XTcUhfyxUax)
 * [Brown](https://zenodo.org/record/1146666#.XTcTdvyxUaw)
+* [ANGUS](https://github.com/ZNES-datapackages/angus-input-data)
