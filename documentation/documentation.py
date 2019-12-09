@@ -74,7 +74,7 @@ print(tabulate(carrier_cost.reset_index().set_index("scenario"), tablefmt="pipe"
 # technology assumptions
 df = technologies.unstack([2,3]).loc[(slice(None), "efficiency"),"value"].T.reset_index().set_index("carrier")
 df.columns = ["tech", "2030", "2050"]
-print(tabulate(df, tablefmt="pipe", headers="keys"))
+print(tabulate(df.fillna("NA"), tablefmt="pipe", headers="keys"))
 
 # installed capacities
 conv = building.read_elements(
