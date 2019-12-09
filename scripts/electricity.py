@@ -283,14 +283,16 @@ def tyndp_generation_2016(
     technologies = pd.DataFrame(
         # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
         Package(
-            "https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/technology/datapackage.json"
+            "https://raw.githubusercontent.com/ZNES-datapackages/"
+            "angus-input-data/master/technology/datapackage.json"
         )
         .get_resource("technology")
         .read(keyed=True)
     ).set_index(["year", "parameter", "carrier", "tech"])
 
     carrier_package = Package(
-        "https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/carrier/datapackage.json"
+        "https://raw.githubusercontent.com/ZNES-datapackages/"
+        "angus-input-data/master/carrier/datapackage.json"
     )
 
     carrier_cost = (
@@ -586,8 +588,12 @@ def DE_nep_conventional(
         directory=os.path.join(datapackage_dir, "data", "sequences"),
     )
 
-    pp = list(set([i for i in pp.values if not pd.isnull(i)]))
-    df = sq.loc[pp]
+
+    pp_not_null = list(set([i for i in pp.values if not pd.isnull(i)]))
+    pp_index = [i for i in pp_not_null if i in sq.index]
+
+    # all existing power plants
+    df = sq.loc[pp_index]
 
     cond1 = df["country_code"] == "DE"
     cond2 = df["fuel"].isin(["Hydro"])
@@ -596,6 +602,11 @@ def DE_nep_conventional(
     )
 
     df = df.loc[cond1 & ~cond2 & ~cond3, :].copy()
+
+    # all planned or in construction
+    df_new = nep.loc[(nep["Status 31.12.2016"] == "In Bau") |
+                      (nep["Status 31.12.2016"] == "In Planung"), :]
+
 
     mapper = {
         ("Biomass and biogas", "Steam turbine"): ("biomass", "st"),
@@ -859,14 +870,16 @@ def ehighway_generation(
     technologies = pd.DataFrame(
         # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
         Package(
-            "https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/technology/datapackage.json"
+            "https://raw.githubusercontent.com/ZNES-datapackages/"
+            "angus-input-data/master/technology/datapackage.json"
         )
         .get_resource("technology")
         .read(keyed=True)
     ).set_index(["year", "parameter", "carrier", "tech"])
 
     carrier_package = Package(
-        "https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/carrier/datapackage.json"
+        "https://raw.githubusercontent.com/ZNES-datapackages/"
+        "angus-input-data/master/carrier/datapackage.json"
     )
 
     carrier_cost = (
