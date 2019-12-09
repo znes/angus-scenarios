@@ -3,7 +3,7 @@ import os
 import multiprocessing as mp
 
 from oemof.tabular import datapackage
-import bus, capacity_factors, electricity, grid, biomass, load, hydro, manipulate
+import bus, capacity_factors, electricity, grid, biomass, load, hydro, manipulate, heat
 from fuchur.cli import Scenario
 from prepare import raw_data_path
 
@@ -31,7 +31,6 @@ def build(config):
 
     # must come before generation of others because later manipulation below...
     hydro.generation(config, datapackage_dir, raw_data_path)
-
 
     if config["scenario"]["year"] > 2035:
         grid.ehighway(
@@ -139,6 +138,14 @@ def build(config):
         datapackage_dir,
         raw_data_path,
     )
+
+
+    if config["buses"].get("heat"):
+        heat.load(
+            config["buses"]["heat"],
+            config["scenario"]["weather_year"],
+            datapackage_dir,
+            raw_data_path)
 
 
     datapackage.building.infer_metadata(
