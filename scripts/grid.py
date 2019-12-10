@@ -138,7 +138,7 @@ def ehighway(
     )
 
 
-def tyndp(buses, grid_loss, datapackage_dir, raw_data_path):
+def tyndp(buses, grid_loss, scenario, datapackage_dir, raw_data_path):
     """
     Parameter
     ---------
@@ -147,6 +147,8 @@ def tyndp(buses, grid_loss, datapackage_dir, raw_data_path):
     grid_loss: numeric
         Loss for transshipment model (oemof.tabular.facades.Link component
         attribute)
+    scenario: str
+        Scenario name (e.g. 2040GCA)
     datapackage_dir: string
         Directory for tabular resource
     raw_data_path: string
@@ -158,9 +160,14 @@ def tyndp(buses, grid_loss, datapackage_dir, raw_data_path):
         directory=raw_data_path,
     )
 
+    mapper = {
+        "2030C": ["CBA Capacities", "Unnamed: 3"],
+        "2040GCA": ["Unnamed: 8", "Unnamed: 9"]
+        }
+
     df = pd.read_excel(
         filepath, sheet_name="NTC", index_col=[0], skiprows=[1, 2]
-    )[["CBA Capacities", "Unnamed: 3"]]
+    )[mapper[scenario]]
     df.columns = ["=>", "<="]
     df["links"] = df.index.astype(str)
     df["links"] = df["links"].apply(

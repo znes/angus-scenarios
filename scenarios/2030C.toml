@@ -7,7 +7,7 @@ DE_system = "C2030" # german data (generation, load, etc.)
 EU_load = "2030DG" # european load
 EU_generation = "2030 DG" # european generation mix based on TYNDP
 cost = "2030C" # carrier cost (gas, co2, etc.)
-grid = ""
+grid = "2030C"
 year = 2030
 weather_year = 2012 # 2011, 2012
 grid_loss = 0.05
@@ -44,3 +44,7 @@ biomass = [
   "PL",
   "SE"
 ]
+
+[buses.heat]
+central = ["DE"]
+decentral = ["DE"]

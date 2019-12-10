@@ -32,8 +32,7 @@ def build(config):
     # must come before generation of others because later manipulation below...
     hydro.generation(config, datapackage_dir, raw_data_path)
 
-
-    if config["scenario"]["year"] > 2035:
+    if config["scenario"]["year"] == 2050:
         grid.ehighway(
             config["buses"]["electricity"],
             config["scenario"]["year"],
@@ -59,10 +58,35 @@ def build(config):
             raw_data_path,
         )
 
+    elif config["scenario"]["year"] == 2040:
+            grid.tyndp(
+                config["buses"]["electricity"],
+                config["scenario"]["grid_loss"],
+                config["scenario"]["grid"],
+                datapackage_dir,
+                raw_data_path,
+            )
+
+            load.tyndp(
+                config["buses"]["electricity"],
+                config["scenario"]["EU_load"],
+                datapackage_dir,
+                raw_data_path,
+            )
+
+            electricity.tyndp_generation_2018(
+                config["buses"]["electricity"],
+                config["scenario"]["EU_generation"],
+                config["scenario"]["cost"],
+                config["scenario"]["year"],
+                datapackage_dir,
+                raw_data_path,
+            )
     else:
         grid.tyndp(
             config["buses"]["electricity"],
             config["scenario"]["grid_loss"],
+            config["scenario"]["grid"],
             datapackage_dir,
             raw_data_path,
         )
@@ -78,6 +102,7 @@ def build(config):
             set(config["buses"]["electricity"]) - set(["DE"]),
             config["scenario"]["EU_generation"],
             config["scenario"]["cost"],
+            config["scenario"]["year"],
             datapackage_dir,
             raw_data_path,
         )
@@ -96,6 +121,7 @@ def build(config):
             cost_scenario=config["scenario"]["cost"],
         )
 
+    # the same for all scenarios
     load.opsd_profile(
         config["buses"]["electricity"],
         config["scenario"]["weather_year"],
@@ -165,10 +191,10 @@ def build(config):
 
 
 if __name__ == "__main__":
-    scenarios= [
-        Scenario.from_path(os.path.join('scenarios', s))
-        for s in os.listdir('scenarios')]
-    p = mp.Pool(10)
-    p.map(build, scenarios)
+    # scenarios= [
+    #     Scenario.from_path(os.path.join('scenarios', s))
+    #     for s in os.listdir('scenarios')]
+    # p = mp.Pool(10)
+    # p.map(build, scenarios)
 
-    #build(Scenario.from_path(os.path.join("scenarios", "2030C.toml")))
+    build(Scenario.from_path(os.path.join("scenarios", "2040GCA.toml")))

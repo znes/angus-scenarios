@@ -35,7 +35,7 @@ scenario for 2030 'Sustainable Transition'. (For the NEP2030C, the TYNDP
 
 ## Conventional generation
 
-For Germany the installed capacities from the
+For Germany installed capacities of the
 NEPScenario 2019 C are implemented. The capacities generation of german
 neigbouring countries are based on the  *Vision 2030DG* of the TYNDP2018. 2050
 capacities are derived from the E-Highway scenario *100% RE*.
@@ -68,13 +68,10 @@ the data of the TYNDP2018 has been used as a foundation.
 | lithium   | battery  |   0.85 | 0.92   |
 | air       | caes     |   0.57 | 0.57   |
 
-
-
-
 For germany the OPSD powerplant register is used to calculate efficiencies for
 the conventional powerplants in 2030.
 
-* Costs are based on the NEP2030C and TYNDP2018 cost assumptions:
+* Commodity costs are based on the NEP2030C and TYNDP2018 cost assumptions:
 
 | scenario   | carrier   |   value | unit    | source         |
 |:-----------|:----------|--------:|:--------|:---------------|
@@ -102,6 +99,9 @@ the conventional powerplants in 2030.
 | climate    | oil       |  48.3   | EUR/MWh | NEP2019        |
 | climate    | uranium   |   1.692 | EUR/MWh | TYNDP2016A     |
 | climate    | waste     |   6.7   | EUR/MWh | IRENA2015      |
+
+The availability factor (avf) of technologies and variable
+operation and maintenance cost (vom) are the same for all scenarios.
 
 
 ## Renewables

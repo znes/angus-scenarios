@@ -73,17 +73,18 @@ print(tabulate(carrier_cost.reset_index().set_index("scenario"), tablefmt="pipe"
 
 # technology assumptions
 df = technologies.unstack([2,3]).loc[(slice(None), "efficiency"),"value"].T.reset_index().set_index("carrier")
-df.columns = ["tech", "2030", "2050"]
+
+df.columns = ["tech", "2030", "2040", "2050"]
 print(tabulate(df.fillna("NA"), tablefmt="pipe", headers="keys"))
 
 # installed capacities
 conv = building.read_elements(
     "/home/admin/projects/angus-scenarios/"
-    "datapackages/2030C/data/elements/dispatchable.csv")
+    "datapackages/2040GCA/data/elements/dispatchable.csv")
 
 renew = building.read_elements(
     "/home/admin/projects/angus-scenarios/"
-    "datapackages/2030C/data/elements/volatile.csv")
+    "datapackages/2040GCA/data/elements/volatile.csv")
 
 all = pd.concat([conv, renew], sort=True)
 all.reset_index(inplace=True)

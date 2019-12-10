@@ -1,0 +1,45 @@
+title = "Scenario for 2040"
+description = "Based on TYNDP 2018 scenario Global Climate Action (GCA)"
+name = "2040GCA"
+
+[scenario]
+EU_load = "2040GCA" # european load
+EU_generation = "2040 GCA" # european generation mix based on TYNDP
+cost = "2040GCA" # carrier cost (gas, co2, etc.)
+grid = "2040GCA"
+year = 2040
+weather_year = 2012 # 2011, 2012
+grid_loss = 0.05
+renewable_profiles = "ninja" # emhires
+
+[buses]
+
+electricity = [
+    "AT",
+    "BE",
+    "CH",
+    "CZ",
+    "DE",
+    "DK",
+    "FR",
+    "IT",
+    "NL",
+    "NO",
+    "PL",
+    "SE"
+]
+
+biomass = [
+  "AT",
+  "BE",
+  "CH",
+  "CZ",
+  "DE",
+  "DK",
+  "FR",
+  "IT",
+  "NL",
+  "NO",
+  "PL",
+  "SE"
+]
