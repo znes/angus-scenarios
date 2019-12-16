@@ -11,6 +11,7 @@ from oemof.tabular.datapackage import aggregation, processing
 from oemof.tabular.tools import postprocessing as pp
 import oemof.outputlib as outputlib
 
+from pyomo.environ import Expression
 
 def compute(
     datapackage, solver="gurobi", temporal_resolution=1, emission_limit=None
@@ -55,6 +56,21 @@ def compute(
     if emission_limit is not None:
         constraints.emission_limit(m, limit=emission_limit)
 
+    flows = {}
+    for (i, o) in m.flows:
+        if hasattr(m.flows[i, o], "emission_factor"):
+            flows[(i, o)] = m.flows[i, o]
+
+    # add emission as expression to model
+    setattr(m, "total_emission", Expression(
+        expr=sum(m.flow[inflow, outflow, t]
+                 * m.timeincrement[t]
+                 * getattr(flows[inflow, outflow], "emission_factor")
+                 for (inflow, outflow) in flows
+                 for t in m.TIMESTEPS)))
+
+
+
     m.receive_duals()
 
     m.solve(solver)
@@ -69,7 +85,9 @@ def compute(
     # TODO: This is not model stats -> move somewhere else!
     modelstats["temporal_resolution"] = temporal_resolution
     modelstats["emission_limit"] = emission_limit
+    modelstats["total_emission"] = m.total_emission()
 
+    
     with open(os.path.join(scenario_path, "modelstats.json"), "w") as outfile:
         json.dump(modelstats, outfile, indent=4)
 
@@ -129,7 +147,7 @@ def compute(
 
 
 if __name__ == "__main__":
-    # compute('base-a', 'gurobi')
-    datapackages = [d for d in os.listdir("datapackages")]
-    p = mp.Pool(1)
-    p.map(compute, datapackages)
+    compute('ANGUS2030-DE', 'gurobi')
+    # datapackages = [d for d in os.listdir("datapackages")]
+    # p = mp.Pool(1)
+    # p.map(compute, datapackages)

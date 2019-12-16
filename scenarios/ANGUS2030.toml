@@ -1,9 +1,9 @@
-title = "Scenario for NEP 2030C"
-description = "Based on NEP2019 Scenario 2030C"
-name = "2030C"
+title = "ANGUS2030"
+description = "Scenario for ANGUS project, year 2030 (based on NEP2019 2030C)"
+name = "ANGUS2030"
 
 [scenario]
-DE_system = "C2030" # german data (generation, load, etc.)
+DE_system = "ANGUS2030" # german data (generation, load, etc.)
 EU_load = "2030DG" # european load
 EU_generation = "2030 DG" # european generation mix based on TYNDP
 cost = "2030C" # carrier cost (gas, co2, etc.)
