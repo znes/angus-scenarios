@@ -44,26 +44,20 @@ color = {
 
 color_dict = {name: colors.to_hex(color) for name, color in color.items()}
 
+
 def filling_level_plot(scenario, datapath="results"):
     """
     """
 
     df = pd.read_csv(
-        os.path.join(
-            datapath,
-            scenario,
-            "output",
-            "filling_levels.csv",
-        ),
+        os.path.join(datapath, scenario, "output", "filling_levels.csv"),
         index_col=[0],
         parse_dates=True,
     )
     # create plot
     layout = go.Layout(
         barmode="stack",
-        title="Filling levels for scenario {}".format(
-        scenario
-        ),
+        title="Filling levels for scenario {}".format(scenario),
         yaxis=dict(
             title="Energy in MWh",
             titlefont=dict(size=16, color="rgb(107, 107, 107)"),
@@ -72,20 +66,24 @@ def filling_level_plot(scenario, datapath="results"):
     )
 
     data = []
-    for storage in ["DE-air-caes", "DE-lithium-battery", "DE-hydro-phs",
-                    "DE-hydro-reservoir", "DE-lithium-battery"]:
-            data.append(
-                go.Scatter(
-                    x=df.index,
-                    y=df[storage],
-                    name=storage,
-                    #stackgroup="positive",
-                    line=dict(width=2, color=color_dict.get(storage[3:], "black")),
-                )
+    for storage in [
+        "DE-air-caes",
+        "DE-lithium-battery",
+        "DE-hydro-phs",
+        "DE-hydro-reservoir",
+        "DE-lithium-battery",
+    ]:
+        data.append(
+            go.Scatter(
+                x=df.index,
+                y=df[storage],
+                name=storage,
+                # stackgroup="positive",
+                line=dict(width=2, color=color_dict.get(storage[3:], "black")),
             )
+        )
 
     return {"data": data, "layout": layout}
-
 
 
 def hourly_plot(scenario, bus, datapath="results"):

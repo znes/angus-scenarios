@@ -9,7 +9,6 @@ import pandas as pd
 from oemof.tabular.datapackage import building
 
 
-
 def _get_hydro_inflow(inflow_dir=None):
     """ Adapted from:
 

@@ -13,6 +13,7 @@ import oemof.outputlib as outputlib
 
 from pyomo.environ import Expression
 
+
 def compute(
     datapackage, solver="gurobi", temporal_resolution=1, emission_limit=None
 ):
@@ -62,14 +63,19 @@ def compute(
             flows[(i, o)] = m.flows[i, o]
 
     # add emission as expression to model
-    setattr(m, "total_emission", Expression(
-        expr=sum(m.flow[inflow, outflow, t]
-                 * m.timeincrement[t]
-                 * getattr(flows[inflow, outflow], "emission_factor")
-                 for (inflow, outflow) in flows
-                 for t in m.TIMESTEPS)))
-
-
+    setattr(
+        m,
+        "total_emission",
+        Expression(
+            expr=sum(
+                m.flow[inflow, outflow, t]
+                * m.timeincrement[t]
+                * getattr(flows[inflow, outflow], "emission_factor")
+                for (inflow, outflow) in flows
+                for t in m.TIMESTEPS
+            )
+        ),
+    )
 
     m.receive_duals()
 
@@ -87,7 +93,6 @@ def compute(
     modelstats["emission_limit"] = emission_limit
     modelstats["total_emission"] = m.total_emission()
 
-    
     with open(os.path.join(scenario_path, "modelstats.json"), "w") as outfile:
         json.dump(modelstats, outfile, indent=4)
 
@@ -147,7 +152,7 @@ def compute(
 
 
 if __name__ == "__main__":
-    compute('ANGUS2030-DE', 'gurobi')
+    compute("ANGUS2030-DE", "gurobi")
     # datapackages = [d for d in os.listdir("datapackages")]
     # p = mp.Pool(1)
     # p.map(compute, datapackages)

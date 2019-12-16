@@ -50,7 +50,7 @@ def build(config):
         scenario_name=config["scenario"]["DE_system"],
         scenario_year=config["scenario"]["year"],
         cost_scenario=config["scenario"]["cost"],
-        technologies=technologies
+        technologies=technologies,
     )
 
     if config["scenario"]["year"] == 2050:
@@ -83,30 +83,29 @@ def build(config):
         )
 
     elif config["scenario"]["year"] in [2030, 2040]:
-            grid.tyndp(
-                config["buses"]["electricity"],
-                config["scenario"]["grid_loss"],
-                config["scenario"]["grid"],
-                datapackage_dir,
-                raw_data_path,
-            )
+        grid.tyndp(
+            config["buses"]["electricity"],
+            config["scenario"]["grid_loss"],
+            config["scenario"]["grid"],
+            datapackage_dir,
+            raw_data_path,
+        )
 
-            load.tyndp(
-                set(config["buses"]["electricity"]) - set(["DE"]),
-                config["scenario"]["EU_load"],
-                datapackage_dir,
-                raw_data_path,
-            )
+        load.tyndp(
+            set(config["buses"]["electricity"]) - set(["DE"]),
+            config["scenario"]["EU_load"],
+            datapackage_dir,
+            raw_data_path,
+        )
 
-            electricity.tyndp_generation_2018(
-                set(config["buses"]["electricity"]) - set(["DE"]),
-                config["scenario"]["EU_generation"],
-                config["scenario"]["cost"],
-                config["scenario"]["year"],
-                datapackage_dir,
-                raw_data_path,
-            )
-
+        electricity.tyndp_generation_2018(
+            set(config["buses"]["electricity"]) - set(["DE"]),
+            config["scenario"]["EU_generation"],
+            config["scenario"]["cost"],
+            config["scenario"]["year"],
+            datapackage_dir,
+            raw_data_path,
+        )
 
     # the same for all scenarios
     load.opsd_profile(
@@ -146,8 +145,6 @@ def build(config):
 
     electricity.shortage(datapackage_dir)
 
-
-
     datapackage.building.infer_metadata(
         package_name=config["name"],
         foreign_keys={
@@ -172,10 +169,11 @@ def build(config):
 
 
 if __name__ == "__main__":
-    scenarios= [
-        Scenario.from_path(os.path.join('scenarios', s))
-        for s in os.listdir('scenarios')]
+    scenarios = [
+        Scenario.from_path(os.path.join("scenarios", s))
+        for s in os.listdir("scenarios")
+    ]
     p = mp.Pool(10)
     p.map(build, scenarios)
 
-    #build(Scenario.from_path(os.path.join("scenarios", "ANGUS2050.toml")))
+    # build(Scenario.from_path(os.path.join("scenarios", "ANGUS2050.toml")))
