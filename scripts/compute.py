@@ -63,25 +63,22 @@ def compute(
             flows[(i, o)] = m.flows[i, o]
 
     # add emission as expression to model
-    setattr(
-        m,
-        "total_emission",
-        Expression(
-            expr=sum(
-                m.flow[inflow, outflow, t]
-                * m.timeincrement[t]
-                * getattr(flows[inflow, outflow], "emission_factor")
-                for (inflow, outflow) in flows
-                for t in m.TIMESTEPS
-            )
-        ),
-    )
+    BUSES = [b for b in es.nodes if isinstance(b, Bus)]
+    def emission_rule(m, b, t):
+        expr = sum(m.flow[inflow, outflow, t]
+               * m.timeincrement[t]
+               * getattr(flows[inflow, outflow], "emission_factor", 0)
+               for (inflow, outflow) in flows if outflow is b
+              )
+        return expr
+    m.emissions = Expression(BUSES, m.TIMESTEPS, rule=emission_rule)
 
     m.receive_duals()
 
     m.solve(solver)
 
     m.results = m.results()
+
 
     pp.write_results(m, output_path)
 
@@ -91,7 +88,6 @@ def compute(
     # TODO: This is not model stats -> move somewhere else!
     modelstats["temporal_resolution"] = temporal_resolution
     modelstats["emission_limit"] = emission_limit
-    modelstats["total_emission"] = m.total_emission()
 
     with open(os.path.join(scenario_path, "modelstats.json"), "w") as outfile:
         json.dump(modelstats, outfile, indent=4)
@@ -149,6 +145,11 @@ def compute(
     summary["export"] = imports[imports < 0].sum() / 1e6 * temporal_resolution
 
     summary.to_csv(os.path.join(scenario_path, "summary.csv"))
+
+    emissions = pd.Series(
+        {key: value() for key,value in m.emissions.items()}).unstack().T
+    emissions.to_csv(os.path.join(scenario_path, "emissions.csv"))
+
 
 
 if __name__ == "__main__":

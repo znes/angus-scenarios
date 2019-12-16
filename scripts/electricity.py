@@ -194,7 +194,15 @@ def tyndp_generation_2018(
                             (2050, "avf", carrier, tech), "value"
                         ],
                         "tech": tech,
-                        "output_parameters": json.dumps({}),
+                        "output_parameters": json.dumps(
+                            {
+                                "emission_factor": float(
+                                    emission_factors.at[carrier, "value"] /
+                                technologies.loc[
+                                    (scenario_year, "efficiency", carrier, tech), "value"
+                                ])
+                            }
+                        )
                     }
                 )
 
@@ -622,7 +630,10 @@ def german_energy_system(
                     "output_parameters": json.dumps(
                         {
                             "emission_factor": float(
-                                emission_factors.at[carrier, "value"]
+                                emission_factors.at[carrier, "value"] /
+                            technologies.loc[
+                                (scenario_year, "efficiency", carrier, tech), "value"
+                            ]
                             )
                         }
                     ),
@@ -846,7 +857,10 @@ def ehighway_generation(
                         "output_parameters": json.dumps(
                             {
                                 "emission_factor": float(
-                                    emission_factors.at[carrier, "value"]
+                                    emission_factors.at[carrier, "value"] /
+                                technologies.loc[
+                                    (2050, "efficiency", carrier, tech), "value"
+                                ]
                                 )
                             }
                         ),
