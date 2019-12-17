@@ -46,5 +46,5 @@ biomass = [
 ]
 
 [buses.heat]
-central = ["DE"]
+#central = ["DE"]
 decentral = ["DE"]

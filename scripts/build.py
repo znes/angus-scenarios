@@ -5,7 +5,7 @@ import pandas as pd
 from datapackage import Package
 
 from oemof.tabular import datapackage
-import bus, capacity_factors, electricity, grid, biomass, load, hydro
+import bus, capacity_factors, electricity, grid, biomass, load, hydro, heat
 from fuchur.cli import Scenario
 from prepare import raw_data_path
 
@@ -145,6 +145,17 @@ def build(config):
 
     electricity.shortage(datapackage_dir)
 
+
+    if config["buses"].get("heat"):
+        heat.german_heat_system(
+            config["buses"]["heat"],
+            config["scenario"]["weather_year"],
+            config["scenario"]["DE_system"],
+            config["scenario"]["year"],
+            datapackage_dir,
+            raw_data_path)
+
+
     datapackage.building.infer_metadata(
         package_name=config["name"],
         foreign_keys={
@@ -152,6 +163,8 @@ def build(config):
                 "volatile",
                 "dispatchable",
                 "storage",
+                "heat_storage",
+                "heat_load",
                 "load",
                 "ror",
                 "reservoir",
@@ -160,8 +173,8 @@ def build(config):
                 "shortage",
                 "commodity",
             ],
-            "profile": ["load", "volatile", "ror", "reservoir"],
-            "from_to_bus": ["link", "conversion"],
+            "profile": ["load", "volatile", "ror", "reservoir", "heat_load"],
+            "from_to_bus": ["link", "conversion", "heatpump"],
             "chp": [],
         },
         path=datapackage_dir,
@@ -169,11 +182,11 @@ def build(config):
 
 
 if __name__ == "__main__":
-    scenarios = [
-        Scenario.from_path(os.path.join("scenarios", s))
-        for s in os.listdir("scenarios")
-    ]
-    p = mp.Pool(10)
-    p.map(build, scenarios)
+    # scenarios = [
+    #     Scenario.from_path(os.path.join("scenarios", s))
+    #     for s in os.listdir("scenarios")
+    # ]
+    # p = mp.Pool(10)
+    # p.map(build, scenarios)
 
-    # build(Scenario.from_path(os.path.join("scenarios", "ANGUS2050.toml")))
+    build(Scenario.from_path(os.path.join("scenarios", "ANGUS2030-DE.toml")))

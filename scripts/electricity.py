@@ -533,7 +533,7 @@ def german_energy_system(
                 "https://raw.githubusercontent.com/ZNES-datapackages/"
                 "angus-input-data/master/capacities/datapackage.json"
             )
-            .get_resource("german-energy-system")
+            .get_resource("german-electricity-system")
             .read(keyed=True)
         )
         .set_index(["scenario", "year", "carrier", "tech"])
