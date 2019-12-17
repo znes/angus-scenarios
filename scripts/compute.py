@@ -153,7 +153,7 @@ def compute(
 
 
 if __name__ == "__main__":
-    compute("ANGUS2030-DE", "gurobi")
-    # datapackages = [d for d in os.listdir("datapackages")]
-    # p = mp.Pool(1)
-    # p.map(compute, datapackages)
+    # compute("ANGUS2030-DE", "gurobi")
+    datapackages = [d for d in os.listdir("datapackages")]
+    p = mp.Pool(1)
+    p.map(compute, datapackages)
