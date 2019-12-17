@@ -147,9 +147,11 @@ def build(config):
 
 
     if config["buses"].get("heat"):
-        heat.load(
+        heat.german_heat_system(
             config["buses"]["heat"],
             config["scenario"]["weather_year"],
+            config["scenario"]["DE_system"],
+            config["scenario"]["year"],
             datapackage_dir,
             raw_data_path)
 
@@ -161,6 +163,8 @@ def build(config):
                 "volatile",
                 "dispatchable",
                 "storage",
+                "heat_storage",
+                "heat_load",
                 "load",
                 "ror",
                 "reservoir",
@@ -169,8 +173,8 @@ def build(config):
                 "shortage",
                 "commodity",
             ],
-            "profile": ["load", "volatile", "ror", "reservoir"],
-            "from_to_bus": ["link", "conversion"],
+            "profile": ["load", "volatile", "ror", "reservoir", "heat_load"],
+            "from_to_bus": ["link", "conversion", "heatpump"],
             "chp": [],
         },
         path=datapackage_dir,
@@ -178,11 +182,11 @@ def build(config):
 
 
 if __name__ == "__main__":
-    scenarios = [
-        Scenario.from_path(os.path.join("scenarios", s))
-        for s in os.listdir("scenarios")
-    ]
-    p = mp.Pool(10)
-    p.map(build, scenarios)
+    # scenarios = [
+    #     Scenario.from_path(os.path.join("scenarios", s))
+    #     for s in os.listdir("scenarios")
+    # ]
+    # p = mp.Pool(10)
+    # p.map(build, scenarios)
 
-    # build(Scenario.from_path(os.path.join("scenarios", "ANGUS2050.toml")))
+    build(Scenario.from_path(os.path.join("scenarios", "ANGUS2030-DE.toml")))
