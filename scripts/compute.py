@@ -11,6 +11,8 @@ from oemof.tabular.datapackage import aggregation, processing
 from oemof.tabular.tools import postprocessing as pp
 import oemof.outputlib as outputlib
 
+from pyomo.environ import Expression
+
 
 def compute(
     datapackage, solver="gurobi", temporal_resolution=1, emission_limit=None
@@ -55,11 +57,28 @@ def compute(
     if emission_limit is not None:
         constraints.emission_limit(m, limit=emission_limit)
 
+    flows = {}
+    for (i, o) in m.flows:
+        if hasattr(m.flows[i, o], "emission_factor"):
+            flows[(i, o)] = m.flows[i, o]
+
+    # add emission as expression to model
+    BUSES = [b for b in es.nodes if isinstance(b, Bus)]
+    def emission_rule(m, b, t):
+        expr = sum(m.flow[inflow, outflow, t]
+               * m.timeincrement[t]
+               * getattr(flows[inflow, outflow], "emission_factor", 0)
+               for (inflow, outflow) in flows if outflow is b
+              )
+        return expr
+    m.emissions = Expression(BUSES, m.TIMESTEPS, rule=emission_rule)
+
     m.receive_duals()
 
     m.solve(solver)
 
     m.results = m.results()
+
 
     pp.write_results(m, output_path)
 
@@ -127,9 +146,14 @@ def compute(
 
     summary.to_csv(os.path.join(scenario_path, "summary.csv"))
 
+    emissions = pd.Series(
+        {key: value() for key,value in m.emissions.items()}).unstack().T
+    emissions.to_csv(os.path.join(scenario_path, "emissions.csv"))
+
+
 
 if __name__ == "__main__":
-    # compute('base-a', 'gurobi')
-    datapackages = [d for d in os.listdir("datapackages")]
-    p = mp.Pool(1)
-    p.map(compute, datapackages)
+    compute("ANGUS2030-DE", "gurobi")
+    # datapackages = [d for d in os.listdir("datapackages")]
+    # p = mp.Pool(1)
+    # p.map(compute, datapackages)

@@ -128,7 +128,8 @@ def opsd_profile(
     """
 
     filepath = building.download_data(
-        "https://data.open-power-system-data.org/time_series/2018-06-30/time_series_60min_singleindex.csv",
+        "https://data.open-power-system-data.org/time_series/2018-06-30/"
+        "time_series_60min_singleindex.csv",
         directory=raw_data_path,
     )
 

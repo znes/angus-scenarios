@@ -1,0 +1,13 @@
+title = "ANGUS2040"
+description = "Scenario for ANGUS project, year 2040 (based on TYNDP2018, GCA)."
+name = "ANGUS2040"
+
+parents = ["scenarios/ANGUS2030.toml"]
+
+[scenario]
+DE_system = "ANGUS2040"
+EU_load = "2040GCA" # european load
+EU_generation = "2040 GCA" # european generation mix based on TYNDP
+cost = "2040GCA" # carrier cost (gas, co2, etc.)
+grid = "2040GCA"
+year = 2040

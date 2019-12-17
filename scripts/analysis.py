@@ -11,7 +11,7 @@ from plots import (
     price_line_plot,
     price_scatter_plot,
     merit_order_plot,
-    filling_level_plot
+    filling_level_plot,
 )
 
 results = [r for r in os.listdir("results") if "plots" not in r]
@@ -130,7 +130,6 @@ offline.plot(
     ),
     auto_open=False,
 )
-
 
 
 for s in results:

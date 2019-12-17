@@ -14,7 +14,7 @@ from oemof.tabular.datapackage import building
 
 
 def tyndp_generation_2018(
-    buses, vision, scenario, datapackage_dir, raw_data_path
+    buses, vision, scenario, scenario_year, datapackage_dir, raw_data_path
 ):
     """Extracts TYNDP2018 generation data and writes to datapackage for oemof
     tabular usage
@@ -24,14 +24,16 @@ def tyndp_generation_2018(
     buses: list
         List with buses to extract (Names in country codes)
     vision: str
-        TYNDP Vision (one of vision1, vision2, vision3, vision4)
+        TYNDP Vision (one of 2040 GCA, 2030 DG, etc.)
     scenario: str
         Name of scenario to be used for cost assumptions etc
+    scenario_year: str
+        Year of scenario
     datapackage_dir: string
         Directory for tabular resource
     raw_data_path: string
-        Path where raw data file `ENTSO%20Scenario%202018%20Generation%20Capacities.xlsm`
-        is located
+        Path where raw data file
+        `ENTSO%20Scenario%202018%20Generation%20Capacities.xlsm` is located
     """
 
     filepath = building.download_data(
@@ -62,17 +64,17 @@ def tyndp_generation_2018(
     ]
 
     newnames = [
-        "biomass-ce",
-        "gas-gt",
+        "biomass-st",
+        "gas-ocgt",
         "coal-st",
         "hydro-phs",
         "hydro-ror",
         "hydro-rsv",
         "lignite-st",
         "uranium-st",
-        "oil-st",
-        "mixed-gt",
-        "other_res",
+        "oil-ocgt",
+        "mixed-st",
+        "other-res",
         "solar-thermal",
         "solar-pv",
         "wind-onshore",
@@ -80,8 +82,8 @@ def tyndp_generation_2018(
     ]
 
     df = df.rename(columns=dict(zip(colnames, newnames)))
-    df["biomass-ce"] += df.other_res
-    df.drop(["other_res"], axis=1, inplace=True)
+    df["biomass-st"] += df["other-res"]
+    df.drop(["other-res"], axis=1, inplace=True)
     df.index.name = "zones"
     df.reset_index(inplace=True)
     df = pd.concat(
@@ -100,14 +102,16 @@ def tyndp_generation_2018(
     technologies = pd.DataFrame(
         # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
         Package(
-            "https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/technology/datapackage.json"
+            "https://raw.githubusercontent.com/ZNES-datapackages/"
+            "angus-input-data/master/technology/datapackage.json"
         )
         .get_resource("technology")
         .read(keyed=True)
     ).set_index(["year", "parameter", "carrier", "tech"])
 
     carrier_package = Package(
-        "https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/carrier/datapackage.json"
+        "https://raw.githubusercontent.com/ZNES-datapackages/"
+        "angus-input-data/master/carrier/datapackage.json"
     )
 
     carrier_cost = (
@@ -145,21 +149,29 @@ def tyndp_generation_2018(
                     "capacity": df.at[b, col],
                     "type": "volatile",
                     "profile": profile,
+                    "output_parameters": json.dumps({}),
                 }
 
                 element.update(e)
 
-            elif carrier in ["gas", "coal", "lignite", "oil", "uranium"]:
+            elif carrier in [
+                "gas",
+                "coal",
+                "lignite",
+                "oil",
+                "uranium",
+                "mixed",
+            ]:
                 marginal_cost = float(
                     carrier_cost.at[(scenario, carrier), "value"]
                     + emission_factors.at[carrier, "value"]
                     * carrier_cost.at[(scenario, "co2"), "value"]
                 ) / float(
                     technologies.loc[
-                        (2030, "efficiency", carrier, tech), "value"
+                        (scenario_year, "efficiency", carrier, tech), "value"
                     ]
                 ) + float(
-                    technologies.loc[(2030, "vom", carrier, tech), "value"]
+                    technologies.loc[(2050, "vom", carrier, tech), "value"]
                 )
 
                 element.update(
@@ -170,7 +182,8 @@ def tyndp_generation_2018(
                         ],
                         "efficiency": float(
                             technologies.loc[
-                                (2030, "efficiency", carrier, tech), "value"
+                                (scenario_year, "efficiency", carrier, tech),
+                                "value",
                             ]
                         ),
                         "capacity": df.at[b, col],
@@ -178,26 +191,18 @@ def tyndp_generation_2018(
                         "type": "dispatchable",
                         "marginal_cost": marginal_cost,
                         "profile": technologies.loc[
-                            (2030, "avf", carrier, tech), "value"
+                            (2050, "avf", carrier, tech), "value"
                         ],
                         "tech": tech,
-                        "output_parameters": json.dumps({}),
-                    }
-                )
-
-            elif carrier == "mixed":
-                element.update(
-                    {
-                        "carrier": carrier,
-                        "capacity": df.at[b, col],
-                        "bus": b + "-electricity",
-                        "type": "dispatchable",
-                        "output_parameters": json.dumps({}),
-                        "marginal_cost": 0,
-                        "tech": "gt",
-                        "profile": technologies.loc[
-                            (2030, "avf", carrier, "gt"), "value"
-                        ],
+                        "output_parameters": json.dumps(
+                            {
+                                "emission_factor": float(
+                                    emission_factors.at[carrier, "value"] /
+                                technologies.loc[
+                                    (scenario_year, "efficiency", carrier, tech), "value"
+                                ])
+                            }
+                        )
                     }
                 )
 
@@ -208,215 +213,16 @@ def tyndp_generation_2018(
                         "capacity": df.at[b, col],
                         "to_bus": b + "-electricity",
                         "efficiency": technologies.loc[
-                            (2030, "efficiency", carrier, "ce"), "value"
+                            (scenario_year, "efficiency", carrier, "st"),
+                            "value",
                         ],
                         "from_bus": b + "-biomass-bus",
                         "type": "conversion",
+                        "output_parameters": json.dumps({}),
                         "carrier_cost": float(
                             carrier_cost.at[(scenario, carrier), "value"]
                         ),
                         "tech": tech,
-                    }
-                )
-
-    df = pd.DataFrame.from_dict(elements, orient="index")
-    df = df[df.capacity != 0]
-
-    # write elements to CSV-files
-    for element_type in ["dispatchable", "volatile", "conversion"]:
-        building.write_elements(
-            element_type + ".csv",
-            df.loc[df["type"] == element_type].dropna(how="all", axis=1),
-            directory=os.path.join(datapackage_dir, "data", "elements"),
-        )
-
-
-def tyndp_generation_2016(
-    buses, vision, scenario, datapackage_dir, raw_data_path
-):
-    """Extracts TYNDP2016 generation data and writes to datapackage for oemof
-    tabular usage
-
-    Parameters
-    -----------
-    buses: list
-        List with buses to extract (Names in country codes)
-    vision: str
-        TYNDP Vision (one of vision1, vision2, vision3, vision4)
-    scenario: str
-        Name of scenario to be used for cost assumptions etc
-    datapackage_dir: string
-        Directory for tabular resource
-    raw_data_path: string
-        Path where raw data file `e-Highway_database_per_country-08022016.xlsx`
-        is located
-    """
-
-    filepath = building.download_data(
-        "https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP%202016/rgips/"
-        "TYNDP2016%20market%20modelling%20data.xlsx",
-        directory=raw_data_path,
-    )
-    df = pd.read_excel(filepath, sheet_name="NGC")
-
-    visions = {"vision1": 41, "vision2": 80, "vision3": 119, "vision4": 158}
-    # 41:77 for 2030 vision 1
-    # 80:116 for 2030 vision 2 or from ehighway scenario?
-    # ....
-    x = df.iloc[visions[vision] : visions[vision] + 36]
-    x.columns = x.iloc[0, :]
-    x.drop(x.index[0], inplace=True)
-    x.rename(
-        columns={
-            x.columns[0]: "country",
-            "Hard coal": "coal",
-            "Nuclear": "uranium",
-        },
-        inplace=True,
-    )
-    x.set_index("country", inplace=True)
-    x.dropna(axis=1, how="all", inplace=True)  # drop unwanted cols
-    x["biomass"] = x["Biofuels"] + x["Others RES"]
-    x.drop(["Biofuels", "Others RES"], axis=1, inplace=True)
-    x.columns = [i.lower().replace(" ", "-") for i in x.columns]
-
-    technologies = pd.DataFrame(
-        # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
-        Package(
-            "https://raw.githubusercontent.com/ZNES-datapackages/"
-            "angus-input-data/master/technology/datapackage.json"
-        )
-        .get_resource("technology")
-        .read(keyed=True)
-    ).set_index(["year", "parameter", "carrier", "tech"])
-
-    carrier_package = Package(
-        "https://raw.githubusercontent.com/ZNES-datapackages/"
-        "angus-input-data/master/carrier/datapackage.json"
-    )
-
-    carrier_cost = (
-        pd.DataFrame(
-            carrier_package.get_resource("carrier-cost").read(keyed=True)
-        )
-        .set_index(["scenario", "carrier"])
-        .sort_index()
-    )
-
-    emission_factors = (
-        pd.DataFrame(
-            carrier_package.get_resource("emission-factor").read(keyed=True)
-        )
-        .set_index(["carrier"])
-        .sort_index()
-    )
-
-    elements = {}
-
-    for b in buses:
-        for carrier in x.columns:
-            element = {}
-
-            if carrier in ["wind", "solar"]:
-                if "wind" in carrier:
-                    profile = b + "-onshore-profile"
-                    tech = "onshore"
-                elif "solar" in carrier:
-                    profile = b + "-pv-profile"
-                    tech = "pv"
-
-                elements["-".join([b, carrier, tech])] = element
-                e = {
-                    "bus": b + "-electricity",
-                    "tech": tech,
-                    "carrier": carrier,
-                    "capacity": x.at[b, carrier],
-                    "type": "volatile",
-                    "profile": profile,
-                }
-
-                element.update(e)
-
-            elif carrier in ["gas", "coal", "lignite", "oil", "uranium"]:
-                if carrier == "gas":
-                    tech = "gt"
-                elif carrier == "oil":
-                    tech = "ocgt"
-                else:
-                    tech = "st"
-
-                elements["-".join([b, carrier, tech])] = element
-                marginal_cost = float(
-                    carrier_cost.at[(scenario, carrier), "value"]
-                    + emission_factors.at[carrier, "value"]
-                    * carrier_cost.at[(scenario, "co2"), "value"]
-                ) / float(
-                    technologies.loc[
-                        (2030, "efficiency", carrier, tech), "value"
-                    ]
-                ) + float(
-                    technologies.loc[(2030, "vom", carrier, tech), "value"]
-                )
-
-                element.update(
-                    {
-                        "carrier": carrier,
-                        "carrier_cost": carrier_cost.at[
-                            (scenario, carrier), "value"
-                        ],
-                        "efficiency": float(
-                            technologies.loc[
-                                (2030, "efficiency", carrier, tech), "value"
-                            ]
-                        ),
-                        "capacity": x.at[b, carrier],
-                        "bus": b + "-electricity",
-                        "type": "dispatchable",
-                        "marginal_cost": marginal_cost,
-                        "profile": technologies.loc[
-                            (2030, "avf", carrier, tech), "value"
-                        ],
-                        "tech": tech,
-                        "output_parameters": json.dumps({}),
-                    }
-                )
-
-            elif carrier == "others-non-res":
-                carrier = "mixed"
-                elements[b + "-" + carrier] = element
-
-                element.update(
-                    {
-                        "carrier": carrier,
-                        "capacity": x.at[b, "others-non-res"],
-                        "bus": b + "-electricity",
-                        "type": "dispatchable",
-                        "output_parameters": json.dumps({}),
-                        "marginal_cost": 0,
-                        "tech": "gt",
-                        "profile": technologies.loc[
-                            (2030, "avf", carrier, "gt"), "value"
-                        ],
-                    }
-                )
-
-            elif carrier == "biomass":
-                elements["-".join([b, carrier, "ce"])] = element
-
-                element.update(
-                    {
-                        "carrier": carrier,
-                        "capacity": x.at[b, carrier],
-                        "to_bus": b + "-electricity",
-                        "efficiency": technologies.loc[
-                            (2030, "efficiency", carrier, "ce"), "value"
-                        ],
-                        "from_bus": b + "-biomass-bus",
-                        "type": "conversion",
-                        "carrier_cost": float(
-                            carrier_cost.at[(scenario, carrier), "value"]
-                        ),
-                        "tech": "ce",
                     }
                 )
 
@@ -588,7 +394,6 @@ def DE_nep_conventional(
         directory=os.path.join(datapackage_dir, "data", "sequences"),
     )
 
-
     pp_not_null = list(set([i for i in pp.values if not pd.isnull(i)]))
     pp_index = [i for i in pp_not_null if i in sq.index]
 
@@ -604,41 +409,42 @@ def DE_nep_conventional(
     df = df.loc[cond1 & ~cond2 & ~cond3, :].copy()
 
     # all planned or in construction
-    df_new = nep.loc[(nep["Status 31.12.2016"] == "In Bau") |
-                      (nep["Status 31.12.2016"] == "In Planung"), :]
-
+    df_new = nep.loc[
+        (nep["Status 31.12.2016"] == "In Bau")
+        | (nep["Status 31.12.2016"] == "In Planung"),
+        :,
+    ]
 
     mapper = {
         ("Biomass and biogas", "Steam turbine"): ("biomass", "st"),
-        ("Biomass and biogas", "Combustion Engine"): ("biomass", "ce"),
+        ("Biomass and biogas", "Combustion Engine"): ("biomass", "st"),
         ("Hard coal", "Steam turbine"): ("coal", "st"),
-        ("Hard coal", "Combined cycle"): ("coal", "ccgt"),
+        ("Hard coal", "Combined cycle"): ("coal", "st"),
         ("Lignite", "Steam turbine"): ("lignite", "st"),
         ("Natural gas", "Gas turbine"): ("gas", "ocgt"),
-        ("Natural gas", "Steam turbine"): ("gas", "st"),
+        ("Natural gas", "Steam turbine"): ("gas", "ocgt"),
         ("Natural gas", "Combined cycle"): ("gas", "ccgt"),
         ("Natural gas", "Combustion Engine"): (
             "gas",
-            "st",
+            "ocgt",
         ),  # other technology
         ("Nuclear", "Steam turbine"): ("uranium", "st"),
         ("Oil", "Steam turbine"): ("oil", "st"),
-        ("Oil", "Gas turbine"): ("oil", "ocgt"),
+        ("Oil", "Gas turbine"): ("oil", "st"),
         ("Oil", "Combined cycle"): ("oil", "st"),
-        ("Other fuels", "Steam turbine"): ("waste", "chp"),
+        ("Other fuels", "Steam turbine"): ("waste", "st"),
         ("Other fuels", "Combined cycle"): ("gas", "ccgt"),
         ("Other fuels", "Gas turbine"): ("gas", "ocgt"),
-        ("Waste", "Steam turbine"): ("waste", "chp"),
-        ("Waste", "Combined cycle"): ("waste", "chp"),
+        ("Waste", "Steam turbine"): ("waste", "st"),
+        ("Waste", "Combined cycle"): ("waste", "st"),
         ("Other fossil fuels", "Steam turbine"): ("coal", "st"),
-        ("Other fossil fuels", "Combustion Engine"): ("gas", "st"),
-        ("Mixed fossil fuels", "Steam turbine"): ("gas", "st"),
+        ("Other fossil fuels", "Combustion Engine"): ("gas", "ocgt"),
+        ("Mixed fossil fuels", "Steam turbine"): ("coal", "st"),
     }
 
     df["carrier"], df["tech"] = zip(
         *[mapper[tuple(i)] for i in df[["fuel", "technology"]].values]
     )
-
     etas = (
         df.groupby(["carrier", "tech"]).mean()["efficiency_estimate"].to_dict()
     )
@@ -667,7 +473,7 @@ def DE_nep_conventional(
     for (country, carrier, tech, bins), (capacity, eta) in s.iterrows():
         name = "-".join([country, carrier, tech, str(bins)])
 
-        vom = technologies.at[(2030, "vom", carrier, tech), "value"]
+        vom = technologies.at[(2050, "vom", carrier, tech), "value"]
         ef = emission_factors.at[carrier, "value"]
         fuel = carrier_cost.at[(cost_scenario, carrier), "value"]
 
@@ -681,7 +487,7 @@ def DE_nep_conventional(
             "carrier": carrier,
             "capacity": capacity,
             "marginal_cost": float(marginal_cost),
-            "profile": technologies.loc[(2030, "avf", carrier, tech), "value"],
+            "profile": technologies.loc[(2050, "avf", carrier, tech), "value"],
             "output_parameters": json.dumps({}),
             "type": "dispatchable",
         }
@@ -695,39 +501,48 @@ def DE_nep_conventional(
     )
 
 
-def DE_nep(datapackage_dir, raw_data_path, nep_scenario, cost_scenario):
-    """Extracts NEP2019 non-conventional generation and storage data
+def german_energy_system(
+    datapackage_dir,
+    raw_data_path,
+    scenario_name,
+    cost_scenario,
+    technologies,
+    scenario_year,
+):
+    """Extracts german specific scenario data from input datapackage
 
     Parameters
     -----------
-    nep_scenario: str
-        Name of nep scenario e.g. C2030, B2030, A2030
+    scenario_name: str
+        Name of scenario
+    scenario_year: int
+        Year of scenario (one of 2030, 2040, 2050)
     cost_scenario: str
-        Name of cost scenario from TYNDP2016
+        Name of cost scenario
+    technologies: DataFrame
+        DataFrame with the technology data like efficiencies etc.
     datapackage_dir: string
         Directory for tabular resource
     raw_data_path: string
         Path where raw data file is located
     """
-    technologies = pd.DataFrame(
-        # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
-        Package(
-            "https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/technology/datapackage.json"
-        )
-        .get_resource("technology")
-        .read(keyed=True)
-    ).set_index(["year", "parameter", "carrier", "tech"])
 
-    data = pd.DataFrame(
-        Package(
-            "https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/capacities/datapackage.json"
+    data = (
+        pd.DataFrame(
+            Package(
+                "https://raw.githubusercontent.com/ZNES-datapackages/"
+                "angus-input-data/master/capacities/datapackage.json"
+            )
+            .get_resource("german-energy-system")
+            .read(keyed=True)
         )
-        .get_resource("DE_system")
-        .read(keyed=True)
-    ).set_index(["scenario"])
+        .set_index(["scenario", "year", "carrier", "tech"])
+        .loc[(scenario_name, scenario_year)]
+    )
 
     carrier_package = Package(
-        "https://raw.githubusercontent.com/ZNES-datapackages/angus-input-data/master/carrier/datapackage.json"
+        "https://raw.githubusercontent.com/ZNES-datapackages/"
+        "angus-input-data/master/carrier/datapackage.json"
     )
 
     carrier_cost = (
@@ -738,27 +553,31 @@ def DE_nep(datapackage_dir, raw_data_path, nep_scenario, cost_scenario):
         .sort_index()
     )
 
-    # add renewables
+    emission_factors = (
+        pd.DataFrame(
+            carrier_package.get_resource("emission-factor").read(keyed=True)
+        )
+        .set_index(["carrier"])
+        .sort_index()
+    )
+
     elements = {}
 
     b = "DE"
-    for carrier, tech in [
-        ("wind", "offshore"),
-        ("wind", "onshore"),
-        ("solar", "pv"),
-        ("biomass", "ce"),
-    ]:
+    for carrier, tech in data.index:
+
         element = {}
+
         if carrier in ["wind", "solar"]:
             if "onshore" == tech:
                 profile = b + "-onshore-profile"
-                capacity = data.loc[nep_scenario, "onshore"]
+                capacity = data.loc[("wind", "onshore"), "value"]
             elif "offshore" == tech:
                 profile = b + "-offshore-profile"
-                capacity = data.loc[nep_scenario, "offshore"]
+                capacity = data.loc[("wind", "offshore"), "value"]
             elif "pv" in tech:
                 profile = b + "-pv-profile"
-                capacity = data.loc[nep_scenario, "pv"]
+                capacity = data.loc[("solar", "pv"), "value"]
 
             elements["-".join([b, carrier, tech])] = element
             e = {
@@ -767,10 +586,59 @@ def DE_nep(datapackage_dir, raw_data_path, nep_scenario, cost_scenario):
                 "carrier": carrier,
                 "capacity": capacity,
                 "type": "volatile",
+                "output_parameters": json.dumps({}),
                 "profile": profile,
             }
 
             element.update(e)
+
+        elif carrier in ["gas", "coal", "lignite", "oil", "uranium", "mixed"]:
+            elements["-".join([b, carrier, tech])] = element
+
+            marginal_cost = float(
+                carrier_cost.at[(cost_scenario, carrier), "value"]
+                + emission_factors.at[carrier, "value"]
+                * carrier_cost.at[(cost_scenario, "co2"), "value"]
+            ) / float(
+                technologies.loc[
+                    (scenario_year, "efficiency", carrier, tech), "value"
+                ]
+            ) + float(
+                technologies.loc[(2050, "vom", carrier, tech), "value"]
+            )
+
+            element.update(
+                {
+                    "carrier": carrier,
+                    "carrier_cost": carrier_cost.at[
+                        (cost_scenario, carrier), "value"
+                    ],
+                    "efficiency": float(
+                        technologies.loc[
+                            (scenario_year, "efficiency", carrier, tech),
+                            "value",
+                        ]
+                    ),
+                    "capacity": data.at[(carrier, tech), "value"],
+                    "bus": b + "-electricity",
+                    "type": "dispatchable",
+                    "marginal_cost": marginal_cost,
+                    "profile": technologies.loc[
+                        (2050, "avf", carrier, tech), "value"
+                    ],
+                    "tech": tech,
+                    "output_parameters": json.dumps(
+                        {
+                            "emission_factor": float(
+                                emission_factors.at[carrier, "value"] /
+                            technologies.loc[
+                                (scenario_year, "efficiency", carrier, tech), "value"
+                            ]
+                            )
+                        }
+                    ),
+                }
+            )
 
         elif carrier == "biomass":
             elements["-".join([b, carrier, tech])] = element
@@ -778,66 +646,82 @@ def DE_nep(datapackage_dir, raw_data_path, nep_scenario, cost_scenario):
             element.update(
                 {
                     "carrier": carrier,
-                    "capacity": data.loc[nep_scenario, "biomass"],
+                    "capacity": data.loc[(carrier, tech), "value"],
                     "to_bus": b + "-electricity",
                     "efficiency": technologies.loc[
-                        (2030, "efficiency", "biomass", "st"), "value"
+                        (scenario_year, "efficiency", "biomass", "st"), "value"
                     ],
                     "maringal_cost": technologies.loc[
-                        (2030, "vom", "biomass", "st"), "value"
+                        (2050, "vom", "biomass", "st"), "value"
                     ],
                     "from_bus": b + "-biomass-bus",
                     "type": "conversion",
+                    "output_parameters": json.dumps({}),
                     "carrier_cost": float(
                         carrier_cost.at[(cost_scenario, carrier), "value"]
                     ),
-                    "tech": "ce",
+                    "tech": "st",
                 }
             )
 
-    elements["DE-battery"] = {
-        "storage_capacity": technologies.loc[
-            (2030, "storage_capacity", "lithium", "battery"), "value"
-        ]
-        * data.loc[nep_scenario, "battery"],
-        "capacity": data.loc[nep_scenario, "battery"],
-        "bus": "DE-electricity",
-        "tech": "battery",
-        "carrier": "lithium",
-        "type": "storage",
-        "efficiency": float(
-            technologies.loc[
-                (2030, "efficiency", "lithium", "battery"), "value"
-            ]
-        )
-        ** 0.5,  # convert roundtrip to input / output efficiency
-        "marginal_cost": 0,
-        "loss": 0,
-    }
+        elif tech in ["phs", "battery", "caes"]:
+            elements["-".join([b, carrier, tech])] = element
+            element.update(
+                {
+                    "storage_capacity": float(
+                        technologies.loc[
+                            (scenario_year, "storage_capacity", carrier, tech),
+                            "value",
+                        ]
+                        * data.at[(carrier, tech), "value"]
+                    ),
+                    "capacity": float(data.at[(carrier, tech), "value"]),
+                    "bus": "DE-electricity",
+                    "tech": tech,
+                    "carrier": carrier,
+                    "type": "storage",
+                    "efficiency": float(
+                        technologies.loc[
+                            (scenario_year, "efficiency", carrier, tech),
+                            "value",
+                        ]
+                    )
+                    ** 0.5,  # convert roundtrip to input / output efficiency
+                    "marginal_cost": 0,
+                    "loss": 0,
+                }
+            )
 
-    # update DE load in the load.csv resource
-    load = building.read_elements(
-        "load.csv", directory=os.path.join(datapackage_dir, "data", "elements")
-    )
-
-    load.loc["DE-electricity-load", "amount"] = (
-        data.loc[nep_scenario, "demand"] * 1000
-    )
-
-    building.write_elements(
-        "load.csv",
-        load,
-        directory=os.path.join(datapackage_dir, "data", "elements"),
-        replace=True,
-    )
+        elif "load" in tech:
+            # remove once heat components are merged
+            if carrier != "heat":
+                elements["-".join([b, carrier, tech])] = element
+                element.update(
+                    {
+                        "amount": data.at[(carrier, tech), "value"] * 1000,
+                        "bus": b + "-electricity",
+                        "tech": tech,
+                        "carrier": carrier,
+                        "type": "load",
+                        "profile": "-".join([b, carrier, tech, "profile"]),
+                    }
+                )
 
     df = pd.DataFrame.from_dict(elements, orient="index")
 
-    for element_type in ["volatile", "conversion", "storage"]:
+    for element_type in [
+        "dispatchable",
+        "volatile",
+        "conversion",
+        "storage",
+        "load",
+    ]:
+
         building.write_elements(
             element_type + ".csv",
             df.loc[df["type"] == element_type].dropna(how="all", axis=1),
             directory=os.path.join(datapackage_dir, "data", "elements"),
+            overwrite=True,
         )
 
 
@@ -903,10 +787,9 @@ def ehighway_generation(
         "PV": "pv",
         "TOTAL GAS": "ocgt",
         "TOTAL Biomass": "biomass",
-        "RoR (MW)": "ror",
-        "PSP (MW)": "phs",
-        "Hydro with reservoir (MW)": "rsv",
-        "Demand (GWh)": "load",
+        "RoR": "ror",
+        "PSP": "phs",
+        "Hydro with reservoir": "rsv",
     }
 
     elements = {}
@@ -926,9 +809,6 @@ def ehighway_generation(
                 elif "pv" == tech:
                     profile = b + "-pv-profile"
                     carrier = "solar"
-                elif "ror" == tech:
-                    profile = b + "-ror-profile"
-                    carrier = "hydro"
 
                 elements["-".join([b, carrier, tech])] = element
 
@@ -944,8 +824,8 @@ def ehighway_generation(
                     }
                 )
 
-            elif tech in ["ocgt", "st"]:
-                if tech == "ocgt":
+            elif tech in ["ocgt", "ocgt", "st"]:
+                if tech in ["ocgt", "ccgt"]:
                     carrier = "gas"
                 else:
                     carrier = "coal"
@@ -968,7 +848,22 @@ def ehighway_generation(
                         "bus": b + "-electricity",
                         "type": "dispatchable",
                         "marginal_cost": marginal_cost,
-                        "output_parameters": json.dumps({}),
+                        "carrier_cost": carrier_cost.at[
+                            (cost_scenario, carrier), "value"
+                        ],
+                        "efficiency": technologies.loc[
+                            (2050, "efficiency", carrier, tech), "value"
+                        ],
+                        "output_parameters": json.dumps(
+                            {
+                                "emission_factor": float(
+                                    emission_factors.at[carrier, "value"] /
+                                technologies.loc[
+                                    (2050, "efficiency", carrier, tech), "value"
+                                ]
+                                )
+                            }
+                        ),
                         "profile": technologies.loc[
                             (2050, "avf", carrier, tech), "value"
                         ],
@@ -976,39 +871,37 @@ def ehighway_generation(
                     }
                 )
 
-            # elif tech == 'phs':
-            #     elements['-'.join([b, carrier, tech])] = element
-            #
-            #     element.update({
-            #         'type': 'storage',
-            #         'tech': tech,
-            #         'bus': b + '-electricity',
-            #         'marginal_cost': 0,
-            #         'efficiency': efficiencies[tech],
-            #         'loss': 0,
-            #         'power': df.at[b, tech_key],
-            #         'capacity': df.at[b, 'PSP reservoir (GWh)'] * 1000
-            #         }
-            #     )
-            #
-            # elif tech == 'rsv':
-            #     elements['-'.join([b, carrier, tech])] = element
-            #
-            #     element.update({
-            #         'type': 'reservoir',
-            #         'tech': tech,
-            #         'inflow': b + 'electricity-rsv-inflow',
-            #         'bus': b + '-electricity',
-            #         'marginal_cost': 0,
-            #         'efficiency': efficiencies[tech],
-            #         'capacity': df.at[b, tech_key]
-            #     }
-            # )
+            elif tech == "phs":
+                carrier = "hydro"
+                elements["-".join([b, carrier, tech])] = element
+                element.update(
+                    {
+                        "type": "storage",
+                        "tech": tech,
+                        "bus": b + "-electricity",
+                        "carrier": carrier,
+                        "marginal_cost": 0,
+                        "efficiency": float(
+                            technologies.loc[
+                                (2050, "efficiency", carrier, tech), "value"
+                            ]
+                        )
+                        ** 0.5,
+                        "loss": 0,
+                        "capacity": df.at[b, tech_key],
+                        "storage_capacity": float(
+                            technologies.loc[
+                                (2050, "storage_capacity", carrier, tech),
+                                "value",
+                            ]
+                        )
+                        * df.at[b, tech_key],
+                    }
+                )
 
             elif tech == "biomass":
-                # tech is actually 'ce', kind of hackisch works for now
                 carrier = "biomass"  #
-                elements["-".join([b, carrier, "ce"])] = element
+                elements["-".join([b, carrier, "st"])] = element
 
                 element.update(
                     {
@@ -1016,44 +909,20 @@ def ehighway_generation(
                         "capacity": df.at[b, tech_key],
                         "to_bus": b + "-electricity",
                         "efficiency": technologies.loc[
-                            (2050, "efficiency", carrier, "ce"), "value"
+                            (2050, "efficiency", carrier, "st"), "value"
                         ],
                         "marginal_cost": technologies.loc[
-                            (2050, "vom", carrier, "ce"), "value"
+                            (2050, "vom", carrier, "st"), "value"
                         ],
                         "from_bus": b + "-biomass-bus",
                         "type": "conversion",
                         "carrier_cost": float(
                             carrier_cost.at[(cost_scenario, carrier), "value"]
                         ),
-                        "tech": "ce",
+                        "tech": "st",
                         "output_parameters": json.dumps({}),
                     }
                 )
-
-    phs = building.read_elements(
-        "storage.csv", directory=os.path.join(datapackage_dir, "data", "elements")
-    )
-
-    phs["capacity"] = df["PSP"].values
-    phs["storage_capacity"] = (phs["capacity"] * float(
-        technologies.loc[
-            (
-                2050,
-                "efficiency",
-                "hydro",
-                "phs",
-            ),
-            "value",
-        ]
-    )** 0.5)  # convert roundtrip to input / output efficiency
-
-    building.write_elements(
-        "storage.csv",
-        phs,
-        directory=os.path.join(datapackage_dir, "data", "elements"),
-        replace=True,
-    )
 
     df = pd.DataFrame.from_dict(elements, orient="index")
     df = df[df.capacity != 0]
@@ -1070,6 +939,7 @@ def ehighway_generation(
             element_type + ".csv",
             df.loc[df["type"] == element_type].dropna(how="all", axis=1),
             directory=os.path.join(datapackage_dir, "data", "elements"),
+            overwrite=True,
         )
 
 

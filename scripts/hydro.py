@@ -2,12 +2,11 @@
 """
 """
 import os
-
 from datapackage import Package
+import json
+import pandas as pd
 
 from oemof.tabular.datapackage import building
-from oemof.tools.economics import annuity
-import pandas as pd
 
 
 def _get_hydro_inflow(inflow_dir=None):
@@ -158,8 +157,10 @@ def generation(config, datapackage_dir, raw_data_path):
         * 1000,
         "hydro",
     )
+
     # only select ror shares if exist to avoid errors with profiles etc...
     ror = ror[ror["capacity"] > 0]
+    ror["output_parameters"] = json.dumps({})
 
     ror["efficiency"] = technologies.at[
         (int(scenario_year), "efficiency", "hydro", "ror"), "value"
@@ -177,7 +178,7 @@ def generation(config, datapackage_dir, raw_data_path):
         "storage_capacity"
     ], rsv["carrier"] = (
         "reservoir",
-        "reservoir",
+        "rsv",
         rsv.index.astype(str) + "-electricity",
         0,
         (
@@ -212,7 +213,7 @@ def generation(config, datapackage_dir, raw_data_path):
     )
 
     building.write_sequences(
-        "ror_profile.csv",
+        "volatile_profile.csv",
         ror_sequences.set_index(
             building.timeindex(year=str(config["scenario"]["year"]))
         ),
@@ -227,7 +228,7 @@ def generation(config, datapackage_dir, raw_data_path):
         technologies, phs_capacities, 6, countries, scenario_year
     )
 
-    filenames = ["ror.csv", "storage.csv", "reservoir.csv"]
+    filenames = ["volatile.csv", "storage.csv", "reservoir.csv"]
 
     for fn, df in zip(filenames, [ror, phs, rsv]):
         df.index = df.index.astype(str) + "-hydro-" + df["tech"]
