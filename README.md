@@ -26,7 +26,7 @@ directory in your home folder:
 
 If raw data does not exist run:
 
-    python scritps/prepare.py
+    python scripts/prepare.py
 
 ## Build
 
