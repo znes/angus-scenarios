@@ -15,7 +15,7 @@ from oemof.tabular.datapackage import building
 
 def tyndp_generation_2018(
     buses, vision, scenario, scenario_year, datapackage_dir, raw_data_path,
-    ccgt_share=0.70
+    ccgt_share=0.5
 ):
     """Extracts TYNDP2018 generation data and writes to datapackage for oemof
     tabular usage
@@ -737,7 +737,7 @@ def ehighway_generation(
     scenario="100% RES",
     datapackage_dir=None,
     raw_data_path=None,
-    ccgt_share=0.8
+    ccgt_share=0.5
 ):
     """
     """
