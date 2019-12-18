@@ -98,8 +98,8 @@ for dir in os.listdir("datapackages"):
 df["name"] = ["-".join(i.split("-")[1:]) for i in df.index]
 df = df.set_index(["name", "bus", "scenario"])["capacity"]
 
-# germany 
-de = df.loc[(slice(None), "DE-electricity")].unstack(0).fillna(0).T / 1000
+# germany
+de = df.loc[(slice(None), "DE-electricity")].unstack(0).fillna(0).T
 print(tabulate(de, tablefmt="pipe", headers="keys"))
 
 ax = (de.T).plot(kind='bar', stacked=True, color=[color_dict.get(c) for c in all.columns])
