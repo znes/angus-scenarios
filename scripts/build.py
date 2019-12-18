@@ -188,9 +188,3 @@ if __name__ == "__main__":
     ]
     p = mp.Pool(10)
     p.map(build, scenarios)
-
-<<<<<<< Updated upstream
-    # build(Scenario.from_path(os.path.join("scenarios", "ANGUS2030-DE.toml")))
-=======
-    #build(Scenario.from_path(os.path.join("scenarios", "ANGUS2030-DE.toml")))
->>>>>>> Stashed changes
