@@ -14,7 +14,8 @@ from oemof.tabular.datapackage import building
 
 
 def tyndp_generation_2018(
-    buses, vision, scenario, scenario_year, datapackage_dir, raw_data_path
+    buses, vision, scenario, scenario_year, datapackage_dir, raw_data_path,
+    ccgt_share=0.70
 ):
     """Extracts TYNDP2018 generation data and writes to datapackage for oemof
     tabular usage
@@ -34,6 +35,8 @@ def tyndp_generation_2018(
     raw_data_path: string
         Path where raw data file
         `ENTSO%20Scenario%202018%20Generation%20Capacities.xlsm` is located
+    ccgt_share:
+        Share of ccgt generation of total gas generation
     """
 
     filepath = building.download_data(
@@ -98,6 +101,9 @@ def tyndp_generation_2018(
     )
 
     df = df.groupby("country").sum()
+
+    df["gas-ccgt"] = df["gas-ocgt"] * ccgt_share
+    df["gas-ocgt"] = df["gas-ocgt"] * 1 - ccgt_share
 
     technologies = pd.DataFrame(
         # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
@@ -731,6 +737,7 @@ def ehighway_generation(
     scenario="100% RES",
     datapackage_dir=None,
     raw_data_path=None,
+    ccgt_share=0.8
 ):
     """
     """
@@ -781,11 +788,14 @@ def ehighway_generation(
         .set_index(["carrier"])
         .sort_index()
     )
+    df["CCGT"] = df["TOTAL GAS"] * ccgt_share
+    df["OCGT"] = df["TOTAL GAS"] * (1 - ccgt_share)
     techs = {
         "Wind": "onshore",
         "Wind         North Sea": "offshore",
         "PV": "pv",
-        "TOTAL GAS": "ocgt",
+        "OCGT": "ocgt",
+        "CCGT": "ccgt",
         "TOTAL Biomass": "biomass",
         "RoR": "ror",
         "PSP": "phs",
@@ -824,7 +834,7 @@ def ehighway_generation(
                     }
                 )
 
-            elif tech in ["ocgt", "ocgt", "st"]:
+            elif tech in ["ocgt", "ccgt", "st"]:
                 if tech in ["ocgt", "ccgt"]:
                     carrier = "gas"
                 else:

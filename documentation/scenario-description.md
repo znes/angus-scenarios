@@ -1,5 +1,5 @@
 
-# Scenarios
+# ANGUS II Scenario description
 
 
 ## Overview
@@ -75,6 +75,7 @@ Demand profiles are calculated from the OPSD dataset of the ENTSOE
 timeseries for the selected weather year (2012).
 
 *Implications & Limitations*:
+
 * Due to the historic demand profiles, future
 flexibilities like smart operation of certain applications and inducstry
 processes are not modelled.
@@ -87,12 +88,16 @@ For Germany installed capacities of the NEPScenario 2019 2030C are implemented.
 
 ![Installed capacities](installed_capacities.pdf)
 
+
+### Conventional energies
+
 Efficiencies are based on the TYNDP2018. However, For germany the OPSD powerplant
 register is used to calculate efficiencies for the conventional powerplants in 2030.
 Commodity costs are based on the NEP2030C and TYNDP2018 cost assumptions
 The availability factor (avf) of technologies and variable
 operation and maintenance cost (vom) are the same for all scenarios.
 
+### Renewable Energies
 * Maximum biomass potential per country the hotmaps potential is used. The
 installed capacity of biomass is assumed to be `biofuels` and `others-res`
 from the TNYDP2018.
@@ -172,6 +177,7 @@ of the Restore2050 project.
 | 2050-100RE | oil       |  60     | EUR/MWh | Own Assumption |
 | 2050-100RE | uranium   |   1.692 | EUR/MWh | Own Assumption |
 | 2050-100RE | waste     |  30     | EUR/MWh | Own Assumption |
+
 
 ## All capacities
 
