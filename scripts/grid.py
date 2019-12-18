@@ -7,9 +7,6 @@ import re
 from oemof.tabular.datapackage import building
 import pandas as pd
 
-import fuchur
-
-
 def _prepare_frame(df):
     """ Prepare dataframe from ehighway excel sheet, see function:
     ehighway_grid()
