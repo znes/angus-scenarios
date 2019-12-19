@@ -103,7 +103,12 @@ def tyndp_generation_2018(
     df = df.groupby("country").sum()
 
     df["gas-ccgt"] = df["gas-ocgt"] * ccgt_share
-    df["gas-ocgt"] = df["gas-ocgt"] * 1 - ccgt_share
+    df["gas-ocgt"] = df["gas-ocgt"] * (1 - ccgt_share)
+
+    # as raw data is divided in turbine and pump (where turbine is also from
+    # pump storages as well as reservoirs)
+    df["hydro-rsv"] = (df["hydro-rsv"] - df["hydro-phs"]).clip(0)
+
 
     technologies = pd.DataFrame(
         # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
@@ -670,7 +675,7 @@ def german_energy_system(
                 }
             )
 
-        elif tech in ["phs", "battery", "caes"]:
+        elif tech in ["battery", "caes"]:
             elements["-".join([b, carrier, tech])] = element
             element.update(
                 {
@@ -796,7 +801,7 @@ def ehighway_generation(
         "PV": "pv",
         "OCGT": "ocgt",
         "CCGT": "ccgt",
-        "TOTAL Biomass": "biomass",
+        "Biomass I": "biomass", # use only regional biomass potential
         "RoR": "ror",
         "PSP": "phs",
         "Hydro with reservoir": "rsv",
@@ -878,34 +883,6 @@ def ehighway_generation(
                             (2050, "avf", carrier, tech), "value"
                         ],
                         "tech": tech,
-                    }
-                )
-
-            elif tech == "phs":
-                carrier = "hydro"
-                elements["-".join([b, carrier, tech])] = element
-                element.update(
-                    {
-                        "type": "storage",
-                        "tech": tech,
-                        "bus": b + "-electricity",
-                        "carrier": carrier,
-                        "marginal_cost": 0,
-                        "efficiency": float(
-                            technologies.loc[
-                                (2050, "efficiency", carrier, tech), "value"
-                            ]
-                        )
-                        ** 0.5,
-                        "loss": 0,
-                        "capacity": df.at[b, tech_key],
-                        "storage_capacity": float(
-                            technologies.loc[
-                                (2050, "storage_capacity", carrier, tech),
-                                "value",
-                            ]
-                        )
-                        * df.at[b, tech_key],
                     }
                 )
 
