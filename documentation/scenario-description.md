@@ -4,7 +4,7 @@
 
 ## Overview
 
-The developed scenarios are based on the TYNDP2018, the NEP2019, the Ehighway 100%RES
+The developed scenarios are based on the TYNDP2018, the NEP2019, the e-Highway 100%RES
 scenario and the UBA RESCUE scenarios.
 
 For the non-german countries the following data has been used:
@@ -12,6 +12,15 @@ For the non-german countries the following data has been used:
 * 2030: TYNDP2018 DG (distributed generation vision)
 * 2040: TYNDP2018 2040 GCA (global climate action vision)
 * 2050: E-Highway 100% RES
+
+The e-Highway2050 [ehighway]  has been funded by the European Commission.
+The project aimed develop
+a plan for the European transmission network from 2020 to 2050. One important
+part of this study is the support of EU’s overall policy objectives
+with regard to energy. The study is builds upon the TYNDP2016 and includes
+scenarios for 100% renewable energy supply in 2050. The TYNDP is developed
+by the network of European TSO (ENTSOE), therefore it also plays an important
+role for the NEP which is developed by the four german TSO.   
 
 For Germany the starting point for the pathyways is the NEP2019:
 
@@ -21,7 +30,10 @@ For Germany the starting point for the pathyways is the NEP2019:
 
 The scenarios from literature and their different visions have been selected
 to model a pathway towards 100% renewable energy system in Germany to
-adhere to the COP paris agreement.
+adhere to the COP paris agreement. As the e-Highway scenarios are based on the
+TYNDP2016 and the NEP2019 is aligned with the TYNDP2018, the scenario for
+the year 2050 has been adapted for the focus country of Germany. However,
+the data of the e-Highway scenario has been used for the non-german countries.  
 
 ## Assumptions
 
@@ -81,13 +93,15 @@ flexibilities like smart operation of certain applications and inducstry
 processes are not modelled.
 * The model only covers the residential hotwater and space heating demand.
 
-
 ## Generation capacity
 
 For Germany installed capacities of the NEPScenario 2019 2030C are implemented.
 
 ![Installed capacities](installed_capacities.pdf)
 
+In the TYNDP2018 and Ehighway scenario gas fired power plants are not seperated
+into CCGT and OCGT. Therefore a factor of 0.5 [ISE2011] is used to split the
+total gas capacity into these to technologies.
 
 ### Conventional energies
 
@@ -96,6 +110,7 @@ register is used to calculate efficiencies for the conventional powerplants in 2
 Commodity costs are based on the NEP2030C and TYNDP2018 cost assumptions
 The availability factor (avf) of technologies and variable
 operation and maintenance cost (vom) are the same for all scenarios.
+The avf is based on the PRIMES model assumptions.[PRIMES2016]
 
 ### Renewable Energies
 * Maximum biomass potential per country the hotmaps potential is used. The
@@ -229,6 +244,9 @@ of the Restore2050 project.
 
 # Data Sources
 
+* [ehighway](https://www.entsoe.eu/outlooks/ehighways-2050/)
+* [PRIMES2016](https://ec.europa.eu/energy/sites/ener/files/documents/metis_technical_note_t1_-_integration_of_primes_scenarios_into_metis.pdf)
+* [ISE2011](https://www.isi.fraunhofer.de/content/dam/isi/dokumente/ccx/2011/Final_Report_EU-Long-term-scenarios-2050.pdf)
 * [TYNDP2018a](https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP2018/Scenarios%20Data%20Sets/Input%20Data.xlsx)
 * [TYNDP2018b](https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP2018/Scenarios%20Data%20Sets/ENTSO%20Scenario%202018%20Generation%20Capacities.xlsm)
 * [NinjaWind](https://www.renewables.ninja/static/downloads/ninja_europe_wind_v1.1.zip)
