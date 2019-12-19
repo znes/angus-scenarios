@@ -20,7 +20,7 @@ part of this study is the support of EU’s overall policy objectives
 with regard to energy. The study is builds upon the TYNDP2016 and includes
 scenarios for 100% renewable energy supply in 2050. The TYNDP is developed
 by the network of European TSO (ENTSOE), therefore it also plays an important
-role for the NEP which is developed by the four german TSO.   
+role for the NEP which is developed by the four german TSO.
 
 For Germany the starting point for the pathyways is the NEP2019:
 
@@ -32,8 +32,7 @@ The scenarios from literature and their different visions have been selected
 to model a pathway towards 100% renewable energy system in Germany to
 adhere to the COP paris agreement. As the e-Highway scenarios are based on the
 TYNDP2016 and the NEP2019 is aligned with the TYNDP2018, the scenario for
-the year 2050 has been adapted for the focus country of Germany. However,
-the data of the e-Highway scenario has been used for the non-german countries.  
+the year 2050 has been adapted for the focus country of Germany.
 
 ## Assumptions
 
@@ -97,7 +96,18 @@ processes are not modelled.
 
 For Germany installed capacities of the NEPScenario 2019 2030C are implemented.
 
-![Installed capacities](installed_capacities.pdf)
+| name          |   ANGUS2030 |   ANGUS2040 |   ANGUS2050 |
+|:--------------|------------:|------------:|------------:|
+| coal-st       |        8100 |        4000 |           0 |
+| gas-ccgt      |       23400 |       30000 |       13000 |
+| gas-ocgt      |       10000 |           0 |           0 |
+| lignite-st    |        9000 |        5000 |           0 |
+| mixed-st      |        4100 |        4100 |        2000 |
+| oil-ocgt      |         900 |         450 |           0 |
+| solar-pv      |      104500 |      127250 |      150000 |
+| wind-offshore |       17000 |       26000 |       35000 |
+| wind-onshore  |       85500 |      105250 |      125000 |
+
 
 In the TYNDP2018 and Ehighway scenario gas fired power plants are not seperated
 into CCGT and OCGT. Therefore a factor of 0.5 [ISE2011] is used to split the
@@ -105,39 +115,47 @@ total gas capacity into these to technologies.
 
 ### Conventional energies
 
-Efficiencies are based on the TYNDP2018. However, For germany the OPSD powerplant
-register is used to calculate efficiencies for the conventional powerplants in 2030.
-Commodity costs are based on the NEP2030C and TYNDP2018 cost assumptions
-The availability factor (avf) of technologies and variable
+Efficiencies and commodity costs are based on the TYNDP2018 and the NEP2030C for
+2030. The availability factor (avf) of technologies and variable
 operation and maintenance cost (vom) are the same for all scenarios.
-The avf is based on the PRIMES model assumptions.[PRIMES2016]
+The avf is based on the PRIMES model assumptions.[PRIMES2016] For detailed data
+see Annex I.
 
 ### Renewable Energies
-* Maximum biomass potential per country the hotmaps potential is used. The
-installed capacity of biomass is assumed to be `biofuels` and `others-res`
-from the TNYDP2018.
-* For the renewable profiles of wind and pv timeseries of renewables ninja has
-been used.
-* Hydro reservoir and run of river capacities are assumend to be the same as in 2015. The
-inflow in run of river and reservoirs is modelled based on the inflow timeseries
+
+For the renewable profiles of wind and pv timeseries of renewables ninja has
+been used. The maximum biomass potential per country the hotmaps potential is used.
+
+Hydro data is based on the TYNDP2018 GCA (global climate action) vision.
+However it should be noted, that due to the low cost and the limited potential
+of hydro power, the installed capacities within the vision and years of the TYNDP
+do not differ significantly.
+
+* The reservoir (rsv) capacity is calculated by substracting the column 'hydro-pump
+from column 'hydro turbine' in the original data source. Therefore, it is assumed,
+that each pumped hydro storage (phs) have equal pump/turbine capacities.
+* The max-hours for phs is based on Geth et al. 2018.
+* The max-hours for rsv is calculated for each country based on the Restore2050 data, where
+rsv storage capacity in TWh is provided in addition to the installed capacity.
+It is assumed that  new rsv plants will have the same reservoir sizes in
+each country as provided in current data from the Restore2050 project.
+
+The inflow in run of river and reservoirs is modelled based on the inflow timeseries
 of the Restore2050 project.
 
-## Annex
+## Grid
 
-### Installed capacities Germany
+The grid for 2030 and 2040 is based on the TYNDP2018, while the grid for 2050
+is based on the e-Highway 100% RES scenario.
 
-| name          |   ANGUS2030 |   ANGUS2040 |   ANGUS2050 |
-|:--------------|------------:|------------:|------------:|
-| coal-st       |      8100   |      4000   |         0   |
-| gas-ccgt      |     23400   |     30000   |     13000   |
-| gas-ocgt      |     10000   |         0   |         0   |
-| hydro-ror     |      3993.6 |      3993.6 |      3993.6 |
-| lignite-st    |      9000   |      5000   |         0   |
-| mixed-st      |      4100   |      4100   |      2000   |
-| oil-ocgt      |       900   |       450   |         0   |
-| solar-pv      |    104500   |    127250   |    150000   |
-| wind-offshore |     17000   |     26000   |     35000   |
-| wind-onshore  |     85500   |    105250   |    125000   |
+![Installed tranmission capacities in 2030](grid-scenarioANGUS2030.pdf)
+
+![Installed tranmission capacities in 2040](grid-scenarioANGUS2040.pdf)
+
+![Installed tranmission capacities in 2050](grid-scenarioANGUS2050.pdf)
+
+## Annex I
+
 
 ### Efficiencies
 
@@ -194,52 +212,6 @@ of the Restore2050 project.
 | 2050-100RE | waste     |  30     | EUR/MWh | Own Assumption |
 
 
-## All capacities
-
-|    |   coal-st |   gas-ccgt |   gas-ocgt |   hydro-ror |   lignite-st |   mixed-st |   oil-ocgt |   solar-pv |   uranium-st |   wind-offshore |   wind-onshore |
-|:---|----------:|-----------:|-----------:|------------:|-------------:|-----------:|-----------:|-----------:|-------------:|----------------:|---------------:|
-| AT |         0 |          0 |       2969 |        5566 |            0 |        984 |        174 |       5600 |            0 |               0 |           5500 |
-| BE |         0 |          0 |       4956 |          10 |            0 |       1710 |          0 |      22000 |            0 |            8300 |           7700 |
-| CH |         0 |          0 |          0 |         385 |            0 |        985 |          0 |      12600 |            0 |               0 |           2590 |
-| CZ |       251 |          0 |        995 |         150 |         1297 |       1505 |        180 |       5230 |         3277 |               0 |           1330 |
-| DE |      4000 |      30000 |          0 |        3994 |         5000 |       4100 |        450 |     127250 |            0 |           26000 |         105250 |
-| DK |         0 |          0 |          0 |           0 |            0 |         99 |        337 |       7453 |            0 |            7807 |           7180 |
-| FR |         0 |          0 |       8892 |       10243 |            0 |          0 |        990 |      60000 |        37640 |           20000 |          49050 |
-| IT |      4759 |          0 |      30734 |        5720 |            0 |       5785 |       3337 |      58271 |            0 |           11437 |          17785 |
-| NL |      3358 |          0 |       7593 |           0 |            0 |       3539 |          0 |      46000 |            0 |           23433 |           7400 |
-| NO |         0 |          0 |          0 |        2211 |            0 |          0 |          0 |       3000 |            0 |             400 |          10036 |
-| PL |      8326 |          0 |       2741 |         708 |         1936 |       7276 |       3945 |      42507 |         7500 |            7000 |          32927 |
-| SE |         0 |          0 |          0 |        6520 |            0 |        390 |          0 |       6703 |         3682 |            1303 |          17418 |
-
-|    |   coal-st |   gas-ccgt |   lignite-st |   mixed-st |   oil-ocgt |   gas-ocgt |   hydro-ror |   solar-pv |   wind-offshore |   wind-onshore |
-|:---|----------:|-----------:|-------------:|-----------:|-----------:|-----------:|------------:|-----------:|----------------:|---------------:|
-| AT |         0 |          0 |            0 |          0 |          0 |       1500 |        5566 |      12090 |               0 |           6880 |
-| BE |         0 |          0 |            0 |          0 |          0 |       2500 |          10 |      24087 |            3000 |          10903 |
-| CH |         0 |          0 |            0 |          0 |          0 |       2000 |         385 |      15000 |               0 |           1382 |
-| CZ |         0 |          0 |            0 |          0 |          0 |       1750 |         150 |      13048 |               0 |          10234 |
-| DE |         0 |      13000 |            0 |       2000 |          0 |          0 |        3994 |     150000 |           35000 |         125000 |
-| DK |         0 |          0 |            0 |          0 |          0 |       1000 |           0 |       2038 |           25600 |          18708 |
-| FR |         0 |          0 |            0 |          0 |          0 |      16000 |       10243 |     103055 |               0 |         124197 |
-| IT |         0 |          0 |            0 |          0 |          0 |       9000 |        5720 |      91415 |               0 |          41290 |
-| NL |         0 |          0 |            0 |          0 |          0 |       3000 |           0 |      22247 |           15900 |          14997 |
-| NO |         0 |          0 |            0 |          0 |          0 |          0 |        2211 |       5364 |            3000 |          12175 |
-| PL |         0 |          0 |            0 |          0 |          0 |       3000 |         708 |      24220 |               0 |          81918 |
-| SE |         0 |          0 |            0 |          0 |          0 |          0 |        6520 |       8919 |            3000 |          24211 |
-
-|    |   coal-st |   gas-ccgt |   gas-ocgt |   hydro-ror |   lignite-st |   mixed-st |   oil-ocgt |   solar-pv |   uranium-st |   wind-offshore |   wind-onshore |
-|:---|----------:|-----------:|-----------:|------------:|-------------:|-----------:|-----------:|-----------:|-------------:|----------------:|---------------:|
-| AT |         0 |          0 |       3928 |        5566 |            0 |        984 |        174 |       7803 |            0 |               0 |           5000 |
-| BE |         0 |          0 |       6352 |          10 |            0 |       1157 |        500 |       6851 |            0 |            2310 |           3298 |
-| CH |         0 |          0 |          0 |         385 |            0 |        985 |          0 |       9371 |         1190 |               0 |            370 |
-| CZ |         0 |          0 |        995 |         150 |         4760 |       1505 |          0 |       6993 |         4055 |               0 |            950 |
-| DE |      8100 |      23400 |      10000 |        3994 |         9000 |       4100 |        900 |     104500 |            0 |           17000 |          85500 |
-| DK |       410 |          0 |          0 |           0 |            0 |         99 |        817 |       5113 |            0 |            2905 |           5596 |
-| FR |         0 |          0 |       8892 |       10243 |            0 |          0 |       6424 |      41600 |        37640 |            7000 |          36336 |
-| IT |      2811 |          0 |      32705 |        5720 |            0 |       5785 |        354 |      46386 |            0 |             654 |          15575 |
-| NL |      4608 |          0 |       7593 |           0 |            0 |       3539 |          0 |      14084 |          486 |           11500 |           6723 |
-| NO |         0 |          0 |        435 |        2211 |            0 |          0 |          0 |       2972 |            0 |               0 |           3330 |
-| PL |     13771 |          0 |       2741 |         708 |         7405 |       7276 |       1000 |      24870 |         3000 |            2250 |           9200 |
-| SE |         0 |          0 |          0 |        6520 |            0 |        390 |          0 |       5384 |         6852 |             190 |          10780 |
 
 
 # Data Sources
