@@ -140,7 +140,7 @@ def generation(config, datapackage_dir, raw_data_path):
     # ror
     elements = {}
     for country in countries:
-        name = country + "-ror"
+        name = country + "-hydro-ror"
 
         capacity = capacities.loc[country, "ror"]
 
@@ -180,7 +180,7 @@ def generation(config, datapackage_dir, raw_data_path):
     # reservoir
     elements = {}
     for country in countries:
-        name = country + "-reservoir"
+        name = country + "-hydro-reservoir"
 
         capacity = capacities.loc[country, "rsv"]
         rsv_max_hours = max_hours.loc[country, "rsv-max-hours"]
@@ -222,7 +222,7 @@ def generation(config, datapackage_dir, raw_data_path):
     # phs
     elements = {}
     for country in countries:
-        name = country + "-phs"
+        name = country + "-hydro-phs"
 
         capacity = capacities.loc[country, "phs"]
         phs_max_hours = max_hours.loc[country, "phs-max-hours"]
