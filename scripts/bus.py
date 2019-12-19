@@ -53,7 +53,7 @@ def electricity(buses, datapackage_dir, raw_data_path):
     for r in buses:
         el_buses[r + "-electricity"] = nuts0[r]
     building.write_geometries(
-        "bus.geojson",
+        "buses.csv",
         el_buses,
         os.path.join(datapackage_dir, "data", "geometries"),
     )
