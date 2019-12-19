@@ -95,35 +95,10 @@ def generation(config, datapackage_dir, raw_data_path):
     )
 
     building.download_data(
-        "https://zenodo.org/record/1146666/files/sector-zenodo.tar.gz?download=1",
-        directory=raw_data_path,
-        unzip_file="data/hydro/ror_ENTSOe_Restore2050.csv",
-    )
-
-    building.download_data(
         "https://zenodo.org/record/804244/files/Hydro_Inflow.zip?download=1",
         directory=raw_data_path,
         unzip_file="Hydro_Inflow/",
     )
-
-    filepath = building.download_data(
-        "https://zenodo.org/record/804244/files/hydropower.csv?download=1",
-        directory=raw_data_path,
-    )
-
-    capacities = pd.read_csv(filepath, index_col=["ctrcode"])
-    capacities.rename(index={"UK": "GB"}, inplace=True)  # for iso code
-
-    capacities.loc["CH"] = [8.8, 12, 1.9]  # add CH elsewhere
-
-    inflows = _get_hydro_inflow(
-        inflow_dir=os.path.join(raw_data_path, "Hydro_Inflow")
-    )
-
-    inflows = inflows.loc[
-        inflows.index.year == config["scenario"]["weather_year"], :
-    ]
-    inflows["DK"], inflows["LU"] = 0, inflows["BE"]
 
     technologies = pd.DataFrame(
         Package(
@@ -134,153 +109,146 @@ def generation(config, datapackage_dir, raw_data_path):
         .read(keyed=True)
     ).set_index(["year", "parameter", "carrier", "tech"])
 
-    ror_shares = pd.read_csv(
-        os.path.join(
-            raw_data_path, "data", "hydro", "ror_ENTSOe_Restore2050.csv"
-        ),
-        index_col="Country Code (ISO 3166-1)",
-    )["ror ENTSO-E\n+ Restore"]
+    hydro_data = pd.DataFrame(
+        Package(
+            "https://raw.githubusercontent.com/ZNES-datapackages/"
+            "angus-input-data/master/hydro/datapackage.json"
+        )
+        .get_resource("hydro")
+        .read(keyed=True)
+    ).set_index(["country"])
+
+    hydro_data.rename(index={"UK": "GB"}, inplace=True)  # for iso code
+
+    inflows = _get_hydro_inflow(
+        inflow_dir=os.path.join(raw_data_path, "Hydro_Inflow")
+    )
+
+    inflows = inflows.loc[
+        inflows.index.year == config["scenario"]["weather_year"], :
+    ]
+
+    inflows["DK"], inflows["LU"] = 0, inflows["BE"]
+
+    for c in hydro_data.columns:
+        hydro_data[c] = hydro_data[c].astype(float)
+
+    capacities = hydro_data.loc[countries][["ror", "rsv", "phs"]]
+    ror_shares = hydro_data.loc[countries]["ror-share"]
+    max_hours = hydro_data.loc[countries][["rsv-max-hours", "phs-max-hours"]]
 
     # ror
-    ror = pd.DataFrame(index=countries)
-    ror["type"], ror["tech"], ror["bus"], ror["capacity"], ror["carrier"] = (
-        "volatile",
-        "ror",
-        ror.index.astype(str) + "-electricity",
-        (
-            capacities.loc[ror.index, " installed hydro capacities [GW]"]
-            - capacities.loc[
-                ror.index, " installed pumped hydro capacities [GW]"
-            ]
-        )
-        * ror_shares[ror.index]
-        * 1000,
-        "hydro",
+    elements = {}
+    for country in countries:
+        name = country + "-ror"
+
+        capacity = capacities.loc[country, "ror"]
+
+        eta = technologies.loc[
+            (scenario_year, "efficiency", "hydro", "ror"), "value"
+        ]
+
+        if capacity > 0:
+
+            elements[name] = {
+                "type": "volatile",
+                "tech": "ror",
+                "carrier": "hydro",
+                "bus": country + "-electricity",
+                "capacity": capacity,
+                "profile": country + "-ror-profile",
+                "efficiency": eta,
+            }
+
+    building.write_elements(
+        "ror.csv",
+        pd.DataFrame.from_dict(elements, orient="index"),
+        directory=os.path.join(datapackage_dir, "data", "elements"),
     )
 
-    # only select ror shares if exist to avoid errors with profiles etc...
-    ror = ror[ror["capacity"] > 0]
-    ror["output_parameters"] = json.dumps({})
+    sequences = (inflows[countries] * ror_shares * 1000) / capacities["ror"]
+    sequences = sequences[countries].copy()
+    sequences.dropna(axis=1, inplace=True)
+    sequences.columns = sequences.columns.astype(str) + "-ror-profile"
 
-    ror["efficiency"] = technologies.at[
-        (int(scenario_year), "efficiency", "hydro", "ror"), "value"
-    ]
-    ror["profile"] = ror["bus"] + "-" + ror["tech"] + "-profile"
+    building.write_sequences(
+        "ror_profile.csv",
+        sequences.set_index(building.timeindex(str(scenario_year))),
+        directory=os.path.join(datapackage_dir, "data", "sequences"),
+    )
 
-    ror_sequences = (inflows[ror.index] * ror_shares[ror.index] * 1000) / ror[
-        "capacity"
-    ]
-    ror_sequences.columns = ror_sequences.columns.map(ror["profile"])
+    # reservoir
+    elements = {}
+    for country in countries:
+        name = country + "-reservoir"
 
-    # other hydro / reservoir
-    rsv = pd.DataFrame(index=countries)
-    rsv["type"], rsv["tech"], rsv["bus"], rsv["loss"], rsv["capacity"], rsv[
-        "storage_capacity"
-    ], rsv["carrier"] = (
-        "reservoir",
-        "rsv",
-        rsv.index.astype(str) + "-electricity",
-        0,
-        (
-            capacities.loc[ror.index, " installed hydro capacities [GW]"]
-            - capacities.loc[
-                ror.index, " installed pumped hydro capacities [GW]"
-            ]
-        )
-        * (1 - ror_shares[ror.index])
-        * 1000,
-        capacities.loc[rsv.index, " reservoir capacity [TWh]"] * 1e6,
-        "hydro",
-    )  # to MWh
+        capacity = capacities.loc[country, "rsv"]
+        rsv_max_hours = max_hours.loc[country, "rsv-max-hours"]
 
-    rsv["profile"] = rsv["bus"] + "-" + rsv["tech"] + "-profile"
-    rsv[
-        "efficiency"
-    ] = 1  # as inflow is already in MWelec -> no conversion needed
-    rsv_sequences = (
-        inflows[rsv.index] * (1 - ror_shares[rsv.index]) * 1000
-    )  # GWh -> MWh
-    rsv_sequences.columns = rsv_sequences.columns.map(rsv["profile"])
+        eta = technologies.loc[
+            (scenario_year, "efficiency", "hydro", "rsv"), "value"
+        ]
 
-    # write sequences to different files for better automatic foreignKey
-    # handling in meta data
+        if capacity > 0:
+
+            elements[name] = {
+                "type": "reservoir",
+                "tech": "rsv",
+                "carrier": "hydro",
+                "bus": country + "-electricity",
+                "capacity": capacity,
+                "storage_capacity": capacity * rsv_max_hours,
+                "profile": country + "-reservoir-profile",
+                "efficiency": eta,
+                "marginal_cost": 0.0000001,
+            }
+
+    building.write_elements(
+        "reservoir.csv",
+        pd.DataFrame.from_dict(elements, orient="index"),
+        directory=os.path.join(datapackage_dir, "data", "elements"),
+    )
+
+    sequences = inflows[countries] * (1 - ror_shares) * 1000
+    sequences = sequences[countries].copy()
+    sequences.dropna(axis=1, inplace=True)
+    sequences.columns = sequences.columns.astype(str) + "-reservoir-profile"
     building.write_sequences(
         "reservoir_profile.csv",
-        rsv_sequences.set_index(
-            building.timeindex(year=str(config["scenario"]["year"]))
-        ),
+        sequences.set_index(building.timeindex(str(scenario_year))),
         directory=os.path.join(datapackage_dir, "data", "sequences"),
     )
-
-    building.write_sequences(
-        "volatile_profile.csv",
-        ror_sequences.set_index(
-            building.timeindex(year=str(config["scenario"]["year"]))
-        ),
-        directory=os.path.join(datapackage_dir, "data", "sequences"),
-    )
-
-    # add pumped hydro capacities from ENTSOe_Restore2050 project if 'current'
-    phs_capacities = capacities.loc[
-        countries, " installed pumped hydro capacities [GW]"
-    ]
-    phs = pumped_hydro(
-        technologies, phs_capacities, 6, countries, scenario_year
-    )
-
-    filenames = ["volatile.csv", "storage.csv", "reservoir.csv"]
-
-    for fn, df in zip(filenames, [ror, phs, rsv]):
-        df.index = df.index.astype(str) + "-hydro-" + df["tech"]
-        # df["capacity_cost"] = df.apply(
-        #     lambda x: annuity(
-        #         float(x["capacity_cost"]) * 1000,
-        #         float(x["lifetime"]),
-        #         config["cost"]["wacc"],
-        #     ),
-        #     axis=1,
-        # )
-        building.write_elements(
-            fn, df, directory=os.path.join(datapackage_dir, "data", "elements")
-        )
-
-
-def pumped_hydro(
-    technologies, capacities, storage_capacity, buses, scenario_year
-):
-    """
-
-    """
 
     # phs
-    phs = pd.DataFrame(index=buses)
-    phs["type"], phs["tech"], phs["bus"], phs["loss"], phs["capacity"], phs[
-        "storage_capacity"
-    ], phs["marginal_cost"], phs["carrier"] = (
-        "storage",
-        "phs",
-        phs.index.astype(str) + "-electricity",
-        0,
-        capacities * 1000,
-        capacities * storage_capacity * 1000,
-        0,
-        "hydro",
-    )
+    elements = {}
+    for country in countries:
+        name = country + "-phs"
 
-    phs["storage_capacity"] = phs["capacity"] * float(
-        technologies.at[
-            (int(scenario_year), "storage_capacity", "hydro", "phs"), "value"
+        capacity = capacities.loc[country, "phs"]
+        phs_max_hours = max_hours.loc[country, "phs-max-hours"]
+
+        eta = technologies.loc[
+            (scenario_year, "efficiency", "hydro", "phs"), "value"
         ]
-    )
 
-    # as efficieny in data is roundtrip use sqrt of roundtrip
-    phs["efficiency"] = (
-        float(
-            technologies.at[
-                (int(scenario_year), "efficiency", "hydro", "phs"), "value"
-            ]
-        )
-        ** 0.5
-    )
+        if capacity > 0:
 
-    return phs
+            elements[name] = {
+                "type": "storage",
+                "tech": "phs",
+                "carrier": "hydro",
+                "bus": country + "-electricity",
+                "capacity": capacity,
+                "loss": 0,
+                "marginal_cost": 0.0000001,
+                "storage_capacity": capacity * phs_max_hours,
+                "storage_capacity_initial": 0.5,
+                "efficiency": float(eta)
+                ** (0.5),  # rountrip to input/output eta
+            }
+
+    building.write_elements(
+        "phs.csv",
+        pd.DataFrame.from_dict(elements, orient="index"),
+        directory=os.path.join(datapackage_dir, "data", "elements"),
+    )
