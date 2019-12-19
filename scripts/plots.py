@@ -16,7 +16,7 @@ color = {
     "solar-pv": "gold",
     "wind-onshore": "skyblue",
     "wind-offshore": "darkblue",
-    "biomass-ce": "olivedrab",
+    "biomass-st": "olivedrab",
     "battery": "lightsalmon",
     "electricity": "lightsalmon",
     "hydro-ror": "aqua",
@@ -36,10 +36,7 @@ color = {
     "storage": "green",
     "other": "red",
     "mixed": "saddlebrown",
-    "mixed-gt": "darkcyan",
-    "mixed-chp": "saddlebrown",
-    "chp": "red",
-    "NONE": "blue",
+    "mixed-st": "darkcyan",
 }
 
 color_dict = {name: colors.to_hex(color) for name, color in color.items()}
@@ -70,7 +67,7 @@ def filling_level_plot(scenario, datapath="results"):
         "DE-air-caes",
         "DE-lithium-battery",
         "DE-hydro-phs",
-        "DE-hydro-reservoir",
+        "DE-hydro-rsv",
         "DE-lithium-battery",
     ]:
         data.append(
@@ -110,7 +107,7 @@ def hourly_plot(scenario, bus, datapath="results"):
     # kind of a hack to get only the technologies
     df.columns = [c.strip(bus + "-") for c in df.columns]
 
-    flexibility = ["import", "acaes", "phs", "lithium_battery", "battery"]
+    flexibility = ["import", "caes", "phs", "battery"]
 
     # create plot
     layout = go.Layout(
