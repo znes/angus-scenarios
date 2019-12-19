@@ -14,7 +14,7 @@ from oemof.tabular.datapackage import building
 
 
 def tyndp_generation_2018(
-    buses, vision, scenario, scenario_year, datapackage_dir, raw_data_path,
+    countries, vision, scenario, scenario_year, datapackage_dir, raw_data_path,
     ccgt_share=0.5
 ):
     """Extracts TYNDP2018 generation data and writes to datapackage for oemof
@@ -22,8 +22,8 @@ def tyndp_generation_2018(
 
     Parameters
     -----------
-    buses: list
-        List with buses to extract (Names in country codes)
+    countries: list
+        List with countries to extract (Names in country codes)
     vision: str
         TYNDP Vision (one of 2040 GCA, 2030 DG, etc.)
     scenario: str
@@ -67,26 +67,26 @@ def tyndp_generation_2018(
     ]
 
     newnames = [
-        "biomass-st",
-        "gas-ocgt",
-        "coal-st",
-        "hydro-phs",
-        "hydro-ror",
-        "hydro-rsv",
-        "lignite-st",
-        "uranium-st",
-        "oil-ocgt",
-        "mixed-st",
-        "other-res",
-        "solar-thermal",
-        "solar-pv",
-        "wind-onshore",
-        "wind-offshore",
+        ("biomass", "st"),
+        ("gas", "ocgt"),
+        ("coal", "st"),
+        ("hydro", "phs"),
+        ("hydro", "ror"),
+        ("hydro", "rsv"),
+        ("lignite", "st"),
+        ("uranium", "st"),
+        ("oil", "ocgt"),
+        ("mixed", "st"),
+        ("other", "res"),
+        ("solar", "thermal"),
+        ("solar", "pv"),
+        ("wind", "onshore"),
+        ("wind","offshore"),
     ]
 
     df = df.rename(columns=dict(zip(colnames, newnames)))
-    df["biomass-st"] += df["other-res"]
-    df.drop(["other-res"], axis=1, inplace=True)
+    df[("biomass", "st")] += df[("other", "res")]
+    df.drop([("other", "res")], axis=1, inplace=True)
     df.index.name = "zones"
     df.reset_index(inplace=True)
     df = pd.concat(
@@ -102,12 +102,12 @@ def tyndp_generation_2018(
 
     df = df.groupby("country").sum()
 
-    df["gas-ccgt"] = df["gas-ocgt"] * ccgt_share
-    df["gas-ocgt"] = df["gas-ocgt"] * (1 - ccgt_share)
+    df[("gas", "ccgt")] = df[("gas", "ocgt")] * ccgt_share
+    df[("gas", "ocgt")] = df[("gas", "ocgt")] * (1 - ccgt_share)
 
     # as raw data is divided in turbine and pump (where turbine is also from
     # pump storages as well as reservoirs)
-    df["hydro-rsv"] = (df["hydro-rsv"] - df["hydro-phs"]).clip(0)
+    df[("hydro", "rsv")] = (df[("hydro", "rsv")] - df[("hydro", "phs")]).clip(0)
 
 
     technologies = pd.DataFrame(
@@ -141,101 +141,9 @@ def tyndp_generation_2018(
         .sort_index()
     )
 
-    elements = {}
-
-    for b in buses:
-        for col in df.columns:
-            element = {}
-            tech = col.split("-")[1]
-            carrier = col.split("-")[0]
-
-            elements["-".join([b, carrier, tech])] = element
-            if tech in ["onshore", "offshore", "pv"]:
-
-                profile = "-".join([b, tech, "profile"])
-                e = {
-                    "bus": b + "-electricity",
-                    "tech": tech,
-                    "carrier": carrier,
-                    "capacity": df.at[b, col],
-                    "type": "volatile",
-                    "profile": profile,
-                    "output_parameters": json.dumps({}),
-                }
-
-                element.update(e)
-
-            elif carrier in [
-                "gas",
-                "coal",
-                "lignite",
-                "oil",
-                "uranium",
-                "mixed",
-            ]:
-                marginal_cost = float(
-                    carrier_cost.at[(scenario, carrier), "value"]
-                    + emission_factors.at[carrier, "value"]
-                    * carrier_cost.at[(scenario, "co2"), "value"]
-                ) / float(
-                    technologies.loc[
-                        (scenario_year, "efficiency", carrier, tech), "value"
-                    ]
-                ) + float(
-                    technologies.loc[(2050, "vom", carrier, tech), "value"]
-                )
-
-                element.update(
-                    {
-                        "carrier": carrier,
-                        "carrier_cost": carrier_cost.at[
-                            (scenario, carrier), "value"
-                        ],
-                        "efficiency": float(
-                            technologies.loc[
-                                (scenario_year, "efficiency", carrier, tech),
-                                "value",
-                            ]
-                        ),
-                        "capacity": df.at[b, col],
-                        "bus": b + "-electricity",
-                        "type": "dispatchable",
-                        "marginal_cost": marginal_cost,
-                        "profile": technologies.loc[
-                            (2050, "avf", carrier, tech), "value"
-                        ],
-                        "tech": tech,
-                        "output_parameters": json.dumps(
-                            {
-                                "emission_factor": float(
-                                    emission_factors.at[carrier, "value"] /
-                                technologies.loc[
-                                    (scenario_year, "efficiency", carrier, tech), "value"
-                                ])
-                            }
-                        )
-                    }
-                )
-
-            elif carrier == "biomass":
-                element.update(
-                    {
-                        "carrier": carrier,
-                        "capacity": df.at[b, col],
-                        "to_bus": b + "-electricity",
-                        "efficiency": technologies.loc[
-                            (scenario_year, "efficiency", carrier, "st"),
-                            "value",
-                        ],
-                        "from_bus": b + "-biomass-bus",
-                        "type": "conversion",
-                        "output_parameters": json.dumps({}),
-                        "carrier_cost": float(
-                            carrier_cost.at[(scenario, carrier), "value"]
-                        ),
-                        "tech": tech,
-                    }
-                )
+    elements = _elements(
+        countries, df, technologies, carrier_cost, emission_factors,
+        scenario, scenario_year)
 
     df = pd.DataFrame.from_dict(elements, orient="index")
     df = df[df.capacity != 0]
@@ -795,6 +703,7 @@ def ehighway_generation(
     )
     df["CCGT"] = df["TOTAL GAS"] * ccgt_share
     df["OCGT"] = df["TOTAL GAS"] * (1 - ccgt_share)
+
     techs = {
         "Wind": "onshore",
         "Wind         North Sea": "offshore",
@@ -807,6 +716,7 @@ def ehighway_generation(
         "Hydro with reservoir": "rsv",
     }
 
+    
     elements = {}
     for b in df.index:
         for tech_key, tech in techs.items():
@@ -971,3 +881,100 @@ def shortage(datapackage_dir):
     elements.set_index("name", inplace=True)
 
     building.write_elements("shortage.csv", elements, directory=path)
+
+
+
+def _elements(countries, data, technologies, carrier_cost, emission_factors,
+               scenario, scenario_year):
+    elements = {}
+    for b in countries:
+        for carrier, tech in data.columns:
+
+            element = {}
+            elements["-".join([b, carrier, tech])] = element
+
+            if tech in ["onshore", "offshore", "pv"]:
+
+                profile = "-".join([b, tech, "profile"])
+                element.update({
+                    "bus": b + "-electricity",
+                    "tech": tech,
+                    "carrier": carrier,
+                    "capacity": data.at[b, (carrier, tech)],
+                    "type": "volatile",
+                    "profile": profile,
+                    "output_parameters": json.dumps({}),
+                })
+
+            elif carrier in [
+                "gas",
+                "coal",
+                "lignite",
+                "oil",
+                "uranium",
+                "mixed",
+            ]:
+                marginal_cost = float(
+                    carrier_cost.at[(scenario, carrier), "value"]
+                    + emission_factors.at[carrier, "value"]
+                    * carrier_cost.at[(scenario, "co2"), "value"]
+                ) / float(
+                    technologies.loc[
+                        (scenario_year, "efficiency", carrier, tech), "value"
+                    ]
+                ) + float(
+                    technologies.loc[(2050, "vom", carrier, tech), "value"]
+                )
+
+                emission_factor = float(
+                    emission_factors.at[carrier, "value"] /
+                    technologies.loc[
+                        (scenario_year, "efficiency", carrier, tech), "value"]
+                )
+
+                element.update(
+                    {
+                        "carrier": carrier,
+                        "carrier_cost": carrier_cost.at[
+                            (scenario, carrier), "value"
+                        ],
+                        "efficiency": float(
+                            technologies.loc[
+                                (scenario_year, "efficiency", carrier, tech),
+                                "value",
+                            ]
+                        ),
+                        "capacity": data.at[b, (carrier, tech)],
+                        "bus": b + "-electricity",
+                        "type": "dispatchable",
+                        "marginal_cost": marginal_cost,
+                        "profile": technologies.loc[
+                            (2050, "avf", carrier, tech), "value"
+                        ],
+                        "tech": tech,
+                        "output_parameters": json.dumps({
+                            "emission_factor": emission_factor}
+                        )
+                    }
+                )
+
+            elif carrier == "biomass":
+                element.update(
+                    {
+                        "carrier": carrier,
+                        "capacity": data.at[b, (carrier, tech)],
+                        "to_bus": b + "-electricity",
+                        "efficiency": technologies.loc[
+                            (scenario_year, "efficiency", carrier, "st"),
+                            "value",
+                        ],
+                        "from_bus": b + "-biomass-bus",
+                        "type": "conversion",
+                        "output_parameters": json.dumps({}),
+                        "carrier_cost": float(
+                            carrier_cost.at[(scenario, carrier), "value"]
+                        ),
+                        "tech": tech,
+                    }
+                )
+    return elements
