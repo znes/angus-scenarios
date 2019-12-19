@@ -482,149 +482,15 @@ def german_energy_system(
 
     elements = {}
 
-    b = "DE"
-    for carrier, tech in data.index:
+    # prepare data for usage in _elements() function
+    countries = ["DE"]
+    _data = data["value"].T
+    _data.name = "DE"
+    _data = _data.to_frame().T
 
-        element = {}
-
-        if carrier in ["wind", "solar"]:
-            if "onshore" == tech:
-                profile = b + "-onshore-profile"
-                capacity = data.loc[("wind", "onshore"), "value"]
-            elif "offshore" == tech:
-                profile = b + "-offshore-profile"
-                capacity = data.loc[("wind", "offshore"), "value"]
-            elif "pv" in tech:
-                profile = b + "-pv-profile"
-                capacity = data.loc[("solar", "pv"), "value"]
-
-            elements["-".join([b, carrier, tech])] = element
-            e = {
-                "bus": b + "-electricity",
-                "tech": tech,
-                "carrier": carrier,
-                "capacity": capacity,
-                "type": "volatile",
-                "output_parameters": json.dumps({}),
-                "profile": profile,
-            }
-
-            element.update(e)
-
-        elif carrier in ["gas", "coal", "lignite", "oil", "uranium", "mixed"]:
-            elements["-".join([b, carrier, tech])] = element
-
-            marginal_cost = float(
-                carrier_cost.at[(cost_scenario, carrier), "value"]
-                + emission_factors.at[carrier, "value"]
-                * carrier_cost.at[(cost_scenario, "co2"), "value"]
-            ) / float(
-                technologies.loc[
-                    (scenario_year, "efficiency", carrier, tech), "value"
-                ]
-            ) + float(
-                technologies.loc[(2050, "vom", carrier, tech), "value"]
-            )
-
-            element.update(
-                {
-                    "carrier": carrier,
-                    "carrier_cost": carrier_cost.at[
-                        (cost_scenario, carrier), "value"
-                    ],
-                    "efficiency": float(
-                        technologies.loc[
-                            (scenario_year, "efficiency", carrier, tech),
-                            "value",
-                        ]
-                    ),
-                    "capacity": data.at[(carrier, tech), "value"],
-                    "bus": b + "-electricity",
-                    "type": "dispatchable",
-                    "marginal_cost": marginal_cost,
-                    "profile": technologies.loc[
-                        (2050, "avf", carrier, tech), "value"
-                    ],
-                    "tech": tech,
-                    "output_parameters": json.dumps(
-                        {
-                            "emission_factor": float(
-                                emission_factors.at[carrier, "value"] /
-                            technologies.loc[
-                                (scenario_year, "efficiency", carrier, tech), "value"
-                            ]
-                            )
-                        }
-                    ),
-                }
-            )
-
-        elif carrier == "biomass":
-            elements["-".join([b, carrier, tech])] = element
-
-            element.update(
-                {
-                    "carrier": carrier,
-                    "capacity": data.loc[(carrier, tech), "value"],
-                    "to_bus": b + "-electricity",
-                    "efficiency": technologies.loc[
-                        (scenario_year, "efficiency", "biomass", "st"), "value"
-                    ],
-                    "maringal_cost": technologies.loc[
-                        (2050, "vom", "biomass", "st"), "value"
-                    ],
-                    "from_bus": b + "-biomass-bus",
-                    "type": "conversion",
-                    "output_parameters": json.dumps({}),
-                    "carrier_cost": float(
-                        carrier_cost.at[(cost_scenario, carrier), "value"]
-                    ),
-                    "tech": "st",
-                }
-            )
-
-        elif tech in ["battery", "caes"]:
-            elements["-".join([b, carrier, tech])] = element
-            element.update(
-                {
-                    "storage_capacity": float(
-                        technologies.loc[
-                            (scenario_year, "storage_capacity", carrier, tech),
-                            "value",
-                        ]
-                        * data.at[(carrier, tech), "value"]
-                    ),
-                    "capacity": float(data.at[(carrier, tech), "value"]),
-                    "bus": "DE-electricity",
-                    "tech": tech,
-                    "carrier": carrier,
-                    "type": "storage",
-                    "efficiency": float(
-                        technologies.loc[
-                            (scenario_year, "efficiency", carrier, tech),
-                            "value",
-                        ]
-                    )
-                    ** 0.5,  # convert roundtrip to input / output efficiency
-                    "marginal_cost": 0,
-                    "loss": 0,
-                }
-            )
-
-        elif "load" in tech:
-            # remove once heat components are merged
-            if carrier != "heat":
-                elements["-".join([b, carrier, tech])] = element
-                element.update(
-                    {
-                        "amount": data.at[(carrier, tech), "value"] * 1000,
-                        "bus": b + "-electricity",
-                        "tech": tech,
-                        "carrier": carrier,
-                        "type": "load",
-                        "profile": "-".join([b, carrier, tech, "profile"]),
-                    }
-                )
+    elements = _elements(
+        countries, _data, technologies, carrier_cost, emission_factors,
+        cost_scenario, scenario_year)
 
     df = pd.DataFrame.from_dict(elements, orient="index")
 
@@ -880,4 +746,49 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                         "tech": tech,
                     }
                 )
+
+            elif tech in ["battery", "caes"]:
+                elements["-".join([b, carrier, tech])] = element
+                element.update(
+                    {
+                        "storage_capacity": float(
+                            float(technologies.loc[
+                                (scenario_year,
+                                 "storage_capacity",
+                                 carrier,
+                                 tech),
+                                "value",
+                            ])
+                            * float(data.at[b, (carrier, tech)])
+                        ),
+                        "capacity": float(data.at[b, (carrier, tech)]),
+                        "bus": b + "-electricity",
+                        "tech": tech,
+                        "carrier": carrier,
+                        "type": "storage",
+                        "efficiency": float(
+                            technologies.loc[
+                                (scenario_year, "efficiency", carrier, tech),
+                                "value",
+                            ])
+                        ** 0.5,  # convert roundtrip to input / output efficiency
+                        "marginal_cost": 0,
+                        "loss": 0,
+                    }
+                )
+
+            elif "load" in tech:
+                # remove once heat components are merged
+                if carrier != "heat":
+                    elements["-".join([b, carrier, tech])] = element
+                    element.update(
+                        {
+                            "amount": data.at[b, (carrier, tech)] * 1000,
+                            "bus": b + "-electricity",
+                            "tech": tech,
+                            "carrier": carrier,
+                            "type": "load",
+                            "profile": "-".join([b, carrier, tech, "profile"]),
+                        }
+                    )
     return elements
