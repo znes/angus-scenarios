@@ -9,9 +9,9 @@ EU_generation = "2030 ST" # european generation mix based on TYNDP
 cost = "2030C" # carrier cost (gas, co2, etc.)
 grid = "2030"
 year = 2030
-weather_year = 2012 # 2011, 2012
+weather_year = 2011 # 2011, 2012
 grid_loss = 0.05
-renewable_profiles = "ninja" # emhires
+renewable_profiles = "eGo" # emhires
 
 [buses]
 

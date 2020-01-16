@@ -26,31 +26,43 @@ def eGo_wind_profiles(
         and `ninja_wind_europe_v1.1_current_national.csv`
         is located
     """
-    onshore_path = os.path.join(raw_data_path, "wind_onshore_per_country.csv")
-    offshore_path = os.path.join(raw_data_path, "wind_offshore_per_country.csv")
+    filepath = building.download_data(
+        "https://github.com/znes/FlEnS/archive/master.zip",
+        unzip_file="FlEnS-master/open_eGo/NEP_2035/nep_2035_seq.csv",
+        directory="/home/admin/oemof-raw-data",
+    )
+    wind = pd.read_csv(
+        filepath, parse_dates=True,
+        index_col=0, header=[0,1,2,3,4])
+    wind.columns = wind.columns.droplevel([0,2,3,4])
 
-    year = str(weather_year)
+    if int(scenario_year) > 2040:
+        filepath_2050 = building.download_data(
+            "https://github.com/znes/FlEnS/archive/master.zip",
+            unzip_file="FlEnS-master/Socio-ecologic/2050_seq.csv",
+            directory="/home/admin/oemof-raw-data",
+        )
+        wind_2050 = pd.read_csv(
+            filepath_2050, parse_dates=True,
+            index_col=0, header=[0,1,2,3,4])
+        wind_2050.columns = wind_2050.columns.droplevel([0,2,3,4])
 
-    onshore = pd.read_csv(onshore_path, index_col=[0], parse_dates=True)
-    # for lead year...
-    onshore = onshore[
-        ~((onshore.index.month == 2) & (onshore.index.day == 29))
-    ]
+        wind_2050["DE_wind_offshore"]  =  (
+            wind_2050["DEdr19_wind_offshore"] * 0.2 +
+            wind_2050["DEdr20_wind_offshore"] * 0.4 +
+            wind_2050["DEdr21_wind_offshore"] * 0.4)
+        wind_2050["DE_wind_onshore"] = wind["DE_wind_onshore"]
+        wind = wind_2050
 
-    offshore = pd.read_csv(offshore_path, index_col=[0], parse_dates=True)
-    offshore = offshore[
-        ~((offshore.index.month == 2) & (offshore.index.day == 29))
-    ]
-
-    sequences_df = pd.DataFrame(index=onshore.loc[year].index)
+    sequences_df = pd.DataFrame()
 
     for c in buses:
-        if c in onshore.columns:
-            sequences_df[c + "-onshore-profile"] = onshore[c]
+        if c + "_wind_offshore" in wind.columns:
+            sequences_df[c + "-offshore-profile"] = wind[c + "_wind_offshore"]
 
     for c in buses:
-        if c in offshore.columns:
-            sequences_df[c + "-offshore-profile"] = offshore[c]
+        if c + "_wind_onshore" in wind.columns:
+            sequences_df[c + "-onshore-profile"] = wind[c + "_wind_onshore"]
 
 
     sequences_df.index = building.timeindex(year=str(scenario_year))
@@ -60,7 +72,7 @@ def eGo_wind_profiles(
         sequences_df,
         directory=os.path.join(datapackage_dir, "data", "sequences"),
     )
-    
+
 def ninja_pv_profiles(
     buses, weather_year, scenario_year, datapackage_dir, raw_data_path
 ):
@@ -302,55 +314,3 @@ def emhires_pv_profiles(
         df,
         directory=os.path.join(datapackage_dir, "data", "sequences"),
     )
-
-
-if __name__ == "__main__":
-    year = "2012"
-    profiles = ninja_wind_profiles
-    profiles(
-        ["DE"],
-        year,
-        2030,
-        os.path.join("datapackages", "ninja"),
-        os.path.join(os.expanduser("~", "fuchur-raw-data")),
-    )
-
-
-#
-# from oemof.tabular.datapackage import building
-# import pandas as pd
-# import os
-# seq = building.download_data(
-#     "https://github.com/znes/FlEnS/archive/master.zip",
-#     unzip_file= "FlEnS-master/",
-#     directory="/home/admin/fuchur-raw-data")
-# long = pd.read_csv(
-#     os.path.join(seq, "FlEnS-master", "Socio-ecologic", "2050_seq.csv"),
-#     header=[0,1,2,3,4,5], parse_dates=True, index_col=0)
-# long.columns = long.columns.droplevel([0,2,3,4])
-# import pandas as pd
-# from oemof.tabular.datapackage import building
-# heat_path = building.download_data(
-#     "https://gitlab.com/hotmaps/load_profile/load_profile_residential_heating_generic/raw/master/data/hotmaps_task_2.7_load_profile_residential_heating_generic.csv",
-#     directory="/home/admin/fuchur-raw-data")
-# df = pd.read_csv(heat_path)
-#
-# df = pd.concat(
-#     [
-#         pd.DataFrame(
-#             df["NUTS2_code"].apply(lambda row: [row[0:2], row[2:4]]).tolist(),
-#             columns=["nuts", "code"],
-#         ),
-#         df,
-#     ],
-#     axis=1,
-# )
-# df = df.set_index(['nuts', "code"])
-# df.loc["DE"].groupby(['temperature', 'hour']).mean()
-#
-# de = df.loc["DE"]
-# len(de['load'].unique())
-# de[(de['hour'] == 12) & (de["temperature"] == -11)]
-# # p = Package("https://gitlab.com/hotmaps/load_profile/load_profile_residential_heating_generic/raw/master/datapackage.json")
-# import pdb;pdb.set_trace()
-# #r = p.get_resource('lp_residential_heating_generic').read(keyed=True)
