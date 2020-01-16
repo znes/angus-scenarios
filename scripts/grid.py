@@ -159,8 +159,10 @@ def tyndp(buses, grid_loss, scenario, datapackage_dir, raw_data_path):
     )
 
     mapper = {
-        "2030C": ["CBA Capacities", "Unnamed: 3"],
+        "2030": ["CBA Capacities", "Unnamed: 3"],
         "2040GCA": ["Unnamed: 8", "Unnamed: 9"],
+        "2040ST": ["Unnamed: 5", "Unnamed: 6"],
+        "2040DG": ["Unnamed: 6", "Unnamed: 7"]
     }
 
     df = pd.read_excel(

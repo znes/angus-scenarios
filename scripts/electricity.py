@@ -8,13 +8,12 @@ from datapackage import Package
 
 import pandas as pd
 
-
 from oemof.tabular.datapackage import building
 
 
 def tyndp_generation_2018(
     countries, vision, scenario, scenario_year, datapackage_dir, raw_data_path,
-    ccgt_share=0.5
+    ccgt_share=0.66
 ):
     """Extracts TYNDP2018 generation data and writes to datapackage for oemof
     tabular usage
@@ -96,7 +95,7 @@ def tyndp_generation_2018(
             ),
             df,
         ],
-        axis=1,
+        axis=1, sort=True,
     )
 
     df = df.groupby("country").sum()
@@ -148,7 +147,7 @@ def tyndp_generation_2018(
     df = df[df.capacity != 0]
 
     # write elements to CSV-files
-    for element_type in ["dispatchable", "volatile", "conversion"]:
+    for element_type in ["dispatchable", "volatile", "conversion", "storage"]:
         building.write_elements(
             element_type + ".csv",
             df.loc[df["type"] == element_type].dropna(how="all", axis=1),
@@ -194,6 +193,7 @@ def german_energy_system(
         .set_index(["scenario", "year", "carrier", "tech"])
         .loc[(scenario_name, scenario_year)]
     )
+
 
     carrier_package = Package(
         "https://raw.githubusercontent.com/ZNES-datapackages/"
@@ -252,7 +252,7 @@ def ehighway_generation(
     scenario="100% RES",
     datapackage_dir=None,
     raw_data_path=None,
-    ccgt_share=0.5,
+    ccgt_share=0.66,
     scenario_year=2050
 ):
     """
@@ -283,6 +283,30 @@ def ehighway_generation(
         .get_resource("technology")
         .read(keyed=True)
     ).set_index(["year", "parameter", "carrier", "tech"])
+
+    storage_capacities = (
+        pd.DataFrame(
+            Package(
+                "https://raw.githubusercontent.com/ZNES-datapackages/"
+                "angus-input-data/master/capacities/datapackage.json"
+            )
+            .get_resource("storage-capacities")
+            .read(keyed=True)
+        )
+        .set_index(["year", "country"])
+        .loc[scenario_year]
+    )
+    storage_capacities.drop("phs",axis=1, inplace=True)
+
+    storage_capacities.rename(
+        columns={
+            "acaes": ("cavern", "acaes"),
+            "redox": ("redox", "battery"),
+            "lithium": ("lithium", "battery"),
+            "hydrogen": ("hydrogen", "storage")
+        }, inplace=True)
+
+
 
     carrier_package = Package(
         "https://raw.githubusercontent.com/ZNES-datapackages/"
@@ -321,6 +345,8 @@ def ehighway_generation(
     data.rename(columns=rename_cols, inplace=True)
 
     data = data[[i for i in rename_cols.values()]]
+
+    data = pd.concat([data, storage_capacities], axis=1, sort=True)
 
     elements = _elements(
         countries, data, technologies, carrier_cost, emission_factors,
@@ -388,13 +414,11 @@ def shortage(datapackage_dir):
     building.write_elements("shortage.csv", elements, directory=path)
 
 
-
 def _elements(countries, data, technologies, carrier_cost, emission_factors,
                scenario, scenario_year):
     elements = {}
     for b in countries:
         for carrier, tech in data.columns:
-
             element = {}
             elements["-".join([b, carrier, tech])] = element
 
@@ -429,6 +453,7 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                     ]
                 ) + float(
                     technologies.loc[(2050, "vom", carrier, tech), "value"]
+                    # always the same for all years therefore 2050 value is chosen
                 )
 
                 emission_factor = float(
@@ -440,9 +465,9 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                 element.update(
                     {
                         "carrier": carrier,
-                        "carrier_cost": carrier_cost.at[
+                        "carrier_cost": float(carrier_cost.at[
                             (scenario, carrier), "value"
-                        ],
+                        ]),
                         "efficiency": float(
                             technologies.loc[
                                 (scenario_year, "efficiency", carrier, tech),
@@ -483,14 +508,15 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                     }
                 )
 
-            elif tech in ["battery", "caes"]:
+            elif tech in ["battery", "acaes", "phs", "redox", "hydrogen",
+                          "storage"]:
                 elements["-".join([b, carrier, tech])] = element
                 element.update(
                     {
                         "storage_capacity": float(
                             float(technologies.loc[
                                 (scenario_year,
-                                 "storage_capacity",
+                                 "max_hours",
                                  carrier,
                                  tech),
                                 "value",

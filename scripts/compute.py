@@ -120,7 +120,6 @@ def compute(
     )
     supply_sum.columns = supply_sum.columns.droplevel(0)
     summary = supply_sum  # pd.concat([supply_sum, excess_share], axis=1)
-
     ## grid
     imports = pd.DataFrame()
     link_results = pp.component_results(m.es, m.results).get("link")
@@ -140,6 +139,13 @@ def compute(
             imports = pd.concat([imports, net_import], axis=1)
 
     summary["total_supply"] = summary.sum(axis=1)
+    summary["RE-share-supply"] = (
+        summary["wind-onshore"] +
+        summary["wind-offshore"] +
+        summary["biomass-st"] +
+        summary["hydro-ror"] +
+        summary["hydro-reservoir"] +
+        summary["solar-pv"]) / summary["total_supply"]
 
     summary["import"] = imports[imports > 0].sum() / 1e6 * temporal_resolution
     summary["export"] = imports[imports < 0].sum() / 1e6 * temporal_resolution
@@ -153,7 +159,7 @@ def compute(
 
 
 if __name__ == "__main__":
-    # compute("ANGUS2030-DE", "gurobi")
-    datapackages = [d for d in os.listdir("datapackages")]
-    p = mp.Pool(1)
-    p.map(compute, datapackages)
+    compute("ANGUS2050-eHighway", "gurobi")
+    # datapackages = [d for d in os.listdir("datapackages")]
+    # p = mp.Pool(1)
+    # p.map(compute, datapackages)

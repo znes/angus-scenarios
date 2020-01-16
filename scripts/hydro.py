@@ -247,8 +247,8 @@ def generation(config, datapackage_dir, raw_data_path):
                 ** (0.5),  # rountrip to input/output eta
             }
 
-    building.write_elements(
-        "phs.csv",
-        pd.DataFrame.from_dict(elements, orient="index"),
-        directory=os.path.join(datapackage_dir, "data", "elements"),
-    )
+    # building.write_elements(
+    #     "phs.csv",
+    #     pd.DataFrame.from_dict(elements, orient="index"),
+    #     directory=os.path.join(datapackage_dir, "data", "elements"),
+    # )

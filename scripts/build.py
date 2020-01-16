@@ -43,15 +43,19 @@ def build(config):
     # must come before generation of others because later manipulation below...
     hydro.generation(config, datapackage_dir, raw_data_path)
 
-    # for all countries add german capacities based
-    electricity.german_energy_system(
-        datapackage_dir,
-        raw_data_path,
-        scenario_name=config["scenario"]["DE_system"],
-        scenario_year=config["scenario"]["year"],
-        cost_scenario=config["scenario"]["cost"],
-        technologies=technologies,
-    )
+    if config["scenario"].get("DE_system") != "":
+        # for all countries add german capacities based
+        electricity.german_energy_system(
+            datapackage_dir,
+            raw_data_path,
+            scenario_name=config["scenario"]["DE_system"],
+            scenario_year=config["scenario"]["year"],
+            cost_scenario=config["scenario"]["cost"],
+            technologies=technologies,
+        )
+        DE_set = set(["DE"])
+    else:
+        DE_set = set()
 
     if config["scenario"]["year"] == 2050:
 
@@ -67,7 +71,7 @@ def build(config):
 
         # for 2050 add the ehighway loads for all non-german countries
         load.ehighway(
-            set(config["buses"]["electricity"]) - set(["DE"]),
+            set(config["buses"]["electricity"]) - DE_set,
             config["scenario"]["year"],
             config["scenario"]["EU_load"],
             datapackage_dir,
@@ -75,7 +79,7 @@ def build(config):
         )
         # for 2050 add the ehighway capacities capacity for all non-german
         electricity.ehighway_generation(
-            set(config["buses"]["electricity"]) - set(["DE"]),
+            set(config["buses"]["electricity"]) - DE_set,
             config["scenario"]["cost"],
             config["scenario"]["EU_generation"],
             datapackage_dir,
@@ -92,14 +96,14 @@ def build(config):
         )
 
         load.tyndp(
-            set(config["buses"]["electricity"]) - set(["DE"]),
+            set(config["buses"]["electricity"]) - DE_set,
             config["scenario"]["EU_load"],
             datapackage_dir,
             raw_data_path,
         )
 
         electricity.tyndp_generation_2018(
-            set(config["buses"]["electricity"]) - set(["DE"]),
+            set(config["buses"]["electricity"]) - DE_set,
             config["scenario"]["EU_generation"],
             config["scenario"]["cost"],
             config["scenario"]["year"],
@@ -119,6 +123,9 @@ def build(config):
     if config["scenario"]["renewable_profiles"] == "ninja":
         pv_profiles = capacity_factors.ninja_pv_profiles
         wind_profiles = capacity_factors.ninja_wind_profiles
+    elif config["scenario"]["renewable_profiles"] == "eGo":
+        pv_profiles = capacity_factors.ninja_pv_profiles
+        wind_profiles = capacity_factors.eGo_wind_profiles
     elif config["scenario"]["renewable_profiles"] == "emhires":
         pv_profiles = capacity_factors.emhires_pv_profiles
         wind_profiles = capacity_factors.emhires_wind_profiles
@@ -182,9 +189,10 @@ def build(config):
 
 
 if __name__ == "__main__":
-    scenarios = [
-        Scenario.from_path(os.path.join("scenarios", s))
-        for s in os.listdir("scenarios")
-    ]
-    p = mp.Pool(10)
-    p.map(build, scenarios)
+    # scenarios = [
+    #     Scenario.from_path(os.path.join("scenarios", s))
+    #     for s in os.listdir("scenarios")
+    # ]
+    # p = mp.Pool(10)
+    # p.map(build, scenarios)
+    build(Scenario.from_path(os.path.join("scenarios", "ANGUS2050-eHighway.toml")))

@@ -1,11 +1,11 @@
-title = "ANGUS2040"
+title = "ANGUS2040-GCA"
 description = "Scenario for ANGUS project, year 2040 (based on TYNDP2018, GCA)."
-name = "ANGUS2040"
+name = "ANGUS2040-GCA"
 
-parents = ["scenarios/ANGUS2030.toml"]
+parents = ["scenarios/ANGUS2030-ST.toml"]
 
 [scenario]
-DE_system = "ANGUS2040"
+DE_system = ""
 EU_load = "2040GCA" # european load
 EU_generation = "2040 GCA" # european generation mix based on TYNDP
 cost = "2040GCA" # carrier cost (gas, co2, etc.)

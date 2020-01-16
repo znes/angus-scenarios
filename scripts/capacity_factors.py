@@ -7,7 +7,60 @@ from datetime import datetime
 from oemof.tabular.datapackage import building
 import pandas as pd
 
+def eGo_wind_profiles(
+    buses, weather_year, scenario_year, datapackage_dir, raw_data_path
+):
+    """
+    Parameter
+    ---------
+    buses: array like
+        List with buses represented by iso country code
+    weather_year: integer or string
+        Year to select from raw data source
+    scenario_year: integer or string
+        Year to use for timeindex in tabular resource
+    datapackage_dir: string
+        Directory for tabular resource
+    raw_data_path: string
+        Path where raw data file `ninja_wind_europe_v1.1_current_national.csv`
+        and `ninja_wind_europe_v1.1_current_national.csv`
+        is located
+    """
+    onshore_path = os.path.join(raw_data_path, "wind_onshore_per_country.csv")
+    offshore_path = os.path.join(raw_data_path, "wind_offshore_per_country.csv")
 
+    year = str(weather_year)
+
+    onshore = pd.read_csv(onshore_path, index_col=[0], parse_dates=True)
+    # for lead year...
+    onshore = onshore[
+        ~((onshore.index.month == 2) & (onshore.index.day == 29))
+    ]
+
+    offshore = pd.read_csv(offshore_path, index_col=[0], parse_dates=True)
+    offshore = offshore[
+        ~((offshore.index.month == 2) & (offshore.index.day == 29))
+    ]
+
+    sequences_df = pd.DataFrame(index=onshore.loc[year].index)
+
+    for c in buses:
+        if c in onshore.columns:
+            sequences_df[c + "-onshore-profile"] = onshore[c]
+
+    for c in buses:
+        if c in offshore.columns:
+            sequences_df[c + "-offshore-profile"] = offshore[c]
+
+
+    sequences_df.index = building.timeindex(year=str(scenario_year))
+
+    building.write_sequences(
+        "volatile_profile.csv",
+        sequences_df,
+        directory=os.path.join(datapackage_dir, "data", "sequences"),
+    )
+    
 def ninja_pv_profiles(
     buses, weather_year, scenario_year, datapackage_dir, raw_data_path
 ):
