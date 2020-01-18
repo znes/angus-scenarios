@@ -9,8 +9,8 @@ from matplotlib import colors
 offline.init_notebook_mode()
 
 color = {
-    "caes": "brown",
-    "air-caes": "brown",
+    "acaes": "brown",
+    "cavern-acaes": "brown",
     "gas-ocgt": "gray",
     "gas-ccgt": "lightgray",
     "solar-pv": "gold",
@@ -22,6 +22,7 @@ color = {
     "hydro-ror": "aqua",
     "hydro-phs": "darkred",
     "hydro-reservoir": "magenta",
+    "hydrogen-storage": "skyblue",
     "biomass": "olivedrab",
     "uranium": "yellow",
     "hydro": "aqua",
@@ -64,11 +65,11 @@ def filling_level_plot(scenario, datapath="results"):
 
     data = []
     for storage in [
-        "DE-air-caes",
+        "DE-cavern-acaes",
         "DE-lithium-battery",
         "DE-hydro-phs",
-        "DE-hydro-rsv",
-        "DE-lithium-battery",
+        "DE-hydro-reservoir",
+        "DE-hydrogen-storage"
     ]:
         data.append(
             go.Scatter(
@@ -107,7 +108,7 @@ def hourly_plot(scenario, bus, datapath="results"):
     # kind of a hack to get only the technologies
     df.columns = [c.strip(bus + "-") for c in df.columns]
 
-    flexibility = ["import", "caes", "phs", "battery"]
+    flexibility = ["import", "acaes", "phs", "battery", "storage", "redox"]
 
     # create plot
     layout = go.Layout(

@@ -40,9 +40,6 @@ def build(config):
 
     biomass.add(config["buses"], datapackage_dir)
 
-    # must come before generation of others because later manipulation below...
-    hydro.generation(config, datapackage_dir, raw_data_path)
-
     if config["scenario"].get("DE_system") != "":
         # for all countries add german capacities based
         electricity.german_energy_system(
@@ -132,6 +129,9 @@ def build(config):
     else:
         pass
 
+    hydro.generation(config, config["scenario"]["year"],
+                     datapackage_dir, raw_data_path)
+
     pv_profiles(
         config["buses"]["electricity"],
         config["scenario"]["weather_year"],
@@ -195,4 +195,4 @@ if __name__ == "__main__":
     # ]
     # p = mp.Pool(10)
     # p.map(build, scenarios)
-    build(Scenario.from_path(os.path.join("scenarios", "ANGUS2050-eHighway.toml")))
+    build(Scenario.from_path(os.path.join("scenarios", "ANGUS2050a.toml")))

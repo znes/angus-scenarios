@@ -1,11 +1,11 @@
-title = "ANGUS2050-eHighway"
+title = "ANGUS2050a"
 description = "Scenario for ANGUS project, year 2050 (based on Ehighway 100 % RES)."
-name = "ANGUS2050-eHighway"
+name = "ANGUS2050a"
 
 parents = ["scenarios/ANGUS2030-ST.toml"]
 
 [scenario]
-DE_system = "ZNES2050"
+DE_system = "ANGUS2050a"
 EU_load = "100% RES" # european load
 EU_generation = "100% RES" # european generation mix based on
 cost = "2050-100RE" # carrier cost (gas, co2, etc.)

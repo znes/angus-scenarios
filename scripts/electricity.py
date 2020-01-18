@@ -107,7 +107,6 @@ def tyndp_generation_2018(
     # pump storages as well as reservoirs)
     df[("hydro", "rsv")] = (df[("hydro", "rsv")] - df[("hydro", "phs")]).clip(0)
 
-
     technologies = pd.DataFrame(
         # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
         Package(
@@ -337,7 +336,7 @@ def ehighway_generation(
         "PV": ("solar", "pv"),
         "OCGT": ("gas", "ocgt"),
         "CCGT": ("gas", "ccgt"),
-        "Biomass I": ("biomass", "st"), # use only regional biomass potential
+        "TOTAL Biomass": ("biomass", "st"),
         "RoR": ("hydro", "ror"),
         "PSP": ("hydro", "phs"),
         "Hydro with reservoir": ("hydro", "rsv"),
@@ -345,7 +344,6 @@ def ehighway_generation(
     data.rename(columns=rename_cols, inplace=True)
 
     data = data[[i for i in rename_cols.values()]]
-
     data = pd.concat([data, storage_capacities], axis=1, sort=True)
 
     elements = _elements(
@@ -434,6 +432,18 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                     "profile": profile,
                     "output_parameters": json.dumps({}),
                 })
+            # elif tech  == "ror":
+            #
+            #     profile = "-".join([b, tech, "profile"])
+            #     element.update({
+            #         "bus": b + "-electricity",
+            #         "tech": tech,
+            #         "carrier": carrier,
+            #         "capacity": data.at[b, (carrier, tech)],
+            #         "type": "volatile",
+            #         "profifle": profile,
+            #         "output_parameters": json.dumps({}),
+            #     })
 
             elif carrier in [
                 "gas",
@@ -508,7 +518,7 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                     }
                 )
 
-            elif tech in ["battery", "acaes", "phs", "redox", "hydrogen",
+            elif tech in ["battery", "acaes", "redox", "hydrogen",
                           "storage"]:
                 elements["-".join([b, carrier, tech])] = element
                 element.update(

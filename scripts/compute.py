@@ -25,8 +25,8 @@ def compute(
     scenario_path = os.path.join("results", datapackage)
     if not os.path.exists(scenario_path):
         os.makedirs(scenario_path)
-
     output_path = os.path.join(scenario_path, "output")
+
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
@@ -103,9 +103,11 @@ def compute(
                 "conversion",
                 "backpressure",
                 "extraction",
+            #    "storage",
                 "reservoir",
             ],
         )
+        #.clip(0)
         .sum()
         .reset_index()
     )
@@ -159,7 +161,7 @@ def compute(
 
 
 if __name__ == "__main__":
-    compute("ANGUS2050-eHighway", "gurobi")
+    compute("ANGUS2050a", "gurobi")
     # datapackages = [d for d in os.listdir("datapackages")]
     # p = mp.Pool(1)
     # p.map(compute, datapackages)

@@ -10,7 +10,7 @@ cost = "2030C" # carrier cost (gas, co2, etc.)
 grid = "2030"
 year = 2030
 weather_year = 2011 # 2011, 2012
-grid_loss = 0.05
+grid_loss = 0.03
 renewable_profiles = "eGo" # emhires
 
 [buses]
