@@ -1,89 +1,122 @@
+---
+title: ANGUS II Scenario Description
+author: Simon Hilpert and Clemens Wingenbach
+date: January, 2020
+header: This is fancy
+footer: So is this
+geometry: margin=2.5cm
+abstract:
 
-# ANGUS II Scenario description
+header-includes: |
+    \usepackage{graphicx}
+    \usepackage{caption}
+    \usepackage{subcaption}
+---
 
+# Background
 
-## Overview
+The ANGUS scenarios and their have been developed
+to model a pathway towards 100% renewable energy system in Germany. The assessed
+system aims to adhere with the COP paris agreement, i.e. providing a CO2-neutral
+energy supply in Germany. The developed scenarios are based on the TYNDP2018,
+the NEP2019, the
+e-Highway 100%-RES scenario and the UBA RESCUE scenarios. Their main purpuse
+is to generate storage profiles (power, energy) to assess underground storage
+technologies with regard to techno-ecnomic indicators. Therefore, the
+shadow prices of the developed techno-economic energy system model play an
+important role as economic signal for the storage dispatch and the model coupling
+(s. ANGUS Case Studies). Hence, high priority is given to sensitivies that have
+major effect on the storage dispatch and requirements of the future german
+energy system. The german energy system is modelled with greater detail as the
+neigboring countries due to the regional focus of this country.
 
-The developed scenarios are based on the TYNDP2018, the NEP2019, the e-Highway 100%RES
-scenario and the UBA RESCUE scenarios.
-
-For the non-german countries the following data has been used:
-
-* 2030: TYNDP2018 DG (distributed generation vision)
-* 2040: TYNDP2018 2040 GCA (global climate action vision)
-* 2050: E-Highway 100% RES
-
-The e-Highway2050 [ehighway]  has been funded by the European Commission.
-The project aimed develop
-a plan for the European transmission network from 2020 to 2050. One important
-part of this study is the support of EU’s overall policy objectives
-with regard to energy. The study is builds upon the TYNDP2016 and includes
-scenarios for 100% renewable energy supply in 2050. The TYNDP is developed
+## Existing Scenarios
+The *Netzentwicklungsplan (NEP)* is developed by the German TSOs to plan
+transmission grid in Germany. The NEP is based on a broad public consultation
+phase to enable high acceptance of planned grid expansion. Similarly, the Ten Year
+Netwok Development Plan
+(TYNDP) is developed by the European TSOs with regard to the European grid.
+The process of the national NEP and the TYNDP is aligned to ensure coherent national
+and international planning.  The scenarios in both of these plans reflect current
+and expected socio-economic developments as well as relevant policy decisions.
+Due to the public consultation and their prominent nature, these scenarios constitute
+import visions for the future Eurpean energy system. However, both plans are
+focussin on the short to mid-term perpective. Therefore, within the ANGUS project
+another prominent scenario development project, the e-Highway2050 project, is
+used as a foundation for the  scenario development.
+The e-Highway2050 project has been funded by the European Commission.
+The project aimed develop a plan for the European transmission network from 2020
+to 2050. One important part of this study is the support of EU’s overall policy
+objectives with regard to energy. The study is builds upon the TYNDP2016 and
+includes scenarios for 100% renewable energy supply in 2050. The TYNDP is developed
 by the network of European TSO (ENTSOE), therefore it also plays an important
 role for the NEP which is developed by the four german TSO.
 
-For Germany the starting point for the pathyways is the NEP2019:
 
- * 2030: NEP 2019 C
- * 2040: Interpolated (TYNDP2018)
- * 2050: RESCUE, E-Highway
 
-The scenarios from literature and their different visions have been selected
-to model a pathway towards 100% renewable energy system in Germany to
-adhere to the COP paris agreement. As the e-Highway scenarios are based on the
-TYNDP2016 and the NEP2019 is aligned with the TYNDP2018, the scenario for
-the year 2050 has been adapted for the focus country of Germany.
+# Scenario Assumptions
 
-## Assumptions
-
-### Spatial and temporal resolution
+## Spatial and temporal resolution
 
 **Assumptions**: The scenarios model the western europe energy system with one
-node per country, i.e. reflecting the market zones. Countries modelled are:
-**AT, BE, CH, CZ, DE, DK, FR, IT, NL, NO, PL, SE.**
+node per country. Countries modelled are:
+**AT, BE, CH, CZ, DE, DK, FR, IT, LU, NL, NO, PL, SE.**
  The model simulates the the system on an hourly basis for one year using a
- perfect foresight approach with the years 2030, 2040 and 2050.
+ perfect foresight approach with the years 2030 and 2050.
 
 **Implications & Limitations**: Intra-country grid constraints are not
 reflected by the model. Hence, renewable energy  curtailment and/or storage
 demand may be underestimated.
 
+## Grid
+
+The grid for 2030 and 2040 is based on the TYNDP2018 (s. Annex), while the grid for
+2050 is based on the e-Highway 100% RES scenario. Figure \ref{grid_2050} shows
+the installed transmission capacities of the 2050 electricity system. The transmission
+system is modelled with a transhipment approach assuming 0.03 loss on the lines.
+
+![Installed tranmission capacities in 2050\label{grid_2050}](grid-scenarioANGUS2050.pdf){width=60%}
+
+
 ## Demand
 
-## Conventional electricity demand
-The german efficiency goals to reduce the electricity by 10% until 2020 and 25%
-by 2050 % compared to 2008 levels (538.4 TWh) are ambitious but necessary.
-Development strongly depends on demographic and economic development
-as well as implemented efficiency measures.  While in the basis scenario of the
-german Langfristszenarien 441.2 TWh (2030) and 417.2 TWh (2050) are consumed by
-conventional electricity applications, the demand in the NEP2019 scenarios for
-2030 is higher 477 TWh.
+### Conventional electricity demand
+The german goals regarding efficiency aim to reduce the electricity demand
+by 10% until 2020 and 25% by 2050 % compared to 2008 levels (403.8 TWh).  
+The development of future electricity demand strongly depends on demographic and
+economic development as well as implemented efficiency measures.
+In literature, different values can be found. Assumptions regarding the
+electricity demand are an important driving  factor for the energy system.
+At the same time these values come with a high degree of uncertainty
+(Result of the ANGUS Scenario Workshop). While the *Basis Szenario* of the
+German *Langfristszenarien* the conventional electricity demand accounts for
+441.2 TWh in 2030 and 417.2 TWh in 2050 respectively, the demand in the NEP2019
+scenarios for 2030 is slightly higher (477 TWh).
 
-For the ANGUS scenarios the NEP2019 Demand of 477 TWh for 2030 decreases
-until 2050 to 403.8 TWh (-25 % compared to 2008).
-
-## Sector coupling
-Despite a decreasing demand due to efficiency measure,  the electrification of other
-sectors (heat, transport) will create additional demand for electricity.
+### Sector coupling
+Despite a decreasing demand due to efficiency measures, the electrification
+of other sectors (heat, transport) will create an additional demand for electricity.
 Currently the heat demand for residential heating accounts for 122.4 TWh hotwater
-and 678.5 TWh space heating (2017). The german goals 60 to 80% reduction in heat
-demand. With 436.8 TWh (GL) and 246.2 (GS) in the RESCUE scenarios
-the reduction is approx. 50 % and 72 % resp. compared to 2008 (889 TWh).
+and 678.5 TWh space heating (2017). The German goverment set a goal of 60-80%
+reduction for this sector 2050. These values are very ambitious, as current
+values of insulation are lacking behind necessary rates. Heat demand in the
+RESCUE scenarios ranges from 436.8 TWh (GL) to 246.2 TWh (GS). These amounts
+ correspond to a reduction of approx. 72 % to 50 % compared to 2008 (889 TWh).
+The supply for this heat demand is heavily based electricity (heatpumps) 74.6 %
+(GS) and 65 % (GL). The remaining energy is provided by district heating 62.4 TWh
+(GS) and in the case of the GL also additional decentral gas boilers.
 
-The supply fot this heat demand is based on electricity (heatpumps) to 74.6 % (GS)
-and 65 % (GL). The remaining energy is provided by district heating 62.4 TWh (GS)
-and in the case of the GL also additional decentral gas boilers.
-
-NEP2019 2030C 29 TWh for heatpumps in residential heating and 25 TWh additional demand
-for electric vehicles. In the BMWI 17.8 TWh electricity for heatpumps is assumend.
-These values are in the range with the RESCUE green late (GL) and green supreme (GS)
-scenarios with 57 TWh_th and 95 TWh_th respectively (assuming coeffienct of
-performance of appr. 3). Therefore, for 2040 and 2050 these both RESCUE scenarios
-are used as a basis for additional electric heat. For consistency, the electric
-demand is also based on these two RESCUE scenarios.
+In the NEP2019 2030C scenario additional 29 TWh electricity from heatpumps in
+residential heating and 25 TWh additional demand for electric vehicles are consumed.
+In contrast, the BMWI scenarios 17.8 TWh electricity for
+heatpumps is consumed. These values are in the range with the RESCUE green
+late (GL) and green supreme (GS) scenarios with 57 TWh_th and 95 TWh_th respectively
+(assuming coeffienct of performance of appr. 3). Therefore, for 2050  both RESCUE
+scenarios are used as a basis for additional electricity demand due to space heating.
 
 Demand profiles are calculated from the OPSD dataset of the ENTSOE
 timeseries for the selected weather year (2012).
+
 
 *Implications & Limitations*:
 
@@ -91,108 +124,162 @@ timeseries for the selected weather year (2012).
 flexibilities like smart operation of certain applications and inducstry
 processes are not modelled.
 * The model only covers the residential hotwater and space heating demand.
+* EVH are modelled without specific profile for charging / discharging but only
+with a constant additional base load.
+
+
 
 ## Generation capacity
 
-For Germany installed capacities of the NEPScenario 2019 2030C are implemented.
+The different scenarios are based on the NEP2019, TYNDP2018 and the e-Highway
+project.
 
-| name          |   ANGUS2030 |   ANGUS2040 |   ANGUS2050 |
-|:--------------|------------:|------------:|------------:|
-| coal-st       |        8100 |        4000 |           0 |
-| gas-ccgt      |       23400 |       30000 |       13000 |
-| gas-ocgt      |       10000 |           0 |           0 |
-| lignite-st    |        9000 |        5000 |           0 |
-| mixed-st      |        4100 |        4100 |        2000 |
-| oil-ocgt      |         900 |         450 |           0 |
-| solar-pv      |      104500 |      127250 |      150000 |
-| wind-offshore |       17000 |       26000 |       35000 |
-| wind-onshore  |       85500 |      105250 |      125000 |
+* NEP2030C: Installed capacities in Germany are based on the NEP2019 scenario 2030C. The
+capacities of neigboring countries are based on the TYNDP2018-2030ST vision. The
+renewable share of produced energy in Germany in this scenario is approx. 68 %.
+* 2040GCA: This scenario is based on the TYNDP2018-GCA vision.
+* 2050ZNES: The base scenario is the e-Highway 100 RES scenario. This scenario
+strongly depends on hydro capacity expansion in Norway and also substantial biomass
+capacitiy/energy. Based on the input data, this scenario has an renewable
+energy supply share of approx. 95 % .
+* 2050ANGUS: Therefore, the adapted ANGUS scenarios haven been developed to
+describe 100% renewable energy scenarios with different sensitivies such
+as the no-biomass (nb).
 
+The installed capacities in Germany are shown in the Figure \ref{installed_capacities}
+below.  
 
-In the TYNDP2018 and Ehighway scenario gas fired power plants are not seperated
-into CCGT and OCGT. Therefore a factor of 0.5 [ISE2011] is used to split the
-total gas capacity into these to technologies.
+![Installed generation capacity in 2050\label{installed_capacities}](installed_capacities.pdf){width=100%}
 
-### Conventional energies
+Note that only the scenarios 2030NEPC, 2040GCA, 2050ANGUS-(nb) depict a path towards
+100% renewable energy supply.
 
-Efficiencies and commodity costs are based on the TYNDP2018 and the NEP2030C for
-2030. The availability factor (avf) of technologies and variable
-operation and maintenance cost (vom) are the same for all scenarios.
-The avf is based on the PRIMES model assumptions.[PRIMES2016] For detailed data
-see Annex I.
+## Renewables
 
-### Renewable Energies
-
-For the renewable profiles of wind and pv timeseries of renewables ninja has
-been used. The maximum biomass potential per country the hotmaps potential is used.
-
-Hydro data is based on the TYNDP2018 GCA (global climate action) vision.
-However it should be noted, that due to the low cost and the limited potential
-of hydro power, the installed capacities within the vision and years of the TYNDP
-do not differ significantly.
+For 2030 and 2040 the reservoir data has been calculated as follows:
 
 * The reservoir (rsv) capacity is calculated by substracting the column 'hydro-pump
 from column 'hydro turbine' in the original data source. Therefore, it is assumed,
-that each pumped hydro storage (phs) have equal pump/turbine capacities.
-* The max-hours for phs is based on Geth et al. 2018.
-* The max-hours for rsv is calculated for each country based on the Restore2050 data, where
-rsv storage capacity in TWh is provided in addition to the installed capacity.
-It is assumed that  new rsv plants will have the same reservoir sizes in
+that each pumped hydro storage (phs) has equal pump/turbine capacities.
+* The max-hours (energy capacity) for PHS is based on Geth et al. 2018.
+* The max-hours for rsv is calculated for each country based on the Restore2050
+data, where rsv storage capacity in TWh is provided in addition to the installed capacity.
+It is assumed that all new rsv plants will have the same reservoir sizes in
 each country as provided in current data from the Restore2050 project.
 
-The inflow in run of river and reservoirs is modelled based on the inflow timeseries
-of the Restore2050 project.
-
-## Grid
-
-The grid for 2030 and 2040 is based on the TYNDP2018, while the grid for 2050
-is based on the e-Highway 100% RES scenario.
-
-![Installed tranmission capacities in 2030](grid-scenarioANGUS2030.pdf)
-
-![Installed tranmission capacities in 2040](grid-scenarioANGUS2040.pdf)
-
-![Installed tranmission capacities in 2050](grid-scenarioANGUS2050.pdf)
-
-## Annex I
+Onshore wind and pv timeseries are based on renewables ninja for each country.
+The offshore profiles are take from the Venetzen-project and adapted with an
+correction factor of 0.8 which has been derived from the energy production in
+the e-Highway scenarios. The inflow in run of river and reservoirs is modelled
+with the inflow timeseries of the Restore2050 project.
 
 
-### Efficiencies
+| country   |   offshore |   onshore |   pv |   ror |
+|:----------|-----------:|----------:|-----:|------:|
+| AT        |        nan |      1507 | 1291 |  2038 |
+| BE        |       3939 |      2406 | 1135 |   890 |
+| CH        |        nan |      1354 | 1416 |  2555 |
+| CZ        |        nan |      1875 | 1226 |  1316 |
+| DE        |       3976 |      1951 | 1151 |  3082 |
+| DK        |       4224 |      2670 |  977 |     0 |
+| FR        |       3295 |      2040 | 1265 |  1815 |
+| LU        |        nan |      2917 | 1192 |  1947 |
+| NL        |       4025 |      1921 | 1095 |  1012 |
+| NO        |       4341 |      3562 |  811 |  2028 |
+| PL        |       3964 |      1834 | 1113 |   995 |
+| SE        |       3792 |      2654 |  862 |  2161 |
 
-| carrier   | tech     | 2030   | 2040    | 2050   |
-|:----------|:---------|:-------|:--------|:-------|
-| biomass   | st       | 0.35   | 0.4185  | 0.487  |
-| coal      | st       | 0.4    | 0.425   | 0.45   |
-| gas       | ccgt     | 0.5    | 0.53475 | 0.5695 |
-| gas       | ocgt     | 0.38   | 0.373   | 0.366  |
-| hydro     | phs      | 0.75   | 0.75    | 0.75   |
-| hydro     | ror      | 0.9    | 0.9     | 0.9    |
-| hydro     | rsv      | 0.9    | 0.9     | 0.9    |
-| lignite   | st       | 0.4    | 0.4     | 0.4    |
-| oil       | ocgt     | 0.35   | 0.373   | 0.396  |
-| uranium   | st       | 0.33   | 0.335   | 0.34   |
-| waste     | st       | 0.26   | 0.26    | 0.26   |
-| mixed     | st       | 0.26   | 0.28    | 0.3    |
-| lithium   | battery  | 0.85   | 0.885   | 0.92   |
-| air       | caes     | 0.57   | 0.57    | 0.57   |
-| wind      | onshore  | NA     | NA      | NA     |
-| wind      | offshore | NA     | NA      | NA     |
-| solar     | pv       | NA     | NA      | NA     |
 
-### Cost
+The maximum biomass potential per country is derived from the [hotmaps] project
+and is equal for all scenarios in the ANGUS project. The potential does not cover
+waste but only agriculture and forestry residues. With an efficiency of 0.487
+for biomass to electricity conversion the potential in Germany is approx.
+73 TWhel.
+
+|    | Amount in TWh |
+|:---|-----------:|
+| AT |  23.6111   |
+| BE |   8.08333  |
+| CH |   0        |
+| CZ |  32.7778   |
+| DE | 150.167    |
+| DK |  13.5556   |
+| FR | 149.556    |
+| LU |   0.611111 |
+| NL |   2.80556  |
+| NO |   0        |
+| PL |  71.3611   |
+| SE |  86.75     |
+
+
+
+# Annex I
+
+## Hydro data
+
+| country   |   year |      rsv |      phs |        ror |   ror-share |   phs-max-hours |   rsv-max-hours |
+|:----------|-------:|---------:|---------:|-----------:|------------:|----------------:|----------------:|
+| AT        |   2030 |  4787.52 |  6055.33 |  4671.9    |    0.493889 |              33 |             857 |
+| AT        |   2040 |  4787.52 |  6055.33 |  4671.9    |    0.493889 |              33 |             857 |
+| AT        |   2050 |  5676    | 10733    |  7401.16   |    0.565961 |              33 |             857 |
+| BE        |   2030 |   158    |  1150    |   117      |    0.425455 |               4 |             500 |
+| BE        |   2040 |   158    |  1908    |   117      |    0.425455 |               4 |             500 |
+| BE        |   2050 |     0    |  2308    |   331.972  |    1        |               4 |             500 |
+| CH        |   2030 |  8987    |  4593    |  4139      |    0.315328 |             136 |             906 |
+| CH        |   2040 |  8987    |  6722    |  4139      |    0.315328 |             136 |             906 |
+| CH        |   2050 |  8130    |  5443    |  4122.7    |    0.336473 |             136 |             906 |
+| CZ        |   2030 |    50    |  1000    |   365      |    0.879518 |               5 |            1111 |
+| CZ        |   2040 |    50    |  1145    |   365      |    0.879518 |               5 |            1111 |
+| CZ        |   2050 |   819    |  1787    |   454.846  |    0.357065 |               5 |            1111 |
+| DE        |   2030 |   995.9  |  9791.6  |  4329      |    0.812973 |               6 |             592 |
+| DE        |   2040 |   620    | 10244    |  4329      |    0.874722 |               6 |             592 |
+| DE        |   2050 |   620    | 12799    |  4233      |    0.872244 |               6 |             592 |
+| DK        |   2030 |     0    |     0    |     6.6082 |    1        |               6 |                 |
+| DK        |   2040 |     0    |     0    |     6.6082 |    1        |               6 |                 |
+| DK        |   2050 |     0    |     0    |    13.3102 |    1        |               6 |                 |
+| FR        |   2030 |  8197    |  5500    | 13797      |    0.627307 |              15 |            1201 |
+| FR        |   2040 |  8000    |  5500    | 13600      |    0.62963  |              15 |            1201 |
+| FR        |   2050 | 18200    | 13420    | 10318.6    |    0.36182  |              15 |            1201 |
+| LU        |   2030 |   284    |  1026    |    34      |    0.106918 |               4 |            2840 |
+| LU        |   2040 |   284    |  1026    |    34      |    0.106918 |               4 |            2840 |
+| LU        |   2050 |     0    |  1650.68 |   149.203  |    1        |               4 |            2840 |
+| NL        |   2030 |     0    |     0    |    38      |    1        |               6 |                 |
+| NL        |   2040 |     0    |  2500    |    38      |    1        |               6 |                 |
+| NL        |   2050 |     0    |     0    |   104.435  |    1        |               6 |                 |
+| NO        |   2030 | 34702.2  |  1114.71 |     0      |    0        |             314 |            3139 |
+| NO        |   2040 | 34702.2  |  1114.71 |     0      |    0        |             314 |            3139 |
+| NO        |   2050 | 42473    | 17291    | 28141      |    0.398518 |             314 |            3139 |
+| PL        |   2030 |     0    |  1488    |  1033      |    1        |               5 |            5477 |
+| PL        |   2040 |     0    |  2292    |  1033      |    1        |               5 |            5477 |
+| PL        |   2050 |     0    |  3790    |  2078.8    |    1        |               5 |            5477 |
+| SE        |   2030 | 16184    |     0    |     0      |    0        |             793 |            3456 |
+| SE        |   2040 | 16184    |     0    |     0      |    0        |             793 |            3456 |
+| SE        |   2050 | 21383.3  |     0    | 10775.2    |    0.335066 |             793 |            3456 |
+
+
+## Carrier cost
 
 | scenario   | carrier   |   value | unit    | source         |
 |:-----------|:----------|--------:|:--------|:---------------|
-| 2030C      | biomass   |  27.29  | EUR/MWh | Prognos2013    |
-| 2030C      | co2       |  29.4   | EUR/t   | NEP2019        |
-| 2030C      | coal      |   8.4   | EUR/MWh | NEP2019        |
-| 2030C      | gas       |  26.4   | EUR/MWh | NEP2019        |
-| 2030C      | lignite   |   5.6   | EUR/MWh | NEP2019        |
-| 2030C      | mixed     |   6.7   | EUR/MWh | Own Assumption |
-| 2030C      | oil       |  48.3   | EUR/MWh | NEP2019        |
-| 2030C      | uranium   |   1.692 | EUR/MWh | TYNDP2018      |
-| 2030C      | waste     |   6.7   | EUR/MWh | IRENA2015      |
-| 2040GCA    | biomass   |  40     | EUR/MWh | Own Assumption |
+| 2030DG     | biomass   |  30.32  | EUR/MWh | HeatRoadMap    |
+| 2030DG     | co2       |  50     | EUR/t   | TYNDP2018      |
+| 2030DG     | coal      |   9.72  | EUR/MWh | TYNDP2018      |
+| 2030DG     | gas       |  31.68  | EUR/MWh | TYNDP2018      |
+| 2030DG     | lignite   |   3.96  | EUR/MWh | TYNDP2018      |
+| 2030DG     | mixed     |   6.7   | EUR/MWh | Own Assumption |
+| 2030DG     | oil       |  78.48  | EUR/MWh | TYNDP2018      |
+| 2030DG     | uranium   |   1.692 | EUR/MWh | TYNDP2018      |
+| 2030DG     | waste     |   6.7   | EUR/MWh | Own Assumption |
+| 2030NEPC   | biomass   |   5     | EUR/MWh | Own Assumption |
+| 2030NEPC   | co2       |  29.4   | EUR/t   | NEP2019        |
+| 2030NEPC   | coal      |   8.4   | EUR/MWh | NEP2019        |
+| 2030NEPC   | gas       |  26.4   | EUR/MWh | NEP2019        |
+| 2030NEPC   | lignite   |   5.6   | EUR/MWh | NEP2019        |
+| 2030NEPC   | mixed     |   6.7   | EUR/MWh | Own Assumption |
+| 2030NEPC   | oil       |  48.3   | EUR/MWh | NEP2019        |
+| 2030NEPC   | uranium   |   1.692 | EUR/MWh | TYNDP2018      |
+| 2030NEPC   | waste     |   6.7   | EUR/MWh | IRENA2015      |
+| 2040GCA    | biomass   |  30.32  | EUR/MWh | HeatRoadMap    |
 | 2040GCA    | co2       | 126     | EUR/t   | TYNDP2018      |
 | 2040GCA    | coal      |   6.48  | EUR/MWh | TYNDP2018      |
 | 2040GCA    | gas       |  30.24  | EUR/MWh | TYNDP2018      |
@@ -201,18 +288,188 @@ is based on the e-Highway 100% RES scenario.
 | 2040GCA    | oil       |  50.22  | EUR/MWh | TYNDP2018      |
 | 2040GCA    | uranium   |   1.692 | EUR/MWh | TYNDP2018      |
 | 2040GCA    | waste     |   6.7   | EUR/MWh | Own Assumption |
-| 2050-100RE | biomass   |  50     | EUR/MWh | Own Assumption |
-| 2050-100RE | co2       | 150     | EUR/t   | Own Assumption |
-| 2050-100RE | coal      |   8     | EUR/MWh | Own Assumption |
-| 2050-100RE | gas       |  54     | EUR/MWh | Own Assumption |
-| 2050-100RE | lignite   |   6     | EUR/MWh | Own Assumption |
-| 2050-100RE | mixed     |   6.7   | EUR/MWh | Own Assumption |
-| 2050-100RE | oil       |  60     | EUR/MWh | Own Assumption |
-| 2050-100RE | uranium   |   1.692 | EUR/MWh | Own Assumption |
-| 2050-100RE | waste     |  30     | EUR/MWh | Own Assumption |
+| 2050ZNES   | biomass   |  34.89  | EUR/MWh | HeatRoadMap    |
+| 2050ZNES   | co2       | 150     | EUR/t   | Own Assumption |
+| 2050ZNES   | coal      |   7.97  | EUR/MWh | HeatRoadMap    |
+| 2050ZNES   | gas       |  43.72  | EUR/MWh | HeatRoadMap    |
+| 2050ZNES   | lignite   |   6     | EUR/MWh | Own Assumption |
+| 2050ZNES   | mixed     |   6.7   | EUR/MWh | Own Assumption |
+| 2050ZNES   | oil       |  47.63  | EUR/MWh | HeatRoadMap    |
+| 2050ZNES   | uranium   |   1.692 | EUR/MWh | Own Assumption |
+| 2050ZNES   | waste     |  30     | EUR/MWh | Own Assumption |
 
 
 
+## Technical parameters
+
+|   year | parameter    | carrier   | tech     |      value | unit      | source                    |
+|-------:|:-------------|:----------|:---------|-----------:|:----------|:--------------------------|
+|   2030 | efficiency   | biomass   | st       |    0.35    | per unit  | DIW                       |
+|   2030 | efficiency   | coal      | st       |    0.4     | per unit  | TYNDP2018                 |
+|   2030 | efficiency   | gas       | ccgt     |    0.5     | per unit  | TYNDP2018                 |
+|   2030 | efficiency   | gas       | ocgt     |    0.38    | per unit  | TYNDP2018                 |
+|   2030 | efficiency   | hydro     | phs      |    0.75    | per unit  | roundtrip; DIW            |
+|   2030 | efficiency   | hydro     | ror      |    0.9     | per unit  | DIW                       |
+|   2030 | efficiency   | hydro     | rsv      |    0.9     | per unit  | DIW                       |
+|   2030 | efficiency   | lignite   | st       |    0.4     | per unit  | TYNDP2018                 |
+|   2030 | efficiency   | oil       | ocgt     |    0.35    | per unit  | TYNDP2018                 |
+|   2030 | efficiency   | uranium   | st       |    0.33    | per unit  | TYNDP2018                 |
+|   2030 | efficiency   | waste     | st       |    0.26    | per unit  | Own assumption            |
+|   2030 | efficiency   | mixed     | st       |    0.26    | per unit  | Own assumption            |
+|   2030 | efficiency   | lithium   | battery  |    0.85    | per unit  | roundtrip;Own assumption  |
+|   2030 | efficiency   | cavern    | acaes    |    0.7     | per unit  | roundtrip;ZNES            |
+|   2030 | efficiency   | hydrogen  | storage  |    0.4     | per unit  | roundtrip;ZNES            |
+|   2030 | max_hours    | lithium   | battery  |    6.5     | h         | Plessmann                 |
+|   2030 | max_hours    | hydro     | phs      |    8       | h         | Plessmann                 |
+|   2030 | max_hours    | porous    | acaes    |  300       | h         | Own assumption            |
+|   2030 | max_hours    | cavern    | acaes    |    3       | h         | ZNES                      |
+|   2030 | max_hours    | hydrogen  | storage  |  168       | h         | eGo                       |
+|   2030 | capex        | wind      | onshore  | 1182       | Euro/kW   | DIW                       |
+|   2030 | capex        | wind      | offshore | 2506       | Euro/kW   | DIW                       |
+|   2030 | capex        | solar     | pv       |  600       | Euro/kW   | DIW                       |
+|   2030 | capex        | gas       | ocgt     |  400       | Euro/kW   | DIW                       |
+|   2030 | capex        | gas       | ccgt     |  800       | Euro/kW   | DIW                       |
+|   2030 | capex        | lithium   | battery  |  785       | Euro/kW   | IWES                      |
+|   2040 | efficiency   | biomass   | st       |    0.4185  | per unit  | Own assumption            |
+|   2040 | efficiency   | coal      | st       |    0.425   | per unit  | Own assumption            |
+|   2040 | efficiency   | gas       | ccgt     |    0.53475 | per unit  | Own assumption            |
+|   2040 | efficiency   | gas       | ocgt     |    0.373   | per unit  | Own assumption            |
+|   2040 | efficiency   | hydro     | phs      |    0.75    | per unit  | roundtrip; DIW            |
+|   2040 | efficiency   | hydro     | ror      |    0.9     | per unit  | DIW                       |
+|   2040 | efficiency   | hydro     | rsv      |    0.9     | per unit  | DIW                       |
+|   2040 | efficiency   | lignite   | st       |    0.4     | per unit  | Own assumption            |
+|   2040 | efficiency   | oil       | ocgt     |    0.373   | per unit  | Own assumption            |
+|   2040 | efficiency   | uranium   | st       |    0.335   | per unit  | Own assumption            |
+|   2040 | efficiency   | waste     | st       |    0.26    | per unit  | Own assumption            |
+|   2040 | efficiency   | mixed     | st       |    0.28    | per unit  | Own assumption            |
+|   2040 | efficiency   | lithium   | battery  |    0.885   | per unit  | Own assumption            |
+|   2040 | efficiency   | porous    | acaes    |    0.57    | per unit  | roundtrip; Own assumption |
+|   2040 | efficiency   | cavern    | acaes    |    0.7     | per unit  | roundtrip; ZNES           |
+|   2040 | max_hours    | lithium   | battery  |    6.5     | h         | Plessmann                 |
+|   2040 | max_hours    | hydro     | phs      |    8       | h         | Plessmann                 |
+|   2040 | max_hours    | porous    | acaes    |  300       | h         | Own assumption            |
+|   2040 | max_hours    | cavern    | acaes    |    3       | h         | ZNES                      |
+|   2050 | efficiency   | biomass   | st       |    0.487   | per unit  | DIW                       |
+|   2050 | efficiency   | coal      | st       |    0.45    | per unit  | DIW                       |
+|   2050 | efficiency   | gas       | ccgt     |    0.5695  | per unit  | Avg; DIW                  |
+|   2050 | efficiency   | gas       | ocgt     |    0.366   | per unit  | Avg; DIW                  |
+|   2050 | efficiency   | hydro     | phs      |    0.75    | per unit  | roundtrip; DIW            |
+|   2050 | efficiency   | hydro     | ror      |    0.9     | per unit  | DIW                       |
+|   2050 | efficiency   | hydro     | rsv      |    0.9     | per unit  | DIW                       |
+|   2050 | efficiency   | lignite   | st       |    0.4     | per unit  | Avg; DIW                  |
+|   2050 | efficiency   | oil       | ocgt     |    0.396   | per unit  | DIW                       |
+|   2050 | efficiency   | uranium   | st       |    0.34    | per unit  | DIW                       |
+|   2050 | efficiency   | waste     | st       |    0.26    | per unit  | Own assumption            |
+|   2050 | efficiency   | mixed     | st       |    0.3     | per unit  | Own assumption            |
+|   2050 | efficiency   | lithium   | battery  |    0.92    | per unit  | roundtrip; IWES           |
+|   2050 | efficiency   | porous    | acaes    |    0.57    | per unit  | roundtrip; Own assumption |
+|   2050 | max_hours    | lithium   | battery  |    6.5     | h         | Plessmann, p. 90          |
+|   2050 | max_hours    | hydro     | phs      |    8       | h         | Plessmann, p. 90          |
+|   2050 | max_hours    | porous    | acaes    |  300       | h         | Own assumption            |
+|   2050 | avf          | wind      | onshore  |    1       | per unit  | Own assumption            |
+|   2050 | avf          | wind      | offshore |    1       | per unit  | Own assumption            |
+|   2050 | avf          | solar     | pv       |    1       | per unit  | Own assumption            |
+|   2050 | avf          | biomass   | st       |    0.9     | per unit  | Own assumption            |
+|   2050 | avf          | coal      | st       |    0.85    | per unit  | PRIMES                    |
+|   2050 | avf          | gas       | ccgt     |    0.85    | per unit  | PRIMES                    |
+|   2050 | avf          | gas       | ocgt     |    0.96    | per unit  | PRIMES                    |
+|   2050 | avf          | hydro     | phs      |    1       | per unit  | Own assumption            |
+|   2050 | avf          | hydro     | ror      |    1       | per unit  | Own assumption            |
+|   2050 | avf          | hydro     | rsv      |    1       | per unit  | Own assumption            |
+|   2050 | avf          | lignite   | st       |    0.85    | per unit  | PRIMES                    |
+|   2050 | avf          | oil       | ocgt     |    0.9     | per unit  | PRIMES                    |
+|   2050 | avf          | mixed     | st       |    0.9     | per unit  | Own assumption            |
+|   2050 | avf          | uranium   | st       |    0.9     | per unit  | Own assumption            |
+|   2050 | avf          | waste     | st       |    0.9     | per unit  | Own assumption            |
+|   2050 | avf          | lithium   | battery  |    1       | per unit  | Own assumption            |
+|   2050 | avf          | porous    | acaes    |    1       | per unit  | Own assumption            |
+|   2050 | vom          | wind      | onshore  |    0       | Euro/Mwh  | Plessmann                 |
+|   2050 | vom          | wind      | offshore |    0       | Euro/Mwh  | Plessmann                 |
+|   2050 | vom          | solar     | pv       |    0       | Euro/Mwh  | Plessmann                 |
+|   2050 | vom          | biomass   | st       |   10       | Euro/Mwh  | Own assumption            |
+|   2050 | vom          | coal      | st       |    6       | Euro/Mwh  | DIW, p. 78                |
+|   2050 | vom          | gas       | ccgt     |    4       | Euro/Mwh  | DIW, p. 78                |
+|   2050 | vom          | gas       | ocgt     |    3       | Euro/Mwh  | DIW, p. 78                |
+|   2050 | vom          | hydro     | phs      |    0       | Euro/Mwh  | DIW, p. 78                |
+|   2050 | vom          | hydro     | ror      |    0       | Euro/Mwh  | DIW, p. 78                |
+|   2050 | vom          | hydro     | rsv      |    0       | Euro/Mwh  | DIW, p. 78                |
+|   2050 | vom          | lignite   | st       |    7       | Euro/Mwh  | DIW, p. 78                |
+|   2050 | vom          | uranium   | st       |    8.5     | Euro/Mwh  | DIW, p. 78, AVG           |
+|   2050 | vom          | oil       | ocgt     |    3       | Euro/Mwh  | DIW, p. 78                |
+|   2050 | vom          | mixed     | st       |    5       | Euro/Mwh  | Own assumption            |
+|   2050 | vom          | waste     | st       |   10       | Euro/Mwh  | Own assumption            |
+|   2050 | vom          | lithium   | battery  |    0       | Euro/Mwh  | Plessmann, p. 90          |
+|   2050 | fom          | wind      | onshore  |   35       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | wind      | offshore |   80       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | solar     | pv       |   25       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | biomass   | st       |  100       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | coal      | st       |   25       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | gas       | ccgt     |   20       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | gas       | ocgt     |   15       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | hydro     | phs      |   20       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | hydro     | ror      |   60       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | hydro     | rsv      |   20       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | lignite   | st       |   30       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | oil       | ocgt     |    6       | Euro/kWa  | DIW, p.78                 |
+|   2050 | fom          | lithium   | battery  |   10       | Euro/kWha | Schill2018                |
+|   2050 | capex        | wind      | onshore  | 1075       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | wind      | offshore | 2093       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | solar     | pv       |  425       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | biomass   | st       | 1951       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | coal      | st       | 1300       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | gas       | ccgt     |  800       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | gas       | ocgt     |  400       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | hydro     | phs      | 2000       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | hydro     | ror      | 3000       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | hydro     | rsv      | 2000       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | lignite   | st       | 1500       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex        | oil       | ocgt     |  400       | Euro/kW   | DIW, p. 75                |
+|   2050 | capex_energy | lithium   | battery  |  187       | Euro/kWh  | Schill2018                |
+|   2050 | capex_power  | lithium   | battery  |   35       | Euro/kWh  | Schill2018                |
+|   2050 | lifetime     | wind      | onshore  |   25       | a         | DIW, p. 72                |
+|   2050 | lifetime     | wind      | offshore |   25       | a         | DIW, p. 72                |
+|   2050 | lifetime     | solar     | pv       |   25       | a         | DIW, p. 72                |
+|   2050 | lifetime     | biomass   | st       |   30       | a         | DIW, p. 72                |
+|   2050 | lifetime     | coal      | st       |   40       | a         | DIW, p. 72                |
+|   2050 | lifetime     | gas       | ccgt     |   30       | a         | DIW, p. 72                |
+|   2050 | lifetime     | gas       | ocgt     |   30       | a         | DIW, p. 72                |
+|   2050 | lifetime     | hydro     | phs      |   50       | a         | DIW, p. 72                |
+|   2050 | lifetime     | hydro     | ror      |   50       | a         | DIW, p. 72                |
+|   2050 | lifetime     | hydro     | rsv      |   50       | a         | DIW, p. 72                |
+|   2050 | lifetime     | lignite   | st       |   40       | a         | DIW, p. 72                |
+|   2050 | lifetime     | oil       | ocgt     |   40       | a         | DIW, p. 72                |
+|   2050 | lifetime     | lithium   | battery  |   10       | a         | Plessmann, p. 90          |
+|   2050 | efficiency   | redox     | battery  |    0.75    | per unit  | roundtrip;ZNES            |
+|   2050 | efficiency   | hydrogen  | storage  |    0.4     | per unit  | roundtrip;ZNES            |
+|   2050 | efficiency   | cavern    | acaes    |    0.7     | per unit  | roundtrip;ZNES            |
+|   2050 | max_hours    | redox     | battery  |    3.3     | h         | ZNES                      |
+|   2050 | max_hours    | hydrogen  | storage  |  168       | h         | eGo                       |
+|   2050 | max_hours    | cavern    | acaes    |    3       | h         | ZNES                      |
+|   2050 | lifetime     | redox     | battery  |   25       | a         | Schill2018                |
+|   2050 | lifetime     | hydrogen  | storage  |   22.5     | a         | Schill2018                |
+|   2050 | lifetime     | cavern    | acaes    |   30       | a         | Schill2018                |
+|   2050 | capex_energy | redox     | battery  |   70       | Euro/kWh  | Schill2018                |
+|   2050 | capex_energy | hydrogen  | storage  |    0.2     | Euro/kWh  | Schill2018                |
+|   2050 | capex_energy | cavern    | acaes    |   40       | Euro/kWh  | Schill2018                |
+|   2050 | capex_power  | redox     | battery  |  600       | Euro/kW   | Schill2018                |
+|   2050 | capex_power  | hydrogen  | storage  | 1000       | Euro/kW   | Schill2018                |
+|   2050 | capex_power  | cavern    | acaes    |  750       | Euro/kW   | Schill2018                |
+|   2050 | fom          | redox     | battery  |   10       | Euro/kWha | Schill2018                |
+|   2050 | fom          | hydrogen  | storage  |   10       | Euro/kWha | Schill2018                |
+|   2050 | fom          | cavern    | acaes    |   10       | Euro/kWha | Schill2018                |
+|   2050 | vom          | redox     | battery  |    1       | Euro/Mwh  | Schill2018                |
+|   2050 | vom          | hydrogen  | storage  |    1       | Euro/Mwh  | Schill2018                |
+|   2050 | vom          | cavern    | acaes    |    1       | Euro/Mwh  | Schill2018                |
+
+
+
+## Grid
+
+![Installed tranmission capacities in 2030](grid-scenarioANGUS2030.pdf){width=60%}
+
+![Installed tranmission capacities in 2040](grid-scenarioANGUS2040.pdf){width=60%}
+
+![Installed tranmission capacities in 2050](grid-scenarioANGUS2050.pdf){width=60%}
 
 # Data Sources
 
