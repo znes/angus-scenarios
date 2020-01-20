@@ -161,6 +161,7 @@ def german_energy_system(
     cost_scenario,
     technologies,
     scenario_year,
+    sensitivities
 ):
     """Extracts german specific scenario data from input datapackage
 
@@ -225,7 +226,7 @@ def german_energy_system(
 
     elements = _elements(
         countries, _data, technologies, carrier_cost, emission_factors,
-        cost_scenario, scenario_year)
+        cost_scenario, scenario_year, sensitivities)
 
     df = pd.DataFrame.from_dict(elements, orient="index")
 
@@ -413,7 +414,13 @@ def shortage(datapackage_dir):
 
 
 def _elements(countries, data, technologies, carrier_cost, emission_factors,
-               scenario, scenario_year):
+               scenario, scenario_year, sensitivities=None):
+
+    if sensitivities is not None:
+        for k,v in sensitivities.items():
+            k = k.split("-")
+            data.at[k[0], (k[1], k[2])] = v
+
     elements = {}
     for b in countries:
         for carrier, tech in data.columns:
@@ -432,18 +439,19 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                     "profile": profile,
                     "output_parameters": json.dumps({}),
                 })
-            # elif tech  == "ror":
-            #
-            #     profile = "-".join([b, tech, "profile"])
-            #     element.update({
-            #         "bus": b + "-electricity",
-            #         "tech": tech,
-            #         "carrier": carrier,
-            #         "capacity": data.at[b, (carrier, tech)],
-            #         "type": "volatile",
-            #         "profifle": profile,
-            #         "output_parameters": json.dumps({}),
-            #     })
+            elif tech  == "res":
+                element.update({
+                    "bus": b + "-electricity",
+                    "tech": tech,
+                    "carrier": carrier,
+                    "capacity": data.at[b, (carrier, tech)],
+                    "type": "dispatchable",
+                    "marginal_cost": 0,
+                    "profile": 0.9,
+                    "output_parameters": json.dumps({
+                        "summed_max": 6500, # assumption for geothermal and waste etc.
+                    }),
+                })
 
             elif carrier in [
                 "gas",

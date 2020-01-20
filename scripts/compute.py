@@ -144,6 +144,7 @@ def compute(
     summary["RE-share-supply"] = (
         summary["wind-onshore"] +
         summary["wind-offshore"] +
+        summary["other-res"] +
         summary["biomass-st"] +
         summary["hydro-ror"] +
         summary["hydro-reservoir"] +
@@ -151,7 +152,6 @@ def compute(
 
     summary["import"] = imports[imports > 0].sum() / 1e6 * temporal_resolution
     summary["export"] = imports[imports < 0].sum() / 1e6 * temporal_resolution
-
     summary.to_csv(os.path.join(scenario_path, "summary.csv"))
 
     emissions = pd.Series(
@@ -161,7 +161,7 @@ def compute(
 
 
 if __name__ == "__main__":
-    compute("ANGUS2050a", "gurobi")
-    # datapackages = [d for d in os.listdir("datapackages")]
-    # p = mp.Pool(1)
-    # p.map(compute, datapackages)
+    #compute("ZNES2050", "gurobi")
+    datapackages = [d for d in os.listdir("datapackages")]
+    p = mp.Pool(1)
+    p.map(compute, datapackages)

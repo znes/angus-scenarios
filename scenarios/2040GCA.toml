@@ -1,0 +1,48 @@
+title = "2040GCA"
+description = "Scenario for ANGUS project, year 2040 (based on TYNDP2018 2040 GCA)"
+name = "2040GCA"
+
+[scenario]
+DE_system = "" # german data (generation, load, etc.)
+EU_load = "2040GCA" # european load
+EU_generation = "2040 GCA" # european generation mix based on TYNDP
+cost = "2040GCA" # carrier cost (gas, co2, etc.)
+grid = "2040GCA"
+weather_year = 2012
+year = 2040
+grid_loss = 0.03
+pv_profiles = "ninja"
+onshore_profiles = "ninja"
+offshore_profiles = "eGo"
+
+[buses]
+
+electricity = [
+    "AT",
+    "BE",
+    "CH",
+    "CZ",
+    "DE",
+    "DK",
+    "FR",
+    "NL",
+    "LU",
+    "NO",
+    "PL",
+    "SE"
+]
+
+biomass = [
+  "AT",
+  "BE",
+  "CH",
+  "CZ",
+  "DE",
+  "DK",
+  "FR",
+  "NL",
+  "LU",
+  "NO",
+  "PL",
+  "SE"
+]

@@ -1,17 +1,19 @@
-title = "ANGUS2030-NEP"
+title = "2030NEPC"
 description = "Scenario for ANGUS project, year 2030 (based on NEP2019 2030C, and TYNDP2018 ST)"
-name = "ANGUS2030-NEP"
+name = "2030NEPC"
 
 [scenario]
-DE_system = "ANGUS2030" # german data (generation, load, etc.)
+DE_system = "NEP2030C" # german data (generation, load, etc.)
 EU_load = "2030ST" # european load
 EU_generation = "2030 ST" # european generation mix based on TYNDP
-cost = "2030C" # carrier cost (gas, co2, etc.)
+cost = "NEP2030C" # carrier cost (gas, co2, etc.)
 grid = "2030"
 year = 2030
 weather_year = 2011 # 2011, 2012
 grid_loss = 0.03
-renewable_profiles = "eGo" # emhires
+pv_profiles = "ninja"
+onshore_profiles = "ninja"
+offshore_profiles = "eGo"
 
 [buses]
 

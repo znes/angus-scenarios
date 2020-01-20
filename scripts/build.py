@@ -49,6 +49,7 @@ def build(config):
             scenario_year=config["scenario"]["year"],
             cost_scenario=config["scenario"]["cost"],
             technologies=technologies,
+            sensitivities=config.get("sensitivities"),
         )
         DE_set = set(["DE"])
     else:
@@ -105,7 +106,7 @@ def build(config):
             config["scenario"]["cost"],
             config["scenario"]["year"],
             datapackage_dir,
-            raw_data_path,
+            raw_data_path
         )
 
     # the same for all scenarios
@@ -117,15 +118,16 @@ def build(config):
         raw_data_path,
     )
 
-    if config["scenario"]["renewable_profiles"] == "ninja":
+    if config["scenario"]["pv_profiles"] == "ninja":
         pv_profiles = capacity_factors.ninja_pv_profiles
-        wind_profiles = capacity_factors.ninja_wind_profiles
-    elif config["scenario"]["renewable_profiles"] == "eGo":
-        pv_profiles = capacity_factors.ninja_pv_profiles
-        wind_profiles = capacity_factors.eGo_wind_profiles
-    elif config["scenario"]["renewable_profiles"] == "emhires":
-        pv_profiles = capacity_factors.emhires_pv_profiles
-        wind_profiles = capacity_factors.emhires_wind_profiles
+
+    if config["scenario"]["onshore_profiles"] == "ninja":
+        onshore_wind_profiles = capacity_factors.ninja_onshore_wind_profiles
+
+    if config["scenario"]["offshore_profiles"] == "eGo":
+        offshore_wind_profiles = capacity_factors.eGo_offshore_wind_profiles
+    elif config["scenario"]["offshore_profiles"] == "ninja":
+        offshore_wind_profiles = capacity_factors.ninja_offshore_wind_profiles
     else:
         pass
 
@@ -140,7 +142,15 @@ def build(config):
         raw_data_path,
     )
 
-    wind_profiles(
+    onshore_wind_profiles(
+        config["buses"]["electricity"],
+        config["scenario"]["weather_year"],
+        config["scenario"]["year"],
+        datapackage_dir,
+        raw_data_path,
+    )
+
+    offshore_wind_profiles(
         config["buses"]["electricity"],
         config["scenario"]["weather_year"],
         config["scenario"]["year"],
@@ -189,10 +199,11 @@ def build(config):
 
 
 if __name__ == "__main__":
-    # scenarios = [
-    #     Scenario.from_path(os.path.join("scenarios", s))
-    #     for s in os.listdir("scenarios")
-    # ]
-    # p = mp.Pool(10)
-    # p.map(build, scenarios)
-    build(Scenario.from_path(os.path.join("scenarios", "ANGUS2050a.toml")))
+    scenarios = [
+        Scenario.from_path(os.path.join("scenarios", s))
+        for s in os.listdir("scenarios")
+    ]
+    p = mp.Pool(10)
+    p.map(build, scenarios)
+
+    # build(Scenario.from_path(os.path.join("scenarios", "ZNES2050.toml")))

@@ -1,0 +1,11 @@
+title = "2050ANGUS-nb"
+description = "Scenario for ANGUS project, year 2050 (based on Ehighway 100 % RES). With additional renewable capacity"
+name = "2050ANGUS-nb"
+
+parents = ["scenarios/2050ZNES.toml"]
+
+[sensitivities]
+DE-biomass-st = 0 # GWh
+DE-wind-onshore = 120000 # GWh
+DE-wind-offshore = 33800 # GWh
+DE-solar-pv = 180000 # GWh
