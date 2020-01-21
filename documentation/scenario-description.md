@@ -53,6 +53,37 @@ includes scenarios for 100% renewable energy supply in 2050. The TYNDP is develo
 by the network of European TSO (ENTSOE), therefore it also plays an important
 role for the NEP which is developed by the four German TSOs.
 
+\newpage
+In literature different scenarios for 100% renewable energy systems can found.
+Figure \ref{scenario-comparison} shows installed capacities of renewable energies
+in Germany for systems with high share of renewables.
+One important factor for the required capacity / energy is the future electricity
+demand including the electrification of heat and transport sectors. In addition,
+capacity factors and biomass potentials are crucial aspects. While PV
+capacity factors lie within a small range of values, onshore and offshore
+capacity factors can vary strongly with major impacts on results. While in the
+BMWI Reference scenario onshore wind fullloadhours (flh) are 3527 (capacity factor of 0.403),
+the onshore wind production in e-Highway 100% RES scenario is modelled with 2102
+flh (average capacitiy factor of 0.24). However, the avaible biomass potential
+can be considered to be even more imporant, as it constitutes the only dispatchable
+renewable energy source.
+
+![Installed renewable capacities in scenarios from literature\label{scenario-comparison}](scenario-comparison.pdf)
+
+The lowest capacities are found in the BMWI Reference scenario. However, capacity
+factors
+for wind in the scenario are significantly higher compared to the other scenarios.
+In addition, this scenario only comes with a share of approx. 82% RE.
+The highest capacities wind and pv are obtained in the RESCUE GL scenario. Here
+the 100% RE, no import and the higher demand of 796 TWh are the driving factors.
+Within the set of scenarios, the wind and pv capacities of e-Highway scenario are
+rather located at the lower end of the range. The main reason is the high biomass
+potential, increasing hydro capacities ( in particular in Norway) and higher
+offshore wind. This results in significant imports in Germany, but also lower
+installed capacities of onshore wind and pv. In addtion to the before mentioned
+factors, system flexibility is another important determinate. Here grid
+infrastructure (regional flexibility) and storages (temporal flexbiliy) have to
+be considered.
 
 
 # Scenario Assumptions
@@ -465,6 +496,59 @@ Biomass potential:
 |   2050 | vom          | redox     | battery  |    1       | Euro/Mwh  | Schill2018                |
 |   2050 | vom          | hydrogen  | storage  |    1       | Euro/Mwh  | Schill2018                |
 |   2050 | vom          | cavern    | acaes    |    1       | Euro/Mwh  | Schill2018                |
+
+## Installed capacities
+
+The table show the installed capacities for path towards 100% renewable energy supply
+fomr 2030 to 2050.
+
+| scenario   | name             | AT   | BE   | CH   | CZ   | DE    | DK   | FR    | LU   | NL   | NO   | PL   | SE   |
+|:-----------|:-----------------|:-----|:-----|:-----|:-----|:------|:-----|:------|:-----|:-----|:-----|:-----|:-----|
+| 2030NEPC   | biomass-st       | 0.6  | 1.3  | 1.3  | 1.2  | 6.0   | 1.9  | 3.6   | 0.1  | 0.5  | 0.1  | 1.8  | 4.5  |
+| 2030NEPC   | oil-ocgt         | 0.2  | -    | -    | -    | 0.9   | 0.8  | 1.5   | -    | -    | -    | -    | -    |
+| 2030NEPC   | solar-pv         | 4.5  | 5.1  | 5.6  | 3.5  | 104.5 | 2.9  | 31.5  | 0.2  | 11.4 | 0.4  | 2.4  | 1.7  |
+| 2030NEPC   | mixed-st         | 1.0  | 1.2  | 1.0  | 1.5  | 4.1   | 0.1  | -     | 0.1  | 3.5  | -    | 7.3  | 0.4  |
+| 2030NEPC   | lithium-battery  | -    | -    | -    | -    | 12.5  | -    | -     | -    | -    | -    | -    | -    |
+| 2030NEPC   | lignite-st       | -    | -    | -    | 4.8  | 9.0   | -    | -     | -    | -    | -    | 7.4  | -    |
+| 2030NEPC   | hydrogen-storage | -    | -    | -    | -    | 3.0   | -    | -     | -    | -    | -    | -    | -    |
+| 2030NEPC   | uranium-st       | -    | -    | 1.2  | 4.1  | -     | -    | 37.6  | -    | 0.5  | -    | 3.0  | 6.9  |
+| 2030NEPC   | hydro-phs        | 6.1  | 1.2  | 4.6  | 1.0  | 9.8   | -    | 5.5   | 1.0  | -    | 1.1  | 1.5  | -    |
+| 2030NEPC   | gas-ocgt         | 1.4  | 2.2  | -    | 0.5  | 10.0  | 0.1  | 3.9   | -    | 2.6  | 0.1  | 2.0  | -    |
+| 2030NEPC   | other-res        | -    | -    | -    | -    | 1.3   | -    | -     | -    | -    | -    | -    | -    |
+| 2030NEPC   | gas-ccgt         | 2.7  | 4.2  | -    | 0.9  | 23.4  | 0.3  | 7.6   | -    | 5.0  | 0.3  | 3.8  | -    |
+| 2030NEPC   | wind-onshore     | 5.0  | 3.3  | 0.4  | 1.0  | 85.5  | 5.6  | 36.3  | 0.2  | 6.7  | 3.3  | 9.2  | 10.8 |
+| 2030NEPC   | cavern-acaes     | -    | -    | -    | -    | 1.0   | -    | -     | -    | -    | -    | -    | -    |
+| 2030NEPC   | coal-st          | -    | -    | -    | 0.3  | 8.1   | 0.4  | -     | -    | 4.6  | -    | 13.8 | 0.1  |
+| 2030NEPC   | wind-offshore    | -    | 2.3  | -    | -    | 17.0  | 2.9  | 7.0   | -    | 11.5 | -    | 2.2  | 0.2  |
+| 2040GCA    | gas-ccgt         | 2.0  | 3.3  | -    | 0.7  | 20.1  | -    | 5.9   | -    | 5.0  | -    | 1.8  | -    |
+| 2040GCA    | oil-ocgt         | 0.2  | -    | -    | 0.2  | 0.2   | 0.3  | 1.0   | -    | -    | -    | 3.9  | -    |
+| 2040GCA    | biomass-st       | 0.6  | 1.3  | 1.3  | 1.2  | 6.6   | 1.9  | 3.6   | 0.1  | 0.5  | 0.1  | 1.8  | 4.3  |
+| 2040GCA    | mixed-st         | 1.0  | 1.7  | 1.0  | 1.5  | 10.3  | 0.1  | -     | 0.1  | 3.5  | -    | 7.3  | 0.4  |
+| 2040GCA    | solar-pv         | 5.6  | 22.0 | 12.6 | 5.2  | 141.0 | 7.5  | 60.0  | 1.1  | 46.0 | 3.0  | 42.5 | 6.7  |
+| 2040GCA    | lignite-st       | -    | -    | -    | 1.3  | -     | -    | -     | -    | -    | -    | 1.9  | -    |
+| 2040GCA    | coal-st          | -    | -    | -    | 0.3  | 8.3   | -    | -     | -    | 3.4  | -    | 8.3  | -    |
+| 2040GCA    | wind-offshore    | -    | 8.3  | -    | -    | 33.8  | 7.8  | 20.0  | -    | 23.4 | 0.4  | 7.0  | 1.3  |
+| 2040GCA    | uranium-st       | -    | -    | -    | 3.3  | -     | -    | 37.6  | -    | -    | -    | 7.5  | 3.7  |
+| 2040GCA    | gas-ocgt         | 1.0  | 1.7  | -    | 0.3  | 10.4  | -    | 3.0   | -    | 2.6  | -    | 0.9  | -    |
+| 2040GCA    | wind-onshore     | 5.5  | 7.7  | 2.6  | 1.3  | 81.6  | 7.2  | 49.0  | 0.2  | 7.4  | 10.0 | 32.9 | 17.4 |
+| 2040GCA    | hydro-phs        | 6.1  | 1.9  | 6.7  | 1.1  | 10.2  | -    | 5.5   | 1.0  | 2.5  | 1.1  | 2.3  | -    |
+| 2050ANGUS  | wind-offshore    | -    | 3.0  | -    | -    | 33.8  | 25.6 | -     | -    | 15.9 | 3.0  | -    | 3.0  |
+| 2050ANGUS  | solar-pv         | 12.1 | 24.1 | 15.0 | 13.0 | 150.0 | 2.0  | 103.1 | 1.0  | 22.2 | 5.4  | 24.2 | 8.9  |
+| 2050ANGUS  | redox-battery    | -    | -    | -    | -    | 0.9   | 0.1  | 0.1   | -    | -    | -    | -    | -    |
+| 2050ANGUS  | lignite-st       | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050ANGUS  | oil-ocgt         | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050ANGUS  | mixed-st         | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050ANGUS  | lithium-battery  | 0.2  | 0.3  | 0.3  | 2.5  | 15.6  | 0.9  | 3.4   | 0.1  | 1.3  | -    | 4.5  | 3.2  |
+| 2050ANGUS  | hydrogen-storage | -    | 1.8  | -    | 0.2  | 10.1  | 5.0  | 26.0  | 0.6  | 7.6  | -    | 0.3  | -    |
+| 2050ANGUS  | hydro-phs        | 10.7 | 2.3  | 5.4  | 1.8  | 12.8  | -    | 13.4  | 1.7  | -    | 17.3 | 3.8  | -    |
+| 2050ANGUS  | gas-ocgt         | 0.5  | 0.8  | 0.7  | 0.6  | 4.4   | 0.3  | 5.4   | 0.1  | 1.0  | -    | 1.0  | -    |
+| 2050ANGUS  | gas-ccgt         | 1.0  | 1.6  | 1.3  | 1.2  | 8.6   | 0.7  | 10.6  | 0.2  | 2.0  | -    | 2.0  | -    |
+| 2050ANGUS  | coal-st          | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050ANGUS  | cavern-acaes     | -    | 0.4  | -    | 0.9  | 3.4   | 0.2  | 0.2   | 0.1  | 1.7  | -    | 1.7  | -    |
+| 2050ANGUS  | biomass-st       | 3.5  | 4.8  | 1.2  | 5.0  | 27.8  | 3.8  | 28.2  | -    | 4.0  | 0.5  | 14.2 | 5.5  |
+| 2050ANGUS  | other-res        | -    | -    | -    | -    | 1.2   | -    | -     | -    | -    | -    | -    | -    |
+| 2050ANGUS  | wind-onshore     | 6.9  | 10.9 | 1.4  | 10.2 | 98.3  | 18.7 | 124.2 | 0.7  | 15.0 | 12.2 | 81.9 | 24.2 |
+
 
 
 
