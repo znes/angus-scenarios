@@ -141,14 +141,17 @@ def compute(
             imports = pd.concat([imports, net_import], axis=1)
 
     summary["total_supply"] = summary.sum(axis=1)
-    summary["RE-share-supply"] = (
+    summary["RE-supply"] = (
         summary["wind-onshore"] +
         summary["wind-offshore"] +
-        summary["other-res"] +
         summary["biomass-st"] +
         summary["hydro-ror"] +
         summary["hydro-reservoir"] +
-        summary["solar-pv"]) / summary["total_supply"]
+        summary["solar-pv"])
+    if "other-res" in summary:
+        summary["RE-supply"] += summary["other-res"]
+
+    summary["RE-share"] = summary["RE-supply"] / summary["total_supply"]
 
     summary["import"] = imports[imports > 0].sum() / 1e6 * temporal_resolution
     summary["export"] = imports[imports < 0].sum() / 1e6 * temporal_resolution
@@ -161,7 +164,7 @@ def compute(
 
 
 if __name__ == "__main__":
-    #compute("ZNES2050", "gurobi")
+    #compute("2040GCA", "gurobi")
     datapackages = [d for d in os.listdir("datapackages")]
     p = mp.Pool(1)
     p.map(compute, datapackages)

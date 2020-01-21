@@ -8,7 +8,7 @@ from oemof.tabular.datapackage import building
 import pandas as pd
 
 def eGo_offshore_wind_profiles(
-    buses, weather_year, scenario_year, datapackage_dir, raw_data_path
+    buses, weather_year, scenario_year, datapackage_dir, raw_data_path, correction_factor=0.8
 ):
     """
     Parameter
@@ -60,10 +60,9 @@ def eGo_offshore_wind_profiles(
 
     for c in buses:
         if c + "_wind_offshore" in wind.columns:
-            sequences_df[c + "-offshore-profile"] = wind[c + "_wind_offshore"] * 0.80 # correction factor
+            sequences_df[c + "-offshore-profile"] = wind[c + "_wind_offshore"] * correction_factor # correction factor
 
-
-
+    
     sequences_df.index = building.timeindex(year=str(scenario_year))
 
     building.write_sequences(

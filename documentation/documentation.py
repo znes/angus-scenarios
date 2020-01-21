@@ -13,13 +13,18 @@ import seaborn
 
 color = {
     "caes": "brown",
+    "conventional": "dimgrey",
     "air-caes": "brown",
     "gas-ocgt": "gray",
     "gas-ccgt": "lightgray",
     "solar-pv": "gold",
+    "pv": "gold",
     "wind-onshore": "skyblue",
+    "onshore": "skyblue",
     "wind-offshore": "darkblue",
+    "offshore": "darkblue",
     "biomass-st": "olivedrab",
+    "biomass": "olivedrab",
     "battery": "lightsalmon",
     "electricity": "lightsalmon",
     "hydro-ror": "aqua",
@@ -39,6 +44,7 @@ color = {
     "import": "pink",
     "storage": "green",
     "other": "red",
+    "other-res": "darkred",
     "mixed": "saddlebrown",
     "mixed-gt": "darkcyan",
     "mixed-chp": "saddlebrown",
@@ -136,6 +142,13 @@ for dir in os.listdir(path):
 df["name"] = ["-".join(i.split("-")[1:]) for i in df.index]
 df = df.set_index(["name", "bus", "scenario"])["capacity"]
 
+df_GW = df/1e3
+df_GW = (df_GW.unstack(1).reset_index().set_index("scenario")).round(1).replace(0, "-").sort_index().fillna("-")
+df_GW.columns = [i.split("-")[0] for i in df_GW.columns]
+
+print(tabulate(df_GW, tablefmt="pipe", headers="keys"))
+
+
 # German capacities
 de = df.loc[(slice(None), "DE-electricity")].unstack(0).fillna(0).T.round(0)
 print(tabulate(de.sort_index(), tablefmt="pipe", headers="keys"))
@@ -187,13 +200,33 @@ for dir in os.listdir("datapackages"):
     scenario.columns = [c[0:2] for c in scenario.columns]
     print(tabulate(scenario.T, tablefmt="pipe", headers="keys"))
 
+#
+# path = os.path.join(os.getcwd(), "results")
+# energy = pd.DataFrame()
+# for dir in os.listdir(path):
+#     if dir != "plots":
+#         df = pd.read_csv(
+#             os.path.join(path, dir, "output", "DE-electricity.csv"), parse_dates=True,
+#             index_col=0
+#         )
+#         energy = pd.concat([energy, df.clip(0).sum()/1e6], axis=1)
 
-path = os.path.join(os.getcwd(), "results")
-energy = pd.DataFrame()
-for dir in os.listdir(path):
-    if dir != "plots":
-        df = pd.read_csv(
-            os.path.join(path, dir, "output", "DE-electricity.csv"), parse_dates=True,
-            index_col=0
-        )
-        energy = pd.concat([energy, df.clip(0).sum()/1e6], axis=1)
+
+scenarios = pd.read_csv("documentation/scenarios-literature.csv", index_col=[0,1])
+scenarios.index = scenarios.index.droplevel(1)
+demand = scenarios.loc["demand"]
+scenarios = scenarios.drop(["demand", "import", "other-res"])
+
+ax =scenarios.T.plot(kind="bar",  grid=True, color=[color_dict.get(c) for c in scenarios.index])
+lgd = ax.legend(loc='lower left', bbox_to_anchor= (0.0, 1.02), ncol=2,
+            borderaxespad=0, frameon=False)
+ax.set_ylabel("Installed capacity in GW")
+plt.xticks(rotation=45)
+
+ax2 = ax.twinx()
+ax2 = demand.plot(linestyle="", marker="o", color="salmon")
+ax2.set_ylabel("Demand in TWh")
+ax2.set_ylim([0, 820])
+ax2.set_xlim([-.5, 5.5])
+
+plt.savefig("documentation/scenario-comparison.pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')
