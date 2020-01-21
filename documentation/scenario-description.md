@@ -15,23 +15,24 @@ header-includes: |
 
 # Background
 
-The ANGUS scenarios and their have been developed
+The ANGUS scenarios and their assumptions have been developed
 to model a pathway towards 100% renewable energy system in Germany. The assessed
-system aims to adhere with the COP paris agreement, i.e. providing a CO2-neutral
+system aims to adhere with the COP Paris agreement, i.e. providing a CO2-neutral
 energy supply in Germany. The developed scenarios are based on the TYNDP2018,
 the NEP2019, the
-e-Highway 100%-RES scenario and the UBA RESCUE scenarios. Their main purpuse
-is to generate storage profiles (power, energy) to assess underground storage
+e-Highway 100%-RES scenario and the UBA RESCUE scenarios. Their main purpose
+is to generate storage operation profiles (power, energy) to assess underground storage
 technologies with regard to techno-ecnomic indicators. Therefore, the
 shadow prices of the developed techno-economic energy system model play an
 important role as economic signal for the storage dispatch and the model coupling
-(s. ANGUS Case Studies). Hence, high priority is given to sensitivies that have
-major effect on the storage dispatch and requirements of the future german
-energy system. The german energy system is modelled with greater detail as the
-neigboring countries due to the regional focus of this country.
+(see ANGUS Case Studies). Hence, high priority is given to sensitivities that have a
+major effect on the storage dispatch and requirements of the future German
+energy system. The German energy system is modelled with greater detail as the
+neigbouring countries due to the regional focus of this study.
 
 ## Existing Scenarios
-The *Netzentwicklungsplan (NEP)* is developed by the German TSOs to plan
+The *Netzentwicklungsplan (NEP)* is developed by the German transmission system
+operator (TSOs) to plan the
 transmission grid in Germany. The NEP is based on a broad public consultation
 phase to enable high acceptance of planned grid expansion. Similarly, the Ten Year
 Netwok Development Plan
@@ -40,17 +41,17 @@ The process of the national NEP and the TYNDP is aligned to ensure coherent nati
 and international planning.  The scenarios in both of these plans reflect current
 and expected socio-economic developments as well as relevant policy decisions.
 Due to the public consultation and their prominent nature, these scenarios constitute
-import visions for the future Eurpean energy system. However, both plans are
-focussin on the short to mid-term perpective. Therefore, within the ANGUS project
+import visions for the future European energy system. However, both plans are
+focussing on the short to mid-term perspective. Therefore, within the ANGUS project
 another prominent scenario development project, the e-Highway2050 project, is
 used as a foundation for the  scenario development.
 The e-Highway2050 project has been funded by the European Commission.
-The project aimed develop a plan for the European transmission network from 2020
+The project aimed to develop a plan for the European transmission network from 2020
 to 2050. One important part of this study is the support of EU’s overall policy
-objectives with regard to energy. The study is builds upon the TYNDP2016 and
+objectives with regard to energy. The study builds upon the TYNDP2016 and
 includes scenarios for 100% renewable energy supply in 2050. The TYNDP is developed
 by the network of European TSO (ENTSOE), therefore it also plays an important
-role for the NEP which is developed by the four german TSO.
+role for the NEP which is developed by the four German TSOs.
 
 
 
@@ -58,60 +59,61 @@ role for the NEP which is developed by the four german TSO.
 
 ## Spatial and temporal resolution
 
-**Assumptions**: The scenarios model the western europe energy system with one
+**Assumptions**: The scenarios model the Western European energy system with one
 node per country. Countries modelled are:
 **AT, BE, CH, CZ, DE, DK, FR, IT, LU, NL, NO, PL, SE.**
- The model simulates the the system on an hourly basis for one year using a
+ The model simulates the system on an hourly basis for one year using a
  perfect foresight approach with the years 2030 and 2050.
 
 **Implications & Limitations**: Intra-country grid constraints are not
-reflected by the model. Hence, renewable energy  curtailment and/or storage
+reflected by the model. Hence, renewable energy curtailment and/or storage
 demand may be underestimated.
 
 ## Grid
 
-The grid for 2030 and 2040 is based on the TYNDP2018 (s. Annex), while the grid for
+The grid for 2030 and 2040 is based on the TYNDP2018 (see Annex), while the grid for
 2050 is based on the e-Highway 100% RES scenario. Figure \ref{grid_2050} shows
 the installed transmission capacities of the 2050 electricity system. The transmission
-system is modelled with a transhipment approach assuming 0.03 loss on the lines.
+system is modelled with a transshipment approach assuming a loss of 0.03 on the lines.
 
-![Installed tranmission capacities in 2050\label{grid_2050}](grid-scenarioANGUS2050.pdf){width=60%}
+![Installed transmission capacities in 2050.\label{grid_2050}](grid-scenarioANGUS2050.pdf){width=60%}
 
 
 ## Demand
 
 ### Conventional electricity demand
-The german goals regarding efficiency aim to reduce the electricity demand
-by 10% until 2020 and 25% by 2050 % compared to 2008 levels (403.8 TWh).  
+The German goals regarding efficiency aim to reduce the electricity demand
+by 10% until 2020 and 25% by 2050 % compared to 2008 levels (403.8 TWh). 
 The development of future electricity demand strongly depends on demographic and
 economic development as well as implemented efficiency measures.
 In literature, different values can be found. Assumptions regarding the
 electricity demand are an important driving  factor for the energy system.
-At the same time these values come with a high degree of uncertainty
-(Result of the ANGUS Scenario Workshop). While the *Basis Szenario* of the
-German *Langfristszenarien* the conventional electricity demand accounts for
+At the same time, these values come with a high degree of uncertainty
+(Result of the ANGUS Scenario Workshop). While the conventional electricity demand
+within the *Basis Szenario* of the German *Langfristszenarien* accounts for
 441.2 TWh in 2030 and 417.2 TWh in 2050 respectively, the demand in the NEP2019
 scenarios for 2030 is slightly higher (477 TWh).
 
 ### Sector coupling
 Despite a decreasing demand due to efficiency measures, the electrification
 of other sectors (heat, transport) will create an additional demand for electricity.
-Currently the heat demand for residential heating accounts for 122.4 TWh hotwater
-and 678.5 TWh space heating (2017). The German goverment set a goal of 60-80%
+Currently the heat demand for residential heating accounts for 122.4 TWh hot water
+and 678.5 TWh space heating (2017). The German government set a goal of 60-80%
 reduction for this sector 2050. These values are very ambitious, as current
 values of insulation are lacking behind necessary rates. Heat demand in the
-RESCUE scenarios ranges from 436.8 TWh (GL) to 246.2 TWh (GS). These amounts
+RESCUE scenarios ranges from 436.8 TWh (green late scenario: GL) to 246.2 TWh
+(green supreme scenario: GS). These amounts
  correspond to a reduction of approx. 72 % to 50 % compared to 2008 (889 TWh).
-The supply for this heat demand is heavily based electricity (heatpumps) 74.6 %
-(GS) and 65 % (GL). The remaining energy is provided by district heating 62.4 TWh
-(GS) and in the case of the GL also additional decentral gas boilers.
+The supply for this heat demand is heavily based on electricity (heatpumps) with 74.6 %
+(GS) and 65 % (GL). The remaining energy is provided by district heating (62.4 TWh,
+ GS) and in the case of the GL also by additional local gas boilers.
 
-In the NEP2019 2030C scenario additional 29 TWh electricity from heatpumps in
+In the NEP2019 2030C scenario, additional 29 TWh electricity from heatpumps in
 residential heating and 25 TWh additional demand for electric vehicles are consumed.
-In contrast, the BMWI scenarios 17.8 TWh electricity for
+In contrast, within the BMWI scenarios, 17.8 TWh electricity for
 heatpumps is consumed. These values are in the range with the RESCUE green
 late (GL) and green supreme (GS) scenarios with 57 TWh_th and 95 TWh_th respectively
-(assuming coeffienct of performance of appr. 3). Therefore, for 2050  both RESCUE
+(assuming an coefficienct of performance of approximately 3). Therefore, for 2050  both RESCUE
 scenarios are used as a basis for additional electricity demand due to space heating.
 
 Demand profiles are calculated from the OPSD dataset of the ENTSOE
@@ -121,10 +123,10 @@ timeseries for the selected weather year (2012).
 *Implications & Limitations*:
 
 * Due to the historic demand profiles, future
-flexibilities like smart operation of certain applications and inducstry
+flexibilities like smart operation of certain applications and industry
 processes are not modelled.
-* The model only covers the residential hotwater and space heating demand.
-* EVH are modelled without specific profile for charging / discharging but only
+* The model only covers the residential hot water and space heating demand.
+*Electric vehicles are modelled without specific profile for charging / discharging but only
 with a constant additional base load.
 
 
@@ -135,44 +137,45 @@ The different scenarios are based on the NEP2019, TYNDP2018 and the e-Highway
 project.
 
 * NEP2030C: Installed capacities in Germany are based on the NEP2019 scenario 2030C. The
-capacities of neigboring countries are based on the TYNDP2018-2030ST vision. The
+capacities of neighbouring countries are based on the TYNDP2018-2030ST vision. The
 renewable share of produced energy in Germany in this scenario is approx. 68 %.
 * 2040GCA: This scenario is based on the TYNDP2018-GCA vision.
-* 2050ZNES: The base scenario is the e-Highway 100 RES scenario. This scenario
+* 2050ZNES: The base scenario is the e-Highway 100 % RES scenario. This scenario
 strongly depends on hydro capacity expansion in Norway and also substantial biomass
-capacitiy/energy. Based on the input data, this scenario has an renewable
+capacity/energy. Based on the input data, this scenario has an renewable
 energy supply share of approx. 95 % .
 * 2050ANGUS: Therefore, the adapted ANGUS scenarios haven been developed to
-describe 100% renewable energy scenarios with different sensitivies such
+describe 100% renewable energy scenarios with different sensitivities such
 as the no-biomass (nb).
 
 The installed capacities in Germany are shown in the Figure \ref{installed_capacities}
-below.  
+below.
 
-![Installed generation capacity in 2050\label{installed_capacities}](installed_capacities.pdf){width=100%}
+![Installed generation capacity in Germany in 2050.\label{installed_capacities}](installed_capacities.pdf){width=100%}
 
 Note that only the scenarios 2030NEPC, 2040GCA, 2050ANGUS-(nb) depict a path towards
 100% renewable energy supply.
 
-## Renewables
+## Renewable Energies
 
 For 2030 and 2040 the reservoir data has been calculated as follows:
 
-* The reservoir (rsv) capacity is calculated by substracting the column 'hydro-pump
+* The reservoir (rsv) capacity is calculated by subtracting the column 'hydro-pump
 from column 'hydro turbine' in the original data source. Therefore, it is assumed,
 that each pumped hydro storage (phs) has equal pump/turbine capacities.
-* The max-hours (energy capacity) for PHS is based on Geth et al. 2018.
+* The max-hours (energy capacity) for phs is based on Geth et al. 2018.
 * The max-hours for rsv is calculated for each country based on the Restore2050
 data, where rsv storage capacity in TWh is provided in addition to the installed capacity.
 It is assumed that all new rsv plants will have the same reservoir sizes in
 each country as provided in current data from the Restore2050 project.
 
 Onshore wind and pv timeseries are based on renewables ninja for each country.
-The offshore profiles are take from the Venetzen-project and adapted with an
+The offshore profiles are taken from the Vernetzen-project and adapted with an
 correction factor of 0.8 which has been derived from the energy production in
 the e-Highway scenarios. The inflow in run of river and reservoirs is modelled
 with the inflow timeseries of the Restore2050 project.
 
+Full load hours of renewable energy technologies:
 
 | country   |   offshore |   onshore |   pv |   ror |
 |:----------|-----------:|----------:|-----:|------:|
@@ -194,7 +197,9 @@ The maximum biomass potential per country is derived from the [hotmaps] project
 and is equal for all scenarios in the ANGUS project. The potential does not cover
 waste but only agriculture and forestry residues. With an efficiency of 0.487
 for biomass to electricity conversion the potential in Germany is approx.
-73 TWhel.
+73 TWh_el.
+
+Biomass potential:
 
 |    | Amount in TWh |
 |:---|-----------:|
@@ -465,11 +470,11 @@ for biomass to electricity conversion the potential in Germany is approx.
 
 ## Grid
 
-![Installed tranmission capacities in 2030](grid-scenarioANGUS2030.pdf){width=60%}
+![Installed transmission capacities in 2030](grid-scenarioANGUS2030.pdf){width=60%}
 
-![Installed tranmission capacities in 2040](grid-scenarioANGUS2040.pdf){width=60%}
+![Installed transmission capacities in 2040](grid-scenarioANGUS2040.pdf){width=60%}
 
-![Installed tranmission capacities in 2050](grid-scenarioANGUS2050.pdf){width=60%}
+![Installed transmission capacities in 2050](grid-scenarioANGUS2050.pdf){width=60%}
 
 # Data Sources
 
