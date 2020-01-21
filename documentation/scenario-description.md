@@ -28,7 +28,7 @@ important role as economic signal for the storage dispatch and the model couplin
 (see ANGUS Case Studies). Hence, high priority is given to sensitivities that have a
 major effect on the storage dispatch and requirements of the future German
 energy system. The German energy system is modelled with greater detail as the
-neigbouring countries due to the regional focus of this study.
+neighbouring countries due to the regional focus of this study.
 
 ## Existing Scenarios
 The *Netzentwicklungsplan (NEP)* is developed by the German transmission system
@@ -83,11 +83,11 @@ system is modelled with a transshipment approach assuming a loss of 0.03 on the 
 
 ### Conventional electricity demand
 The German goals regarding efficiency aim to reduce the electricity demand
-by 10% until 2020 and 25% by 2050 % compared to 2008 levels (403.8 TWh). 
+by 10% until 2020 and 25% by 2050 compared to 2008 levels (403.8 TWh). 
 The development of future electricity demand strongly depends on demographic and
 economic development as well as implemented efficiency measures.
 In literature, different values can be found. Assumptions regarding the
-electricity demand are an important driving  factor for the energy system.
+electricity demand are an important driving factor for the energy system.
 At the same time, these values come with a high degree of uncertainty
 (Result of the ANGUS Scenario Workshop). While the conventional electricity demand
 within the *Basis Szenario* of the German *Langfristszenarien* accounts for
@@ -170,7 +170,7 @@ It is assumed that all new rsv plants will have the same reservoir sizes in
 each country as provided in current data from the Restore2050 project.
 
 Onshore wind and pv timeseries are based on renewables ninja for each country.
-The offshore profiles are taken from the Vernetzen-project and adapted with an
+The offshore profiles are taken from the Vernetzen-project and adapted with a
 correction factor of 0.8 which has been derived from the energy production in
 the e-Highway scenarios. The inflow in run of river and reservoirs is modelled
 with the inflow timeseries of the Restore2050 project.
