@@ -1,0 +1,23 @@
+carrier,tech,type,set name,index
+wind,onshore,volatile,V,v
+wind,offshore,volatile,V,v
+other,res,dispatchable,D,d
+hydor,ror,volatile,V,v
+biomass,st,conversion,C,c
+solar,pv,volatile,V,v
+gas,ccgt,dispatchable,D,d
+gas,ocgt,dispatchable,D,d
+coal,st,dispatchable,D,d
+lignite,st,dispatchable,D,d
+uranium,st,dispatchable,D,d
+oil,ocgt,dispatchable,D,d
+mixed,st,dispatchable,D,d
+waste,st,dispatchable,D,d
+lithium,battery,storage,S,s
+hydrogen,storage,storage,S,s
+redox,battery,storage,S,s
+cavern,acaes,storage,S,s
+hydro,phs,storage,S,s
+hydro,reservoir,reservoir,R,r
+electricity,load,load,L,l
+electricity,line,link,n,N

@@ -12,44 +12,31 @@ import seaborn
 %matplotlib inline
 
 color = {
-    "caes": "brown",
     "conventional": "dimgrey",
-    "air-caes": "brown",
+    "cavern-acaes": "plum",
+    "redox-battery": "violet",
+    "lignite-st": "sienna",
+    "coal-st": "dimgrey",
     "gas-ocgt": "gray",
     "gas-ccgt": "lightgray",
-    "solar-pv": "gold",
-    "pv": "gold",
+    "solar-pv": "lightyellow",
     "wind-onshore": "skyblue",
-    "onshore": "skyblue",
-    "wind-offshore": "darkblue",
-    "offshore": "darkblue",
-    "biomass-st": "olivedrab",
-    "biomass": "olivedrab",
-    "battery": "lightsalmon",
-    "electricity": "lightsalmon",
+    "wind-offshore": "steelblue",
+    "biomass-st": "yellowgreen",
     "hydro-ror": "aqua",
-    "hydro-phs": "darkred",
+    "hydro-phs": "purple",
     "hydro-reservoir": "magenta",
-    "biomass": "olivedrab",
-    "uranium": "yellow",
-    "hydro": "aqua",
-    "wind": "skyblue",
-    "solar": "gold",
-    "gas": "lightgray",
-    "lignite": "chocolate",
-    "coal": "dimgrey",
-    "coal-st": "dimgrey",
-    "waste": "yellowgreen",
+    "hydrogen-storage": "pink",
+    "lithium-battery": "salmon",
+    "waste-st": "yellowgreen",
     "oil-ocgt": "black",
-    "import": "pink",
     "storage": "green",
     "other": "red",
-    "other-res": "darkred",
-    "mixed": "saddlebrown",
-    "mixed-gt": "darkcyan",
-    "mixed-chp": "saddlebrown",
-    "chp": "red",
-    "NONE": "blue",
+    "other-res": "orange",
+    "electricity-load": "slategray",
+    "import": "mediumpurple",
+    "storage": "plum",
+    "mixed-st": "chocolate",
 }
 
 color_dict = {name: colors.to_hex(color) for name, color in color.items()}
@@ -72,7 +59,7 @@ print(tabulate(eta.fillna("NA"), tablefmt="pipe", headers="keys"))
 
 
 ## all parameters
-print(tabulate(technologies.reset_index().set_index('year').sort_index().fillna("NA"), tablefmt="pipe", headers="keys"))
+print(tabulate(technologies.sort_index().reset_index().set_index('year').fillna("NA"), tablefmt="pipe", headers="keys"))
 
 
 # carrier cost
@@ -157,18 +144,19 @@ de = de / 1000
 ax = (de.T).plot(kind='bar', stacked=True, color=[color_dict.get(c) for c in de.index])
 lgd = ax.legend(loc='upper left', bbox_to_anchor=(1, 1), shadow=True, ncol=1)
 ax.set_ylabel("Installed capacity in GW")
+ax.grid(linestyle="--")
 plt.xticks(rotation=45)
 #plt.plot(figsize=(10, 5))
-plt.savefig("documentation/installed_capacities.pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')
+plt.savefig("documentation/figures/installed_capacities.pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')
 
 
 # FLH renewables
 volatile_profile = pd.read_csv(os.path.join(
-        path, "ZNES2050", "data/sequences/volatile_profile.csv"), sep=";", index_col=0
+        path, "2050ZNES", "data/sequences/volatile_profile.csv"), sep=";", index_col=0
     ).sum()
 
 ror_profile = pd.read_csv(os.path.join(
-        path, "ZNES2050", "data/sequences/ror_profile.csv"), sep=";", index_col=0
+        path, "2050ZNES", "data/sequences/ror_profile.csv"), sep=";", index_col=0
     ).sum()
 ror_profile.index = [i.split("-")[0] for i in ror_profile.index]
 
@@ -191,7 +179,10 @@ print(tabulate((biomass.to_frame()), tablefmt="pipe", headers="keys"))
 load["name"] = ["-".join(i.split("-")[1:]) for i in load.index]
 load = load.set_index(["name", "bus", "scenario"])["amount"]
 load.index = load.index.droplevel(0)
-print(tabulate((load.unstack(1)/1e6).round(2), tablefmt="pipe", headers="keys"))
+load = (load.unstack(1)/1e6).round(2)
+load.index = [i.split("-")[0] for i in load.index]
+
+print(tabulate(load, tablefmt="pipe", headers="keys"))
 
 
 ## all countries
@@ -229,4 +220,63 @@ ax2.set_ylabel("Demand in TWh")
 ax2.set_ylim([0, 820])
 ax2.set_xlim([-.5, 5.5])
 
-plt.savefig("documentation/scenario-comparison.pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')
+plt.savefig("documentation/figures/scenario-comparison.pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')
+
+
+
+ctt = pd.read_csv("documentation/carriertechtype.csv", index_col=[0])
+print(tabulate(ctt, tablefmt="pipe", headers="keys"))
+
+########### Energy plot
+
+path = os.path.join(os.getcwd(), "results")
+scenarios = pd.DataFrame()
+
+bus = "DE"
+
+for dir in os.listdir(path):
+    df = pd.read_csv(os.path.join(path, dir, "output", bus +"-electricity.csv"), index_col=0, parse_dates=True)
+    cols = [("-").join([bus, ct]) for ct in ["electricity-load", "electricity-excess"]]
+
+    df[cols] = df[cols] * -1
+
+
+    pos = df.clip(lower=0).sum()
+    neg = df.clip(upper=0).sum()
+    neg = neg.loc[neg < 0]
+    neg.index = [i + "-cos" for i in neg.index]
+
+    df = pd.concat([pos, neg], sort=False)
+
+    if bus + "-decentral-hp" in df.index:
+        df.drop(bus + "-decentral-hp", inplace=True)
+    df.name = dir
+
+    scenarios = pd.concat([scenarios, df], axis=1, sort=False)
+
+scenarios = (scenarios / 1e6).round(2)
+scenarios.index = ["-".join(i.split("-")[1:]) if not "import" in i else i for i in scenarios.index]
+
+storages = ["lithium-battery", "cavern-acaes", "hydro-phs", "hydrogen-storage"]
+storages_cos = [i + "-cos" for i in storages]
+scenarios.loc["storage"] = scenarios.loc[storages].sum()
+scenarios.loc["storage-cos"] = scenarios.loc[storages_cos].sum()
+
+scenarios.drop(storages, inplace=True)
+scenarios.drop(storages_cos, inplace=True)
+
+scenarios.sort_index(axis=1,inplace=True)
+
+ax = scenarios.T.plot(kind='bar',stacked=True,
+                 color=[color_dict.get(i.replace("-cos", "")) for i in scenarios.index],
+                 label=[i if not "-cos" in i else None for i in scenarios.index])
+ax.legend()
+handles, labels = ax.get_legend_handles_labels()
+lgd ={k:v for k,v in dict(zip(handles, labels)).items() if "-cos" not in v}
+lgd = ax.legend(lgd.keys(), lgd.values(), loc='lower left', bbox_to_anchor= (-0.2, -0.65), ncol=4,
+            borderaxespad=0, frameon=False)
+ax.set_ylabel("Energy in TWh")
+ax.grid(linestyle="--")
+plt.xticks(rotation=45)
+#plt.plot(figsize=(10, 5))
+plt.savefig("documentation/figures/energy.pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')

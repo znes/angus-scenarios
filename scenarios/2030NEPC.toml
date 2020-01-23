@@ -3,7 +3,7 @@ description = "Scenario for ANGUS project, year 2030 (based on NEP2019 2030C, an
 name = "2030NEPC"
 
 [scenario]
-DE_system = "NEP2030C" # german data (generation, load, etc.)
+DE_system = "2030NEPC" # german data (generation, load, etc.)
 EU_load = "2030ST" # european load
 EU_generation = "2030 ST" # european generation mix based on TYNDP
 cost = "2030NEPC" # carrier cost (gas, co2, etc.)

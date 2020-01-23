@@ -164,7 +164,7 @@ def compute(
 
 
 if __name__ == "__main__":
-    #compute("2040GCA", "gurobi")
-    datapackages = [d for d in os.listdir("datapackages")]
-    p = mp.Pool(1)
-    p.map(compute, datapackages)
+    compute("2030NEPC", "gurobi")
+    # datapackages = [d for d in os.listdir("datapackages")]
+    # p = mp.Pool(1)
+    # p.map(compute, datapackages)

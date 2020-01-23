@@ -137,6 +137,7 @@ def generation(config, scenario_year, datapackage_dir, raw_data_path):
     capacities =  hydro_data.loc[scenario_year].loc[countries][["ror", "rsv", "phs"]]
     ror_shares =  hydro_data.loc[scenario_year].loc[countries]["ror-share"]
     max_hours =  hydro_data.loc[scenario_year].loc[countries][["rsv-max-hours", "phs-max-hours"]]
+    rsv_factor =  hydro_data.loc[scenario_year].loc[countries]["rsv-factor"]
 
 
     # ror
@@ -146,9 +147,9 @@ def generation(config, scenario_year, datapackage_dir, raw_data_path):
 
         capacity = capacities.loc[country, "ror"]
 
-        eta = technologies.loc[
-            (scenario_year, "efficiency", "hydro", "ror"), "value"
-        ]
+        # eta = technologies.loc[
+        #     (scenario_year, "efficiency", "hydro", "ror"), "value"
+        # ]
 
         if capacity > 0:
 
@@ -159,7 +160,7 @@ def generation(config, scenario_year, datapackage_dir, raw_data_path):
                 "bus": country + "-electricity",
                 "capacity": capacity,
                 "profile": country + "-ror-profile",
-                "efficiency": eta,
+                "efficiency": 1, # as already included in inflow profile
             }
 
     building.write_elements(
@@ -169,6 +170,9 @@ def generation(config, scenario_year, datapackage_dir, raw_data_path):
     )
 
     sequences = (inflows[countries] * ror_shares * 1000) / capacities["ror"]
+    col = list(set(countries) - set(["NO", "SE"]))
+    sequences[col] = sequences[col] * 1.5 # correction factor
+
     sequences = sequences[countries].copy()
     sequences.dropna(axis=1, inplace=True)
     sequences.clip(upper=1, inplace=True)
@@ -188,9 +192,9 @@ def generation(config, scenario_year, datapackage_dir, raw_data_path):
         capacity = capacities.loc[country, "rsv"]
         rsv_max_hours = max_hours.loc[country, "rsv-max-hours"]
 
-        eta = technologies.loc[
-            (scenario_year, "efficiency", "hydro", "rsv"), "value"
-        ]
+        # eta = technologies.loc[
+        #     (scenario_year, "efficiency", "hydro", "rsv"), "value"
+        # ]
 
         if capacity > 0:
             elements[name] = {
@@ -201,7 +205,7 @@ def generation(config, scenario_year, datapackage_dir, raw_data_path):
                 "capacity": capacity,
                 "storage_capacity": capacity * rsv_max_hours,
                 "profile": country + "-reservoir-profile",
-                "efficiency": eta,
+                "efficiency": 1, # as already included in inflow profile
                 "marginal_cost": 0.0000001,
             }
 
@@ -210,8 +214,8 @@ def generation(config, scenario_year, datapackage_dir, raw_data_path):
         pd.DataFrame.from_dict(elements, orient="index"),
         directory=os.path.join(datapackage_dir, "data", "elements"),
     )
-
-    sequences = inflows[countries] * (1 - ror_shares) * 1000 * 1.7 # correction factor for eHighway inflow
+    sequences = inflows[countries] * (1 - ror_shares) * 1000
+    sequences[["NO", "SE"]] = sequences[["NO", "SE"]] * 1.6 # correction factor
     sequences = sequences[countries].copy()
     sequences.dropna(axis=1, inplace=True)
     sequences.columns = sequences.columns.astype(str) + "-reservoir-profile"

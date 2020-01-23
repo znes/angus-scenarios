@@ -3,7 +3,7 @@ description = "Scenario for ANGUS project, year 2040 (based on TYNDP2018 2040 GC
 name = "2040GCA"
 
 [scenario]
-DE_system = "" # german data (generation, load, etc.)
+DE_system = "2040GCA" # german data (generation, load, etc.)
 EU_load = "2040GCA" # european load
 EU_generation = "2040 GCA" # european generation mix based on TYNDP
 cost = "2040GCA" # carrier cost (gas, co2, etc.)

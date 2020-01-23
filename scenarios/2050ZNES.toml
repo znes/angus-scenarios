@@ -4,7 +4,7 @@ name = "2050ZNES"
 
 
 [scenario]
-DE_system = "ZNES2050"
+DE_system = "2050ZNES"
 EU_load = "100% RES" # european load
 EU_generation = "100% RES" # european generation mix based on
 cost = "2050ZNES" # carrier cost (gas, co2, etc.)
