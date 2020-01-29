@@ -116,43 +116,11 @@ prices = {r: pd.DataFrame(prices[r]).set_index("timestamp") for r in prices}
 if not os.path.exists("results/plots"):
     os.makedirs("results/plots")
 
-# plot for all scenarios
-offline.plot(
-    price_line_plot(results, sprices.index, unsorted, country),
-    filename=os.path.join("results", "plots", "shadow-prices.html"),
-    auto_open=False,
-)
-
-offline.plot(
-    price_scatter_plot(results, rload, unsorted, timestamps, country),
-    filename=os.path.join(
-        "results", "plots", "shadow_prices-vs-residual_load.html"
-    ),
-    auto_open=False,
-)
-
 
 for s in results:
     scenario_plots = os.path.join("results", "plots", s)
     if not os.path.exists(scenario_plots):
         os.makedirs(scenario_plots)
-
-    offline.plot(
-        filling_level_plot(s),
-        filename=os.path.join(scenario_plots, s + "-filling-levels.html"),
-        auto_open=False,
-    )
-
-    offline.plot(
-        stacked_plot(s),
-        filename=os.path.join(scenario_plots, s + "-capacities.html"),
-        auto_open=False,
-    )
-    offline.plot(
-        hourly_plot(s, "DE"),
-        filename=os.path.join(scenario_plots, s + "-dispatch.html"),
-        auto_open=False,
-    )
 
     if country == "DE":
         offline.plot(
