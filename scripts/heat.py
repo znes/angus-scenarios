@@ -10,9 +10,19 @@ from oemof.tabular.datapackage import building
 
 
 def german_heat_system(heat_buses, weather_year, scenario, scenario_year,
-                       datapackage_dir, raw_data_path):
+                       sensitivities, datapackage_dir, raw_data_path):
     """
     """
+    technologies = pd.DataFrame(
+        # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
+        Package(
+            "https://raw.githubusercontent.com/ZNES-datapackages/"
+            "angus-input-data/master/technology/datapackage.json"
+        )
+        .get_resource("heat")
+        .read(keyed=True)
+    ).set_index(["year", "parameter", "carrier", "tech"])
+
     data = (
         pd.DataFrame(
             Package(
@@ -42,6 +52,13 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year,
         ~((df.index.month == 2) & (df.index.day == 29))
     ]
 
+    data["country"] = "DE"
+    data.set_index("country", append=True, inplace=True)
+    if sensitivities is not None:
+        for k,v in sensitivities.items():
+            k = k.split("-")
+            data.at[(k[1], k[2], k[0]), "value"] = v
+
     elements = []
     sequences = {}
 
@@ -51,55 +68,75 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year,
         "bus.csv",
         directory=os.path.join(datapackage_dir, "data/elements")
     )
-    heat_demand_total = float(data.loc[("heat", "load-decentral"), "value"])
-    c = "heat"
+    heat_demand_total = float(data.loc[("decentral_heat", "load"), "value"])  * 1000 # MWh
+
     for bustype, buses in heat_buses.items():
+        carrier = bustype + "_heat"
         for b in buses:
-            heat_bus = "-".join([b, bustype, c, "bus"])
+            heat_bus = "-".join([b, carrier, "bus"])
             peak_demand_heat = (
-                (df.loc[weather_year][b + "_heat_demand_total"] /
+                (df.loc[weather_year][b + "_heat_demand_total"] / # MW
                  df.loc[weather_year][b + "_heat_demand_total"].sum() *
-                 heat_demand_total).max() * 1000
+                 heat_demand_total).max()
             )
 
             el_buses.loc[heat_bus] = [True, "heat", None, "bus"]
 
-            profile_name = "-".join([b, bustype, c, "load", "profile"])
+            profile_name = "-".join([b, carrier, "load", "profile"])
             elements.append(
                 {
-                    "name": "-".join([b, bustype, c, "load"]),
+                    "name": "-".join([b, carrier, "load"]),
                     "type": "load",
                     "bus": heat_bus,
-                    "amount": heat_demand_total * 1000, # GWh -> MWh
+                    "amount": heat_demand_total,
                     "profile": profile_name,
-                    "carrier": c,
+                    "carrier": carrier,
                 }
             )
 
             elements.append(
                 {
-                    "name": "-".join([b, bustype, "hp"]),
+                    "name": "-".join([b, carrier, "hp"]),
                     "type": "conversion",
                     "to_bus": heat_bus,
                     "from_bus": "DE-electricity",
                     "capacity": peak_demand_heat * 1.1,
                     "efficiency": 3,
-                    "carrier": "electricity",
-                    "tech": "ground-hp"
+                    "carrier": carrier,
+                    "tech": "hp"
                 }
             )
 
+
+            name = "-".join([b, carrier, "tes"])
+            if sensitivities is not None:
+                if name in sensitivities.keys():
+                    capacity = sensitivities[name]
+                else:
+                    capacity = peak_demand_heat
+            else:
+                capacity = peak_demand_heat
+
             elements.append(
                 {
-                    "name": "-".join([b, bustype, c, "tes"]),
+                    "name": name,
                     "type": "storage",
                     "bus": heat_bus,
-                    "capacity": peak_demand_heat * 1.1,
-                    "storage_capacity": peak_demand_heat * 1.1 * 5,
-                    "efficiency": 0.99,
-                    "loss": 0.05,
-                    "carrier": "heat",
-                    "tech": "tes-tank"
+                    "capacity": capacity,
+                    "storage_capacity": capacity * float(technologies.loc[
+                        (2050, "max_hours", carrier, "tes"),
+                        "value"
+                    ]),
+                    "efficiency": float(technologies.loc[
+                        (2050, "efficiency", carrier, "tes"),
+                        "value"
+                    ])**0.5, # rountrip conversion
+                    "loss": technologies.loc[
+                        (2050, "loss", carrier, "tes"),
+                        "value"
+                    ],
+                    "carrier": carrier,
+                    "tech": "tes"
                 }
             )
 

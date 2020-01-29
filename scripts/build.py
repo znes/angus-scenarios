@@ -5,7 +5,7 @@ import pandas as pd
 from datapackage import Package
 
 from oemof.tabular import datapackage
-import bus, capacity_factors, electricity, grid, biomass, load, hydro, heat
+import bus, capacity_factors, electricity, grid, biomass, load, hydro, heat, investment
 from fuchur.cli import Scenario
 from prepare import raw_data_path
 
@@ -41,7 +41,6 @@ def build(config):
     biomass.add(config["buses"], datapackage_dir)
 
     if config["scenario"].get("DE_system") != "":
-        # for all countries add german capacities based
         electricity.german_energy_system(
             datapackage_dir,
             raw_data_path,
@@ -49,20 +48,31 @@ def build(config):
             scenario_year=config["scenario"]["year"],
             cost_scenario=config["scenario"]["cost"],
             technologies=technologies,
-            sensitivities=config.get("sensitivities"),
+            sensitivities=config.get("sensitivities", {}).get("electricity"),
+            investment=config["scenario"].get("investment")
         )
+
+        # for all countries add german capacities based
+        if config["scenario"].get("investment"):
+            investment.greenfield_investment(
+                datapackage_dir,
+                raw_data_path,
+                config["scenario"]["cost"],
+                ["DE"],
+                technologies,
+                config["scenario"]["year"],
+                0.05
+            )
         DE_set = set(["DE"])
     else:
         DE_set = set()
 
     if config["scenario"]["year"] == 2050:
 
-        # for 2050 add the ehighway grid
-        grid.ehighway(
-            config["buses"]["electricity"],
-            config["scenario"]["year"],
-            config["scenario"]["grid_loss"],
-            config["scenario"]["grid"],
+        electricity.ehighway_generation(
+            set(config["buses"]["electricity"]) - DE_set,
+            config["scenario"]["cost"],
+            config["scenario"]["EU_generation"],
             datapackage_dir,
             raw_data_path,
         )
@@ -76,23 +86,7 @@ def build(config):
             raw_data_path,
         )
         # for 2050 add the ehighway capacities capacity for all non-german
-        electricity.ehighway_generation(
-            set(config["buses"]["electricity"]) - DE_set,
-            config["scenario"]["cost"],
-            config["scenario"]["EU_generation"],
-            datapackage_dir,
-            raw_data_path,
-        )
-
     elif config["scenario"]["year"] in [2030, 2040]:
-        grid.tyndp(
-            config["buses"]["electricity"],
-            config["scenario"]["grid_loss"],
-            config["scenario"]["grid"],
-            datapackage_dir,
-            raw_data_path,
-        )
-
         load.tyndp(
             set(config["buses"]["electricity"]) - DE_set,
             config["scenario"]["EU_load"],
@@ -108,6 +102,31 @@ def build(config):
             datapackage_dir,
             raw_data_path
         )
+
+
+
+    if "100% RES" in config["scenario"]["grid"]:
+        # for 2050 add the ehighway grid
+        grid.ehighway(
+            config["buses"]["electricity"],
+            config["scenario"]["year"],
+            config["scenario"]["grid_loss"],
+            config["scenario"]["grid"],
+            datapackage_dir,
+            raw_data_path,
+        )
+
+
+    elif "2030" or "2040" in config["scenario"]["grid"]:
+        grid.tyndp(
+            config["buses"]["electricity"],
+            config["scenario"]["grid_loss"],
+            config["scenario"]["grid"],
+            datapackage_dir,
+            raw_data_path,
+        )
+
+
 
     # the same for all scenarios
     load.opsd_profile(
@@ -169,6 +188,7 @@ def build(config):
             config["scenario"]["weather_year"],
             config["scenario"]["DE_system"],
             config["scenario"]["year"],
+            config.get("sensitivities", {}).get("heat"),
             datapackage_dir,
             raw_data_path)
 
@@ -179,6 +199,9 @@ def build(config):
             "bus": [
                 "volatile",
                 "dispatchable",
+                "dispatchable_invest",
+                "storage_invest",
+                "volatile_invest",
                 "storage",
                 "heat_storage",
                 "heat_load",
@@ -190,8 +213,8 @@ def build(config):
                 "shortage",
                 "commodity",
             ],
-            "profile": ["load", "volatile", "ror", "reservoir", "heat_load"],
-            "from_to_bus": ["link", "conversion", "heatpump"],
+            "profile": ["load", "volatile", "volatile_invest", "ror", "reservoir", "heat_load"],
+            "from_to_bus": ["link", "conversion", "conversion_invest", "heatpump"],
             "chp": [],
         },
         path=datapackage_dir,
@@ -201,9 +224,13 @@ def build(config):
 if __name__ == "__main__":
     # scenarios = [
     #     Scenario.from_path(os.path.join("scenarios", s))
-    #     for s in os.listdir("scenarios")
+    #     for s in os.listdir("scenarios") if not "invest" in s
     # ]
+    #
     # p = mp.Pool(10)
     # p.map(build, scenarios)
 
-    build(Scenario.from_path(os.path.join("scenarios", "2030NEPC.toml")))
+    scenarios = ["2040GCA.toml"]
+    for c in scenarios:
+        s = Scenario.from_path(os.path.join("scenarios", c))
+        build(s)

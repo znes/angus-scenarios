@@ -13,12 +13,21 @@ import oemof.outputlib as outputlib
 
 from pyomo.environ import Expression
 
+from fuchur.cli import Scenario
+
+
 
 def compute(
-    datapackage, solver="gurobi", temporal_resolution=1, emission_limit=None
+    datapackage, solver="gurobi"
 ):
     """
     """
+    config = Scenario.from_path(
+        os.path.join("scenarios", datapackage + ".toml"))
+    emission_limit = config["scenario"].get("co2_limit")
+
+    temporal_resolution = config.get("model", {}).get("temporal_resolution", 1)
+
     datapackage_dir = os.path.join("datapackages", datapackage)
 
     # create results path
@@ -164,7 +173,10 @@ def compute(
 
 
 if __name__ == "__main__":
-    compute("2030NEPC", "gurobi")
-    # datapackages = [d for d in os.listdir("datapackages")]
-    # p = mp.Pool(1)
-    # p.map(compute, datapackages)
+    # scenarios = ["2050ANGUS-invest-2040grid"]
+    # for s in scenarios:
+    #      compute(s, "gurobi")
+
+    datapackages = [d for d in os.listdir("datapackages")]
+    p = mp.Pool(1)
+    p.map(compute, datapackages)

@@ -1,6 +1,6 @@
-title = "2050ANGUS"
+title = "2050ANGUS-wo-tes"
 description = "Scenario for ANGUS project, year 2050 (based on Ehighway 100 % RES). With additional renewable capacity"
-name = "2050ANGUS"
+name = "2050ANGUS-wo-tes"
 
 parents = ["scenarios/2050ZNES.toml"]
 
@@ -12,6 +12,7 @@ DE-electricity-load = 571e3
 
 [sensitivities.heat]
 DE-decentral_heat-load = 284e3
+DE-decentral_heat-tes = 0
 
 [buses.heat]
 #central = ["DE"]

@@ -15,8 +15,10 @@ pv_profiles = "ninja"
 onshore_profiles = "ninja"
 offshore_profiles = "eGo"
 
-[buses]
+[sensitivities.electricity]
+DE-electricity-load = 510e3
 
+[buses]
 electricity = [
     "AT",
     "BE",
@@ -46,3 +48,7 @@ biomass = [
   "PL",
   "SE"
 ]
+
+[buses.heat]
+#central = ["DE"]
+decentral = ["DE"]

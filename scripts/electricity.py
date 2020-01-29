@@ -141,6 +141,9 @@ def tyndp_generation_2018(
     elements = _elements(
         countries, df, technologies, carrier_cost, emission_factors,
         scenario, scenario_year)
+    load = _load(countries, df)
+    for k,v in load.items():
+        v.update(load[k])
 
     df = pd.DataFrame.from_dict(elements, orient="index")
     df = df[df.capacity != 0]
@@ -161,7 +164,9 @@ def german_energy_system(
     cost_scenario,
     technologies,
     scenario_year,
-    sensitivities
+    sensitivities,
+    investment
+
 ):
     """Extracts german specific scenario data from input datapackage
 
@@ -224,20 +229,28 @@ def german_energy_system(
     _data.name = "DE"
     _data = _data.to_frame().T
 
+
     elements = _elements(
         countries, _data, technologies, carrier_cost, emission_factors,
         cost_scenario, scenario_year, sensitivities)
+    load = _load(countries, _data, sensitivities)
+    for k,v in elements.items():
+        v.update(load[k])
 
     df = pd.DataFrame.from_dict(elements, orient="index")
 
-    for element_type in [
+    if investment:
+        element_list = ["load"]
+    else:
+        element_list = [
         "dispatchable",
         "volatile",
         "conversion",
         "storage",
         "load",
-    ]:
+    ]
 
+    for element_type in element_list:
         building.write_elements(
             element_type + ".csv",
             df.loc[df["type"] == element_type].dropna(how="all", axis=1),
@@ -351,6 +364,10 @@ def ehighway_generation(
         countries, data, technologies, carrier_cost, emission_factors,
         cost_scenario, scenario_year)
 
+    load = _load(countries, data)
+    for k,v in elements.items():
+        v.update(load[k])
+
     df = pd.DataFrame.from_dict(elements, orient="index")
     df = df[df.capacity != 0]
 
@@ -412,9 +429,40 @@ def shortage(datapackage_dir):
 
     building.write_elements("shortage.csv", elements, directory=path)
 
+def _load(countries, data, sensitivities=None):
+
+    if sensitivities is not None:
+        for k,v in sensitivities.items():
+            k = k.split("-")
+            
+            data.at[k[0], (k[1], k[2])] = v
+
+    elements = {}
+    for b in countries:
+        for carrier, tech in data.columns:
+            element = {}
+            elements["-".join([b, carrier, tech])] = element
+
+            if "load" in tech:
+                # remove once heat components are merged
+                if carrier != "heat":
+                    elements["-".join([b, carrier, tech])] = element
+                    element.update(
+                        {
+                            "amount": data.at[b, (carrier, tech)] * 1000,
+                            "bus": b + "-electricity",
+                            "tech": tech,
+                            "carrier": carrier,
+                            "type": "load",
+                            "profile": "-".join([b, carrier, tech, "profile"]),
+                        }
+                    )
+    return elements
+
 
 def _elements(countries, data, technologies, carrier_cost, emission_factors,
                scenario, scenario_year, sensitivities=None):
+
 
     if sensitivities is not None:
         for k,v in sensitivities.items():
@@ -557,18 +605,4 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                     }
                 )
 
-            elif "load" in tech:
-                # remove once heat components are merged
-                if carrier != "heat":
-                    elements["-".join([b, carrier, tech])] = element
-                    element.update(
-                        {
-                            "amount": data.at[b, (carrier, tech)] * 1000,
-                            "bus": b + "-electricity",
-                            "tech": tech,
-                            "carrier": carrier,
-                            "type": "load",
-                            "profile": "-".join([b, carrier, tech, "profile"]),
-                        }
-                    )
     return elements

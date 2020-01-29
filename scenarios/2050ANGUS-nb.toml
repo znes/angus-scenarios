@@ -1,11 +1,21 @@
+
+
 title = "2050ANGUS-nb"
 description = "Scenario for ANGUS project, year 2050 (based on Ehighway 100 % RES). With additional renewable capacity"
 name = "2050ANGUS-nb"
 
 parents = ["scenarios/2050ZNES.toml"]
 
-[sensitivities]
+[sensitivities.electricity]
 DE-biomass-st = 0 # GW
 DE-wind-onshore = 120000 # GW
 DE-wind-offshore = 33800 # GW
 DE-solar-pv = 180000 # GW
+DE-electricity-load = 571e3
+
+[sensitivities.heat]
+DE-decentral_heat-load = 284e3
+
+[buses.heat]
+#central = ["DE"]
+decentral = ["DE"]

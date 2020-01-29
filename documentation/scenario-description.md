@@ -28,7 +28,7 @@ shadow prices of the developed techno-economic energy system model play an
 important role as an economic signal for the storage dispatch and the model coupling
 (see ANGUS Case Studies). Hence, high priority is given to sensitivities that have a
 major effect on the storage dispatch and requirements of the future German
-energy system. 
+energy system.
 
 ## Existing Scenarios
 
@@ -49,7 +49,7 @@ as well as recent relevant policy decisions.  Due to the public consultation and
 their prominent nature, these scenarios constitute import visions for the future
 European energy system. Another important project in the Eurpean context are the
 EUCO scenarios. Their data has been used as input data for the
-TNYDP2018. Thus, in the ANGUSII project the focus will be given to the TNYDP2018
+TNYDP2018. Thus, in the ANGUS project the focus will be given to the TNYDP2018
 scenarios for modelling the electrical neigbouring countries of Germany in the mid-term
 future.
 
@@ -251,7 +251,7 @@ corresponding type (i.e. oemof tabular class) and set.
 
 
 \newpage
-# ANGUSII Scenario Assumptions
+# ANGUS Scenario Assumptions
 
 ## Spatial and temporal resolution
 
@@ -792,7 +792,7 @@ fomr 2030 to 2050.
 
 ![Installed transmission capacities in 2050](figures/grid-scenarioANGUS2050.pdf){width=100%}
 
-\newpage
+\newpage  
 # Data Sources
 
 All relevant raw input data can be found in:
