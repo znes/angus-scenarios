@@ -188,6 +188,7 @@ def build(config):
             config["scenario"]["weather_year"],
             config["scenario"]["DE_system"],
             config["scenario"]["year"],
+            config["scenario"]["decentral_heat-flex-share"],
             config.get("sensitivities", {}).get("heat"),
             datapackage_dir,
             raw_data_path)
@@ -224,13 +225,13 @@ def build(config):
 if __name__ == "__main__":
     # scenarios = [
     #     Scenario.from_path(os.path.join("scenarios", s))
-    #     for s in os.listdir("scenarios") if not "invest" in s
+    #     for s in os.listdir("scenarios") if "base" in s
     # ]
     #
     # p = mp.Pool(10)
     # p.map(build, scenarios)
 
-    scenarios = ["2040GCA.toml"]
+    scenarios = ["base-flex10.toml"]
     for c in scenarios:
         s = Scenario.from_path(os.path.join("scenarios", c))
         build(s)

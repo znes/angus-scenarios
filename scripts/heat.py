@@ -10,7 +10,8 @@ from oemof.tabular.datapackage import building
 
 
 def german_heat_system(heat_buses, weather_year, scenario, scenario_year,
-                       sensitivities, datapackage_dir, raw_data_path):
+                       decentral_heat_flex_share, sensitivities,
+                       datapackage_dir, raw_data_path):
     """
     """
     technologies = pd.DataFrame(
@@ -69,76 +70,112 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year,
         directory=os.path.join(datapackage_dir, "data/elements")
     )
     heat_demand_total = float(data.loc[("decentral_heat", "load"), "value"])  * 1000 # MWh
-
     for bustype, buses in heat_buses.items():
         carrier = bustype + "_heat"
+
+
         for b in buses:
             heat_bus = "-".join([b, carrier, "bus"])
+            flex_peak_demand_heat = (
+                (df.loc[weather_year][b + "_heat_demand_total"] / # MW
+                 df.loc[weather_year][b + "_heat_demand_total"].sum() *
+                 heat_demand_total).max() * decentral_heat_flex_share
+            )
+
             peak_demand_heat = (
                 (df.loc[weather_year][b + "_heat_demand_total"] / # MW
                  df.loc[weather_year][b + "_heat_demand_total"].sum() *
-                 heat_demand_total).max()
+                 heat_demand_total).max() * (1 - decentral_heat_flex_share)
             )
 
             el_buses.loc[heat_bus] = [True, "heat", None, "bus"]
 
             profile_name = "-".join([b, carrier, "load", "profile"])
-            elements.append(
-                {
-                    "name": "-".join([b, carrier, "load"]),
-                    "type": "load",
-                    "bus": heat_bus,
-                    "amount": heat_demand_total,
-                    "profile": profile_name,
-                    "carrier": carrier,
-                }
-            )
 
-            elements.append(
-                {
-                    "name": "-".join([b, carrier, "hp"]),
-                    "type": "conversion",
-                    "to_bus": heat_bus,
-                    "from_bus": "DE-electricity",
-                    "capacity": peak_demand_heat * 1.1,
-                    "efficiency": 3,
-                    "carrier": carrier,
-                    "tech": "hp"
-                }
-            )
+            if "flex" in bustype:
+                elements.append(
+                    {
+                        "name": "-".join([b, carrier, "load"]),
+                        "type": "load",
+                        "bus": heat_bus,
+                        "amount": heat_demand_total * decentral_heat_flex_share,
+                        "profile": profile_name,
+                        "carrier": carrier,
+                    }
+                )
+                elements.append(
+                    {
+                        "name": "-".join([b, carrier, "hp-flex"]),
+                        "type": "conversion",
+                        "to_bus": heat_bus,
+                        "from_bus": "DE-electricity",
+                        "capacity": flex_peak_demand_heat * 1.1,
+                        "efficiency": 3,
+                        "carrier": carrier,
+                        "tech": "hp"
+                    }
+                )
 
-
-            name = "-".join([b, carrier, "tes"])
-            if sensitivities is not None:
-                if name in sensitivities.keys():
-                    capacity = sensitivities[name]
+                name = "-".join([b, carrier, "tes"])
+                if sensitivities is not None:
+                    if name in sensitivities.keys():
+                        capacity = sensitivities[name]
+                    else:
+                        capacity = flex_peak_demand_heat
                 else:
-                    capacity = peak_demand_heat
-            else:
-                capacity = peak_demand_heat
+                    capacity = flex_peak_demand_heat
 
-            elements.append(
-                {
-                    "name": name,
-                    "type": "storage",
-                    "bus": heat_bus,
-                    "capacity": capacity,
-                    "storage_capacity": capacity * float(technologies.loc[
-                        (2050, "max_hours", carrier, "tes"),
-                        "value"
-                    ]),
-                    "efficiency": float(technologies.loc[
-                        (2050, "efficiency", carrier, "tes"),
-                        "value"
-                    ])**0.5, # rountrip conversion
-                    "loss": technologies.loc[
-                        (2050, "loss", carrier, "tes"),
-                        "value"
-                    ],
-                    "carrier": carrier,
-                    "tech": "tes"
-                }
-            )
+                carrier = carrier.replace("flex-", "")
+                elements.append(
+                    {
+                        "name": name,
+                        "type": "storage",
+                        "bus": heat_bus,
+                        "capacity": capacity,
+                        "storage_capacity": capacity * float(technologies.loc[
+                            (2050, "max_hours", carrier, "tes"),
+                            "value"
+                        ]),
+                        "efficiency": float(technologies.loc[
+                            (2050, "efficiency", carrier, "tes"),
+                            "value"
+                        ])**0.5, # rountrip conversion
+                        "loss": technologies.loc[
+                            (2050, "loss", carrier, "tes"),
+                            "value"
+                        ],
+                        "carrier": carrier,
+                        "tech": "tes"
+                    }
+                )
+            else:
+                elements.append(
+                    {
+                        "name": "-".join([b, carrier, "load"]),
+                        "type": "load",
+                        "bus": heat_bus,
+                        "amount": heat_demand_total * (1 - decentral_heat_flex_share),
+                        "profile": profile_name,
+                        "carrier": carrier,
+                    }
+                )
+                elements.append(
+                    {
+                        "name": "-".join([b, carrier, "hp"]),
+                        "type": "conversion",
+                        "to_bus": heat_bus,
+                        "from_bus": "DE-electricity",
+                        "capacity": peak_demand_heat * 1.1,
+                        "efficiency": 3,
+                        "carrier": carrier,
+                        "tech": "hp"
+                    }
+                )
+
+
+
+
+
 
         sequences[profile_name] = (
             df.loc[weather_year][b + "_heat_demand_total"] /

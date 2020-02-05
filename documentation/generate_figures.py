@@ -5,7 +5,7 @@ import plotly.offline as offline
 
 import matplotlib.pyplot as plt
 from matplotlib import colors
-
+import seaborn as sns
 from documentation.plotly_plots import (
     filling_level_plot,
     hourly_plot,
@@ -115,7 +115,7 @@ for dir in os.listdir(path):
         re_supply = sum(sums.get(bus + "-" + k, 0) for k in renewables)
         excess[dir] = df[bus + "-electricity-excess"].sum() / 1e6
         shares[dir] = (re_supply - excess[dir]) / total_supply
-shares
+
 # filling levels --------------------------------------------------------------
 for dir in os.listdir(path):
     if dir not in exclude:
@@ -357,7 +357,6 @@ plt.savefig(
 # shadow prices ---------------------------------------------
 sorted = {}
 unsorted = {}
-exclude = ["2050ANGUS-nb"]
 for dir in os.listdir(path):
     if dir not in exclude:
         data_path = os.path.join(path, dir, "output", "shadow_prices.csv")

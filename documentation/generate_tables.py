@@ -4,7 +4,6 @@ from datapackage import Package
 from tabulate import tabulate
 
 
-
 technologies = pd.DataFrame(
     # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
     Package(
@@ -77,6 +76,7 @@ print(
 
 # installed capacities -------------------------------------------------------
 path = os.path.join(os.getcwd(), "datapackages")
+results_path = os.path.join(os.getcwd(), "results")
 df = pd.DataFrame()
 load = pd.DataFrame()
 storage = pd.DataFrame()
@@ -118,6 +118,23 @@ for dir in os.listdir(path):
     capacities["scenario"] = dir
     df = pd.concat([df, capacities], sort=True)
 
+
+storage_capacities = (
+    pd.concat([storage, phs])
+    .set_index(["bus", "carrier", "tech"], append=True)
+    .capacity.unstack("carrier")
+    .groupby("bus")
+    .sum()
+    .astype("int")
+    / 1e3
+)
+
+storage_capacities.to_latex(
+    "documentation/tables/storage_capacities.tex",
+    caption="Storage capacities by technologies for each country in GW.",
+    label="tab:storage_capacities",
+)
+
 df["name"] = ["-".join(i.split("-")[1:]) for i in df.index]
 df = df.set_index(["name", "bus", "scenario"])["capacity"]
 
@@ -133,6 +150,12 @@ df_GW.columns = [i.split("-")[0] for i in df_GW.columns]
 
 # all capacities
 print(tabulate(df_GW, tablefmt="pipe", headers="keys"))
+df_GW.to_latex(
+    "documentation/tables/installed_capacities.tex",
+    caption="Installed generation and storage capacities by technology for each country in GW.",
+    label="tab:installed_capacities",
+)
+
 
 # german capacities
 de = df.loc[(slice(None), "DE-electricity")].unstack(0).fillna(0).T.round(0)
@@ -165,14 +188,19 @@ volatile_flh["ror"] = ror_profile
 print(tabulate((volatile_flh.round(0)), tablefmt="pipe", headers="keys"))
 
 
+volatile_flh.round(0).to_latex("documentation/tables/volatile_flh.tex")
+
 # biomass potential -----------------------------------------------------------
 biomass = pd.read_csv(
-    os.path.join(path, "ZNES2050", "data/elements/commodity.csv"),
+    os.path.join(path, "2050ANGUS-2040grid", "data/elements/commodity.csv"),
     sep=";",
     index_col=0,
 )
 biomass = biomass["amount"] / 1e6
 biomass.index = [i.split("-")[0] for i in biomass.index]
+biomass.round(2).to_frame().T.to_latex(
+    "documentation/tables/biomass_potential.tex"
+)
 print(tabulate((biomass.to_frame()), tablefmt="pipe", headers="keys"))
 
 # load ------------------------------------------------------------------------

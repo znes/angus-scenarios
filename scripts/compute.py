@@ -134,6 +134,8 @@ def compute(
     ## grid
     imports = pd.DataFrame()
     link_results = pp.component_results(m.es, m.results).get("link")
+    link_results.to_csv(os.path.join(scenario_path, "output", "transmission.csv"))
+
     for b in [b.label for b in es.nodes if isinstance(b, Bus)]:
         if link_results is not None and m.es.groups[b] in list(
             link_results.columns.levels[0]
@@ -173,9 +175,9 @@ def compute(
 
 
 if __name__ == "__main__":
-    # scenarios = ["2050ANGUS-invest-2040grid"]
+    # scenarios = ["2050ANGUS-2040grid"]
     # for s in scenarios:
-    #      compute(s, "gurobi")
+            # compute(s, "gurobi")
 
     datapackages = [d for d in os.listdir("datapackages")]
     p = mp.Pool(1)
