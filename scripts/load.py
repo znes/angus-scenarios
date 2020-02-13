@@ -38,9 +38,10 @@ def tyndp(buses, scenario, datapackage_dir, raw_data_path, sensitivities
     elements.bus = [b + "-electricity" for b in elements.bus]
     elements["amount"] = elements[scenario] * 1000  # MWh -> GWh
 
-    for k in sensitivities:
-        if "load" in k:
-            elements.loc[k, "amount"] = sensitivities[k]
+    if sensitivities is not None:
+        for k in sensitivities:
+            if "load" in k:
+                elements.loc[k, "amount"] = sensitivities[k]
 
     building.write_elements(
         "load.csv",
