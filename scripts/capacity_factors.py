@@ -29,7 +29,7 @@ def eGo_offshore_wind_profiles(
     filepath = building.download_data(
         "https://github.com/znes/FlEnS/archive/master.zip",
         unzip_file="FlEnS-master/open_eGo/NEP_2035/nep_2035_seq.csv",
-        directory="/home/admin/oemof-raw-data",
+        directory=raw_data_path,
     )
     wind = pd.read_csv(
         filepath, parse_dates=True,
@@ -43,7 +43,7 @@ def eGo_offshore_wind_profiles(
     filepath_2050 = building.download_data(
         "https://github.com/znes/FlEnS/archive/master.zip",
         unzip_file="FlEnS-master/Socio-ecologic/2050_seq.csv",
-        directory="/home/admin/oemof-raw-data",
+        directory=raw_data_path,
     )
     wind_2050 = pd.read_csv(
         filepath_2050, parse_dates=True,
@@ -62,7 +62,7 @@ def eGo_offshore_wind_profiles(
         if c + "_wind_offshore" in wind.columns:
             sequences_df[c + "-offshore-profile"] = wind[c + "_wind_offshore"] * correction_factor # correction factor
 
-    
+
     sequences_df.index = building.timeindex(year=str(scenario_year))
 
     building.write_sequences(
