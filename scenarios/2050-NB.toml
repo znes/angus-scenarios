@@ -1,6 +1,6 @@
-title = "2050ANGUS"
-description = "Base scenario for the year 2050 (based on Ehighway 100 % RES). With additional pv and offshore capacity for 100% RES supply"
-name = "2050ANGUS"
+title = "2050-NB"
+description = "Base scenario for the year 2050 (based on Ehighway 100 % RES). With additional pv and offshore capacity for 100% RES supply and no biomass"
+name = "2050-NB"
 
 [model]
 temporal_resolution = 1
