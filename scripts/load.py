@@ -8,13 +8,15 @@ from oemof.tabular.datapackage import building
 import pandas as pd
 
 
-def tyndp(buses, scenario, datapackage_dir, raw_data_path):
+def tyndp(buses, scenario, datapackage_dir, raw_data_path, sensitivities
+):
     """
     """
     filepath = building.download_data(
         "https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP2018/"
         "Scenarios%20Data%20Sets/Input%20Data.xlsx",
         directory=raw_data_path,
+        sensitivities=None
     )
 
     df = pd.read_excel(filepath, sheet_name="Demand")
@@ -35,6 +37,10 @@ def tyndp(buses, scenario, datapackage_dir, raw_data_path):
     elements.set_index("name", inplace=True)
     elements.bus = [b + "-electricity" for b in elements.bus]
     elements["amount"] = elements[scenario] * 1000  # MWh -> GWh
+
+    for k in sensitivities:
+        if "load" in k:
+            elements.loc[k, "amount"] = sensitivities[k]
 
     building.write_elements(
         "load.csv",

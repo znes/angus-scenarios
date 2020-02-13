@@ -8,6 +8,8 @@ from oemof.tabular.datapackage import building
 # change this if you have your raw data stored somewhere else
 raw_data_path = os.path.join(os.path.expanduser("~"), "oemof-raw-data")
 
+if not os.path.exists(raw_data_path):
+    os.makedirs(raw_data_path)
 
 building.download_data(
     "https://zenodo.org/record/3549531/files/angus-raw-data.zip?download=1",

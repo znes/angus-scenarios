@@ -13,5 +13,5 @@ for dir in os.listdir("scenarios"):
         scenario["name"] = filename.replace(".toml", "")
         scenario["title"] = filename.replace(".toml", "")
         toml_string = toml.dumps(scenario)
-        with open(os.path.join("sensitivities", filename), mode='w') as w:
+        with open(os.path.join("scenarios", filename), mode='w') as w:
             w.writelines(toml_string)

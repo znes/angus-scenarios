@@ -13,7 +13,7 @@ from oemof.tabular.datapackage import building
 
 def tyndp_generation_2018(
     countries, vision, scenario, scenario_year, datapackage_dir, raw_data_path,
-    ccgt_share=0.66
+    ccgt_share=0.66, sensitivities=None
 ):
     """Extracts TYNDP2018 generation data and writes to datapackage for oemof
     tabular usage
@@ -162,10 +162,10 @@ def tyndp_generation_2018(
     df = pd.concat([df, storage_capacities], axis=1, sort=True)
     elements = _elements(
         countries, df, technologies, carrier_cost, emission_factors,
-        scenario, scenario_year)
-    load = _load(countries, df)
-    for k,v in load.items():
-        v.update(load[k])
+        scenario, scenario_year, sensitivities)
+    # load = _load(countries, df)
+    # for k,v in load.items():
+    #     v.update(load[k])
 
     df = pd.DataFrame.from_dict(elements, orient="index")
     df = df[df.capacity != 0]

@@ -82,6 +82,7 @@ def build(config):
             config["scenario"]["EU_load"],
             datapackage_dir,
             raw_data_path,
+            sensitivities=config.get("sensitivities", {}).get("electricity")
         )
 
         electricity.tyndp_generation_2018(
@@ -90,7 +91,8 @@ def build(config):
             config["scenario"]["cost"],
             config["scenario"]["year"],
             datapackage_dir,
-            raw_data_path
+            raw_data_path,
+            sensitivities=None
         )
 
 

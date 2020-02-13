@@ -46,6 +46,10 @@ The datapackages are build with the provided .toml-files provided in the
 your needs. All datapackages are build in parallel. If you want to build single
 datapackages you can use the `build.py` function.
 
+The packages will be build with the multiprocessing package. Make sure that
+all files exis in the raw data path, for example by running the building
+process for only one file without multiprocessing. Sometimes errors occure
+in combination with downloading and unzipping multiple file with multiprocessing. 
 
 ## Compute
 

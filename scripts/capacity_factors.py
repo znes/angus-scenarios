@@ -22,9 +22,7 @@ def eGo_offshore_wind_profiles(
     datapackage_dir: string
         Directory for tabular resource
     raw_data_path: string
-        Path where raw data file `ninja_wind_europe_v1.1_current_national.csv`
-        and `ninja_wind_europe_v1.1_current_national.csv`
-        is located
+
     """
     filepath = building.download_data(
         "https://github.com/znes/FlEnS/archive/master.zip",
