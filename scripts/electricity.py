@@ -36,6 +36,27 @@ def tyndp_generation_2018(
     ccgt_share:
         Share of ccgt generation of total gas generation
     """
+    storage_capacities = (
+        pd.DataFrame(
+            Package(
+                "https://raw.githubusercontent.com/ZNES-datapackages/"
+                "angus-input-data/master/capacities/datapackage.json"
+            )
+            .get_resource("storage-capacities")
+            .read(keyed=True)
+        )
+        .set_index(["year", "country"])
+        .loc[scenario_year]
+    )
+    storage_capacities.drop("phs",axis=1, inplace=True)
+
+    storage_capacities.rename(
+        columns={
+            "acaes": ("cavern", "acaes"),
+            "redox": ("redox", "battery"),
+            "lithium": ("lithium", "battery"),
+            "hydrogen": ("hydrogen", "storage")
+        }, inplace=True)
 
     filepath = building.download_data(
         "https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP2018/"
@@ -138,6 +159,7 @@ def tyndp_generation_2018(
         .sort_index()
     )
 
+    df = pd.concat([df, storage_capacities], axis=1, sort=True)
     elements = _elements(
         countries, df, technologies, carrier_cost, emission_factors,
         scenario, scenario_year)
@@ -164,8 +186,7 @@ def german_energy_system(
     cost_scenario,
     technologies,
     scenario_year,
-    sensitivities,
-    investment
+    sensitivities
 
 ):
     """Extracts german specific scenario data from input datapackage
@@ -239,10 +260,8 @@ def german_energy_system(
 
     df = pd.DataFrame.from_dict(elements, orient="index")
 
-    if investment:
-        element_list = ["load"]
-    else:
-        element_list = [
+
+    element_list = [
         "dispatchable",
         "volatile",
         "conversion",
@@ -434,7 +453,7 @@ def _load(countries, data, sensitivities=None):
     if sensitivities is not None:
         for k,v in sensitivities.items():
             k = k.split("-")
-            
+
             data.at[k[0], (k[1], k[2])] = v
 
     elements = {}
@@ -555,6 +574,16 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                 )
 
             elif carrier == "biomass":
+                if b == "DE":
+                    if int(scenario_year) > 2040:
+                        bio_flh = {}
+                    else:
+                        bio_flh = {
+                            "summed_min": 6200,
+                            "summed_max": 6200
+                        }
+                else:
+                    bio_flh = {}
                 element.update(
                     {
                         "carrier": carrier,
@@ -566,7 +595,8 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                         ],
                         "from_bus": b + "-biomass-bus",
                         "type": "conversion",
-                        "output_parameters": json.dumps({}),
+                        "output_parameters": json.dumps(bio_flh
+                        ),
                         "carrier_cost": float(
                             carrier_cost.at[(scenario, carrier), "value"]
                         ),
@@ -577,6 +607,7 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
             elif tech in ["battery", "acaes", "redox", "hydrogen",
                           "storage"]:
                 elements["-".join([b, carrier, tech])] = element
+
                 element.update(
                     {
                         "storage_capacity": float(

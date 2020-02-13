@@ -105,7 +105,7 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year,
                 )
                 elements.append(
                     {
-                        "name": "-".join([b, carrier, "hp-flex"]),
+                        "name": "-".join([b, carrier, "hp"]),
                         "type": "conversion",
                         "to_bus": heat_bus,
                         "from_bus": "DE-electricity",

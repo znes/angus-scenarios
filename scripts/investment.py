@@ -10,7 +10,7 @@ import pandas as pd
 from oemof.tabular.datapackage import building
 from oemof.tools.economics import annuity
 
-def greenfield_investment(
+def storage(
     datapackage_dir,
     raw_data_path,
     cost_scenario,
@@ -36,26 +36,26 @@ def greenfield_investment(
     """
 
 
-    carrier_package = Package(
-        "https://raw.githubusercontent.com/ZNES-datapackages/"
-        "angus-input-data/master/carrier/datapackage.json"
-    )
+    # carrier_package = Package(
+    #     "https://raw.githubusercontent.com/ZNES-datapackages/"
+    #     "angus-input-data/master/carrier/datapackage.json"
+    # )
 
-    carrier_cost = (
-        pd.DataFrame(
-            carrier_package.get_resource("carrier-cost").read(keyed=True)
-        )
-        .set_index(["scenario", "carrier"])
-        .sort_index()
-    )
-
-    emission_factors = (
-        pd.DataFrame(
-            carrier_package.get_resource("emission-factor").read(keyed=True)
-        )
-        .set_index(["carrier"])
-        .sort_index()
-    )
+    # carrier_cost = (
+    #     pd.DataFrame(
+    #         carrier_package.get_resource("carrier-cost").read(keyed=True)
+    #     )
+    #     .set_index(["scenario", "carrier"])
+    #     .sort_index()
+    # )
+    #
+    # emission_factors = (
+    #     pd.DataFrame(
+    #         carrier_package.get_resource("emission-factor").read(keyed=True)
+    #     )
+    #     .set_index(["carrier"])
+    #     .sort_index()
+    # )
 
     potential = (
         Package(
@@ -70,148 +70,148 @@ def greenfield_investment(
         potential["source"] == "Brown & Schlachtberger"
     ]
 
+    scenario_year = 2050
 
-    data = technologies.loc[(scenario_year, "fom")]
     elements = {}
-    storages = ["battery", "acaes", "hydrogen", "storage"]
+    storages = [("lithium", "battery"), ("cavern", "acaes"), ("hydrogen", "storage")]
     for b in countries:
-        for carrier, tech in data.index:
+        for carrier, tech in storages:
 
             element = {}
             elements["-".join([b, carrier, tech])] = element
-            if tech not in storages:
-                capacity_cost = (
-                    float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
-                    annuity(
-                        float(technologies.loc[
-                            (scenario_year, "capex", carrier, tech), "value"]),
-                        float(technologies.loc[
-                            (scenario_year, "lifetime", carrier, tech), "value"]),
-                        wacc
-                        ) * 1000,  # €/kW -> €/M
-                )[0]
-            else:
-                capacity_cost = (
-                    annuity(
-                        float(technologies.loc[
-                            (scenario_year, "capex_power", carrier, tech), "value"]),
-                        float(technologies.loc[
-                            (scenario_year, "lifetime", carrier, tech), "value"]),
-                        wacc
-                        ) * 1000,  # €/kW -> €/MW
-                )[0]
+            # if tech not in storages:
+            #     capacity_cost = (
+            #         float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
+            #         annuity(
+            #             float(technologies.loc[
+            #                 (scenario_year, "capex", carrier, tech), "value"]),
+            #             float(technologies.loc[
+            #                 (scenario_year, "lifetime", carrier, tech), "value"]),
+            #             wacc
+            #             ) * 1000,  # €/kW -> €/M
+            #     )[0]
+            # else:
+            capacity_cost = (
+                annuity(
+                    float(technologies.loc[
+                        (scenario_year, "capex_power", carrier, tech), "value"]),
+                    float(technologies.loc[
+                        (scenario_year, "lifetime", carrier, tech), "value"]),
+                    wacc
+                    ) * 1000,  # €/kW -> €/MW
+            )[0]
 
-                storage_capacity_cost = (
-                    float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
-                    annuity(
-                        float(technologies.loc[
-                            (scenario_year, "capex_energy", carrier, tech), "value"]),
-                        float(technologies.loc[
-                            (scenario_year, "lifetime", carrier, tech), "value"]),
-                        wacc
-                        ) * 1000,  # €/kWh -> €/MWh
-                )[0]
+            storage_capacity_cost = (
+                float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
+                annuity(
+                    float(technologies.loc[
+                        (scenario_year, "capex_energy", carrier, tech), "value"]),
+                    float(technologies.loc[
+                        (scenario_year, "lifetime", carrier, tech), "value"]),
+                    wacc
+                    ) * 1000,  # €/kWh -> €/MWh
+            )[0]
+            #
+            # if tech in ["onshore", "offshore", "pv"]:
+            #
+            #     potential_mapper = {
+            #         "onshore": "wind_onshore", "offshore": "wind_offshore", "pv": "pv"}
+            #     if tech == "offshore" and b in ["CH", "CZ", "AT", "LU"]:
+            #         pass
+            #     else:
+            #         profile = "-".join([b, tech, "profile"])
+            #         element.update({
+            #             "bus": b + "-electricity",
+            #             "tech": tech,
+            #             "carrier": carrier,
+            #             "capacity_potential": float(
+            #                 potential.loc[(b, potential_mapper[tech]),
+            #                               "capacity_potential"]),
+            #             "capacity": 0,
+            #             "expandable": True,
+            #             "capacity_cost": capacity_cost,
+            #             "type": "volatile",
+            #             "profile": profile,
+            #             "output_parameters": json.dumps({}),
+            #         })
+            #
+            # elif carrier in [
+            #     "gas",
+            #     "coal",
+            #     "lignite",
+            #     "oil",
+            #     "uranium",
+            #     "mixed",
+            # ]:
+            #     marginal_cost = float(
+            #         carrier_cost.at[(cost_scenario, carrier), "value"]
+            #         + emission_factors.at[carrier, "value"]
+            #         * carrier_cost.at[(cost_scenario, "co2"), "value"]
+            #     ) / float(
+            #         technologies.loc[
+            #             (scenario_year, "efficiency", carrier, tech), "value"
+            #         ]
+            #     ) + float(
+            #         technologies.loc[(2050, "vom", carrier, tech), "value"]
+            #     )
+            #
+            #     emission_factor = float(
+            #         emission_factors.at[carrier, "value"] /
+            #         technologies.loc[
+            #             (scenario_year, "efficiency", carrier, tech), "value"]
+            #     )
+            #
+            #     element.update(
+            #         {
+            #             "carrier": carrier,
+            #             "carrier_cost": float(carrier_cost.at[
+            #                 (cost_scenario, carrier), "value"
+            #             ]),
+            #             "efficiency": float(
+            #                 technologies.loc[
+            #                     (scenario_year, "efficiency", carrier, tech),
+            #                     "value",
+            #                 ]
+            #             ),
+            #             "capacity": 0,
+            #             "expandable": True,
+            #             "capacity_cost": capacity_cost,
+            #             "bus": b + "-electricity",
+            #             "type": "dispatchable",
+            #             "marginal_cost": marginal_cost,
+            #             "profile": technologies.loc[
+            #                 (2050, "avf", carrier, tech), "value"
+            #             ],
+            #             "tech": tech,
+            #             "output_parameters": json.dumps({
+            #                 "emission_factor": emission_factor}
+            #             )
+            #         }
+            #     )
+            #
+            # elif carrier == "biomass":
+            #     element.update(
+            #         {
+            #             "carrier": carrier,
+            #             "capacity": 0,
+            #             "to_bus": b + "-electricity",
+            #             "efficiency": technologies.loc[
+            #                 (scenario_year, "efficiency", carrier, "st"),
+            #                 "value",
+            #             ],
+            #             "expandable": True,
+            #             "capacity_cost": capacity_cost,
+            #             "from_bus": b + "-biomass-bus",
+            #             "type": "conversion",
+            #             "output_parameters": json.dumps({}),
+            #             "carrier_cost": float(
+            #                 carrier_cost.at[(cost_scenario, carrier), "value"]
+            #             ),
+            #             "tech": tech,
+            #         }
+            #     )
 
-            if tech in ["onshore", "offshore", "pv"]:
-
-                potential_mapper = {
-                    "onshore": "wind_onshore", "offshore": "wind_offshore", "pv": "pv"}
-                if tech == "offshore" and b in ["CH", "CZ", "AT", "LU"]:
-                    pass
-                else:
-                    profile = "-".join([b, tech, "profile"])
-                    element.update({
-                        "bus": b + "-electricity",
-                        "tech": tech,
-                        "carrier": carrier,
-                        "capacity_potential": float(
-                            potential.loc[(b, potential_mapper[tech]),
-                                          "capacity_potential"]),
-                        "capacity": 0,
-                        "expandable": True,
-                        "capacity_cost": capacity_cost,
-                        "type": "volatile",
-                        "profile": profile,
-                        "output_parameters": json.dumps({}),
-                    })
-
-            elif carrier in [
-                "gas",
-                "coal",
-                "lignite",
-                "oil",
-                "uranium",
-                "mixed",
-            ]:
-                marginal_cost = float(
-                    carrier_cost.at[(cost_scenario, carrier), "value"]
-                    + emission_factors.at[carrier, "value"]
-                    * carrier_cost.at[(cost_scenario, "co2"), "value"]
-                ) / float(
-                    technologies.loc[
-                        (scenario_year, "efficiency", carrier, tech), "value"
-                    ]
-                ) + float(
-                    technologies.loc[(2050, "vom", carrier, tech), "value"]
-                )
-
-                emission_factor = float(
-                    emission_factors.at[carrier, "value"] /
-                    technologies.loc[
-                        (scenario_year, "efficiency", carrier, tech), "value"]
-                )
-
-                element.update(
-                    {
-                        "carrier": carrier,
-                        "carrier_cost": float(carrier_cost.at[
-                            (cost_scenario, carrier), "value"
-                        ]),
-                        "efficiency": float(
-                            technologies.loc[
-                                (scenario_year, "efficiency", carrier, tech),
-                                "value",
-                            ]
-                        ),
-                        "capacity": 0,
-                        "expandable": True,
-                        "capacity_cost": capacity_cost,
-                        "bus": b + "-electricity",
-                        "type": "dispatchable",
-                        "marginal_cost": marginal_cost,
-                        "profile": technologies.loc[
-                            (2050, "avf", carrier, tech), "value"
-                        ],
-                        "tech": tech,
-                        "output_parameters": json.dumps({
-                            "emission_factor": emission_factor}
-                        )
-                    }
-                )
-
-            elif carrier == "biomass":
-                element.update(
-                    {
-                        "carrier": carrier,
-                        "capacity": 0,
-                        "to_bus": b + "-electricity",
-                        "efficiency": technologies.loc[
-                            (scenario_year, "efficiency", carrier, "st"),
-                            "value",
-                        ],
-                        "expandable": True,
-                        "capacity_cost": capacity_cost,
-                        "from_bus": b + "-biomass-bus",
-                        "type": "conversion",
-                        "output_parameters": json.dumps({}),
-                        "carrier_cost": float(
-                            carrier_cost.at[(cost_scenario, carrier), "value"]
-                        ),
-                        "tech": tech,
-                    }
-                )
-
-            elif tech in storages:
+            if (carrier, tech) in storages:
                 elements["-".join([b, carrier, tech])] = element
                 element.update(
                     {
@@ -247,19 +247,18 @@ def greenfield_investment(
 
 
     df = pd.DataFrame.from_dict(elements, orient="index")
-
     for element_type in [
-        "dispatchable",
-        "volatile",
-        "conversion",
+        # "dispatchable",
+        # "volatile",
+        # "conversion",
         "storage"
     ]:
 
         building.write_elements(
-            element_type + "_invest.csv",
+            element_type + ".csv",
             df.loc[df["type"] == element_type].dropna(how="all", axis=1),
             directory=os.path.join(datapackage_dir, "data", "elements"),
-            overwrite=True,
+            replace=True,
         )
 
 

@@ -1,14 +1,14 @@
-title = "2040GCA"
-description = "Scenario based on TYNDP2018 2040 GCA"
-name = "2040GCA"
+title = "2040ST"
+description = "Scenario based on TYNDP2018 2040 ST)"
+name = "2040ST"
 
 [scenario]
 DE_system = "" # german data (generation, load, etc.)
 DE_heat_system = "2040GL"
-EU_load = "2040GCA" # european load
-EU_generation = "2040 GCA" # european generation mix based on TYNDP
-cost = "2040GCA" # carrier cost (gas, co2, etc.)
-grid = "2040GCA"
+EU_load = "2040ST" # european load
+EU_generation = "2040 ST" # european generation mix based on TYNDP
+cost = "2040ST" # carrier cost (gas, co2, etc.)
+grid = "2040ST"
 weather_year = 2011
 year = 2040
 grid_loss = 0.03
@@ -18,7 +18,7 @@ offshore_profiles = "eGo"
 decentral_heat-flex-share =  1
 
 [sensitivities.electricity]
-DE-electricity-load = 562e3
+DE-electricity-load = 510e3
 
 [buses]
 electricity = [

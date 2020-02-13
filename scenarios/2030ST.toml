@@ -1,13 +1,13 @@
-title = "2030NEPC"
-description = "Scenario for ANGUS project, year 2030 (based on NEP2019 2030C, and TYNDP2018 ST)"
-name = "2030NEPC"
+title = "2030ST"
+description = "Scenario based on TYNDP2018 ST 2030"
+name = "2030ST"
 
 [scenario]
-DE_system = "2030NEPC" # german data (generation, load, etc.)
-DE_heat_system = "2030NEPC"
+DE_system = "" # german data (generation, load, etc.)
+DE_heat_system = "2030GL"
 EU_load = "2030ST" # european load
 EU_generation = "2030 ST" # european generation mix based on TYNDP
-cost = "2030NEPC" # carrier cost (gas, co2, etc.)
+cost = "2030ST" # carrier cost (gas, co2, etc.)
 grid = "2030"
 year = 2030
 weather_year = 2011 # 2011, 2012
@@ -16,6 +16,9 @@ pv_profiles = "ninja"
 onshore_profiles = "ninja"
 offshore_profiles = "eGo"
 decentral_heat-flex-share = 1
+
+[sensitivities.electricity]
+DE-electricity-load = 548e3
 
 [buses]
 

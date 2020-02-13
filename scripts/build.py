@@ -48,24 +48,14 @@ def build(config):
             scenario_year=config["scenario"]["year"],
             cost_scenario=config["scenario"]["cost"],
             technologies=technologies,
-            sensitivities=config.get("sensitivities", {}).get("electricity"),
-            investment=config["scenario"].get("investment")
+            sensitivities=config.get("sensitivities", {}).get("electricity")
         )
 
-        # for all countries add german capacities based
-        if config["scenario"].get("investment"):
-            investment.greenfield_investment(
-                datapackage_dir,
-                raw_data_path,
-                config["scenario"]["cost"],
-                ["DE"],
-                technologies,
-                config["scenario"]["year"],
-                0.05
-            )
         DE_set = set(["DE"])
     else:
         DE_set = set()
+
+
 
     if config["scenario"]["year"] == 2050:
 
@@ -105,7 +95,7 @@ def build(config):
 
 
 
-    if "100% RES" in config["scenario"]["grid"]:
+    if config["scenario"]["grid"] == "100% RES":
         # for 2050 add the ehighway grid
         grid.ehighway(
             config["buses"]["electricity"],
@@ -117,7 +107,7 @@ def build(config):
         )
 
 
-    elif "2030" or "2040" in config["scenario"]["grid"]:
+    elif config["scenario"]["grid"] in ["2030", "2040GCA", "2040DG", "2040ST"]:
         grid.tyndp(
             config["buses"]["electricity"],
             config["scenario"]["grid_loss"],
@@ -127,6 +117,17 @@ def build(config):
         )
 
 
+    # for all countries add german capacities based
+    if config["scenario"].get("investment"):
+        investment.storage(
+            datapackage_dir,
+            raw_data_path,
+            config["scenario"]["cost"],
+            ["DE"],
+            technologies,
+            config["scenario"]["year"],
+            0.05
+        )
 
     # the same for all scenarios
     load.opsd_profile(
@@ -186,7 +187,7 @@ def build(config):
         heat.german_heat_system(
             config["buses"]["heat"],
             config["scenario"]["weather_year"],
-            config["scenario"]["DE_system"],
+            config["scenario"]["DE_heat_system"],
             config["scenario"]["year"],
             config["scenario"]["decentral_heat-flex-share"],
             config.get("sensitivities", {}).get("heat"),
@@ -223,15 +224,18 @@ def build(config):
 
 
 if __name__ == "__main__":
-    # scenarios = [
-    #     Scenario.from_path(os.path.join("scenarios", s))
-    #     for s in os.listdir("scenarios") if "base" in s
-    # ]
-    #
-    # p = mp.Pool(10)
-    # p.map(build, scenarios)
+    dirs = ["scenarios"]
+    for dir in dirs:
+        scenarios = [
+            Scenario.from_path(os.path.join(dir, s))
+            for s in os.listdir(dir) if "20"
+            in s and not os.path.isdir(os.path.join(dir, s))
+        ]
 
-    scenarios = ["base-flex10.toml"]
-    for c in scenarios:
-        s = Scenario.from_path(os.path.join("scenarios", c))
-        build(s)
+        p = mp.Pool(20)
+        p.map(build, scenarios)
+
+    # scenarios = ["2040ST.toml"]
+    # for c in scenarios:
+    #     s = Scenario.from_path(os.path.join("scenarios", c))
+    #     build(s)

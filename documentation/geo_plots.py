@@ -11,7 +11,7 @@ from shapely import wkt
 import pycountry
 
 
-scenario = "ANGUS2050"
+scenario = "2040GCA"
 
 p = Package(os.path.join("datapackages", scenario, "datapackage.json"))
 
@@ -23,7 +23,7 @@ regions["geometry"] = regions["geometry"].apply(wkt.loads)
 
 conns = pd.DataFrame(p.get_resource("link").read(keyed=True)).set_index("name")
 
-demand = pd.DataFrame(p.get_resource("load").read(keyed=True)).set_index(
+phs = pd.DataFrame(p.get_resource("phs").read(keyed=True)).set_index(
     "name"
 )
 
@@ -41,7 +41,7 @@ conns_geo["geometry"] = conns_geo.apply(
 
 
 layout = go.Layout(
-    title="Transmission capacities in scenario {}".format(scenario),
+    #title="Transmission capacities in scenario {}".format(scenario),
     geo=dict(
         resolution=50,
         showframe=False,
@@ -52,13 +52,13 @@ layout = go.Layout(
         countrycolor="rgb(255, 255, 255)",
         coastlinecolor="rgb(255, 255, 255)",
         projection=dict(type="mercator"),
-        lonaxis=dict(range=[-5, 25]),
-        lataxis=dict(range=[42, 68]),
+        lonaxis=dict(range=[-5, 24]),
+        lataxis=dict(range=[45, 66]),
         domain=dict(x=[0, 1], y=[0, 1]),
     ),
     width=800,
-    height=1200,
-    margin=dict(l=20, r=20, t=30, b=20),
+    height=900,
+    margin=dict(l=10, r=10, t=10, b=10),
 )
 
 
@@ -105,9 +105,9 @@ demand_color = [
     go.Choropleth(
         locations=[
             pycountry.countries.get(alpha_2=r[0:2]).alpha_3
-            for r in demand.index
+            for r in phs.index
         ],
-        z=demand.amount.astype(float) / 1e6,
+        z=phs.capacity.astype(float) / 1e3,
         text="",
         colorscale="YlGnBu",
         autocolorscale=False,
@@ -115,7 +115,10 @@ demand_color = [
         marker_line_color="lightgray",
         marker_line_width=0.5,
         colorbar_tickprefix="",
-        colorbar_title="Demand in TWh",
+        colorbar_len  = 1,
+        zmax=16,
+        zmin=0,
+        colorbar_title="Capacity in GW",
     )
 ]
 
