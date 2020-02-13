@@ -41,7 +41,7 @@ def tyndp(buses, scenario, datapackage_dir, raw_data_path, sensitivities
     if sensitivities is not None:
         for k in sensitivities:
             if "load" in k:
-                elements.loc[k, "amount"] = sensitivities[k]
+                elements.loc[k, "amount"] = sensitivities[k] * 1000
 
     building.write_elements(
         "load.csv",
