@@ -1,0 +1,62 @@
+title = "2050REF"
+description = "Refernce scenario for the year 2050 (based on Ehighway 100 % RES). With additional pv and offshore capacity for 100% RES supply"
+name = "2050REF"
+
+[model]
+temporal_resolution = 1
+
+[scenario]
+DE_system = "2050ANGUS"
+DE_heat_system = "2050GL"
+EU_load = "100% RES" # european load
+EU_generation = "100% RES" # european generation mix based on
+cost = "2050ZNES" # carrier cost (gas, co2, etc.)
+grid = "100% RES"
+year = 2050
+weather_year = 2011
+grid_loss = 0.03
+pv_profiles = "ninja"
+onshore_profiles = "ninja"
+offshore_profiles = "eGo"
+decentral_heat-flex-share = 1
+
+[sensitivities.electricity]
+DE-electricity-load = 560e3
+
+[buses]
+
+electricity = [
+    "AT",
+    "BE",
+    "CH",
+    "CZ",
+    "DE",
+    "DK",
+    "FR",
+    "NL",
+    "LU",
+    "NO",
+    "PL",
+    "SE"
+]
+
+biomass = [
+  "AT",
+  "BE",
+  "CH",
+  "CZ",
+  "DE",
+  "DK",
+  "FR",
+  "NL",
+  "LU",
+  "NO",
+  "PL",
+  "SE"
+]
+
+
+[buses.heat]
+#central = ["DE"]
+decentral = ["DE"]
+flex-decentral = ["DE"]
