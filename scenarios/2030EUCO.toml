@@ -5,7 +5,7 @@ name = "2030EUCO"
 [scenario]
 DE_system = "" # german data (generation, load, etc.)
 DE_heat_system = "2030GL"
-EU_load = "2030EUCO" # european load
+EU_load = "2030EU" # european load
 EU_generation = "2030 EUCO" # european generation mix based on TYNDP
 cost = "2030EUCO" # carrier cost (gas, co2, etc.)
 grid = "2030"
