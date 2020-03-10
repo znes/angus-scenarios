@@ -227,18 +227,18 @@ def build(config):
 
 
 if __name__ == "__main__":
-    # dirs = ["scenarios"]
-    # for dir in dirs:
-    #     scenarios = [
-    #         Scenario.from_path(os.path.join(dir, s))
-    #         for s in os.listdir(dir) if "20"
-    #         in s and not os.path.isdir(os.path.join(dir, s))
-    #     ]
-    #
-    #     p = mp.Pool(20)
-    #     p.map(build, scenarios)
+    dirs = ["scenarios"]
+    for dir in dirs:
+        scenarios = [
+            Scenario.from_path(os.path.join(dir, s))
+            for s in os.listdir(dir) if "20"
+            in s and not os.path.isdir(os.path.join(dir, s))
+        ]
 
-    scenarios = ["2040ST.toml"]
-    for c in scenarios:
-        s = Scenario.from_path(os.path.join("scenarios", c))
-        build(s)
+        p = mp.Pool(20)
+        p.map(build, scenarios)
+
+    # scenarios = ["2040ST.toml"]
+    # for c in scenarios:
+    #     s = Scenario.from_path(os.path.join("scenarios", c))
+    #     build(s)
