@@ -18,7 +18,7 @@ offshore_profiles = "eGo"
 decentral_heat-flex-share = 1
 
 [sensitivities.electricity]
-DE-electricity-load = 548e3
+DE-electricity-load = 571e3
 
 [buses]
 
