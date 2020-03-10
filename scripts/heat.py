@@ -8,8 +8,9 @@ from oemof.tabular.datapackage import building
 # config = building.read_build_config("scenarios/2030C.toml")
 # config["buses"]["heat"]
 
+from oemof.tools.economics import annuity
 
-def german_heat_system(heat_buses, weather_year, scenario, scenario_year,
+def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
                        decentral_heat_flex_share, sensitivities,
                        datapackage_dir, raw_data_path):
     """
@@ -108,8 +109,19 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year,
                         "name": "-".join([b, carrier, "hp"]),
                         "type": "conversion",
                         "to_bus": heat_bus,
+                        "capacity_cost": (
+                            float(technologies.loc[(2050, "fom", "decentral_heat", "hp"), "value"]) +
+                            annuity(
+                                float(technologies.loc[
+                                    (2050, "capex", "decentral_heat", "hp"), "value"]),
+                                float(technologies.loc[
+                                    (2050, "lifetime", "decentral_heat", "hp"), "value"]),
+                                wacc
+                                ) * 1000,  # €/kW -> €/MW
+                        )[0],
                         "from_bus": "DE-electricity",
-                        "capacity": flex_peak_demand_heat * 1.1,
+                        "expandable": True,
+                        "capacity": 0, #flex_peak_demand_heat * 1.1,
                         "efficiency": 3,
                         "carrier": carrier,
                         "tech": "hp"
@@ -131,11 +143,22 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year,
                         "name": name,
                         "type": "storage",
                         "bus": heat_bus,
-                        "capacity": capacity,
-                        "storage_capacity": capacity * float(technologies.loc[
-                            (2050, "max_hours", carrier, "tes"),
-                            "value"
-                        ]),
+                        #"capacity": capacity,
+                        "capacity_cost": float(technologies.loc[(2050, "fom", "decentral_heat", "tes"), "value"]) * 1000,
+                        "storage_capacity_cost": (
+                                annuity(
+                                float(technologies.loc[
+                                    (2050, "capex", "decentral_heat", "tes"), "value"]),
+                                float(technologies.loc[
+                                    (2050, "lifetime", "decentral_heat", "tes"), "value"]),
+                                wacc
+                                ) * 1000,  # €/kWh -> €/MWh
+                        )[0],
+                        "expandable": True,
+                        # "storage_capacity": capacity * float(technologies.loc[
+                        #     (2050, "max_hours", carrier, "tes"),
+                        #     "value"
+                        # ]),
                         "efficiency": float(technologies.loc[
                             (2050, "efficiency", carrier, "tes"),
                             "value"
@@ -164,6 +187,8 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year,
                         "name": "-".join([b, carrier, "hp"]),
                         "type": "conversion",
                         "to_bus": heat_bus,
+                        "capacity_cost": 0,
+                        "expandable": False,
                         "from_bus": "DE-electricity",
                         "capacity": peak_demand_heat * 1.1,
                         "efficiency": 3,
