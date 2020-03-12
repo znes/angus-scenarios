@@ -1,6 +1,6 @@
-title = "2030ST"
+title = "2030ST-GS"
 description = "Scenario based on TYNDP2018 ST 2030"
-name = "2030ST"
+name = "2030ST-GS"
 
 [scenario]
 DE_system = "" # german data (generation, load, etc.)
