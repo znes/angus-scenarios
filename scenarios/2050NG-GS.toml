@@ -1,17 +1,17 @@
-title = "2050NB"
-description = "Scenario for the year 2050 (based on Ehighway 100 % RES). With additional pv and offshore capacity for 100% RES supply and no biomass"
-name = "2050NB"
+title = "2050NG-GS"
+description = "Scenario for 2050 with 2040 grid and higher RE capacities"
+name = "2050NG-GS"
 
 [model]
 temporal_resolution = 1
 
 [scenario]
 DE_system = "2050ANGUS"
-DE_heat_system = "2050GL"
+DE_heat_system = "2050GS"
 EU_load = "100% RES" # european load
 EU_generation = "100% RES" # european generation mix based on
 cost = "2050ZNES" # carrier cost (gas, co2, etc.)
-grid = "100% RES"
+grid = "2040GCA"
 year = 2050
 weather_year = 2011
 grid_loss = 0.03
@@ -21,11 +21,10 @@ offshore_profiles = "eGo"
 decentral_heat-flex-share = 1
 
 [sensitivities.electricity]
-DE-electricity-load = 613e3
-DE-biomass-st = 0
+DE-electricity-load = 539e3
 DE-wind-offshore = 33500
-DE-solar-pv = 218e3
-DE-wind-onshore = 150e3
+DE-solar-pv = 150e3
+DE-wind-onshore = 128e3 # GS
 
 [buses]
 

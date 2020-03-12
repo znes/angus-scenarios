@@ -1,34 +1,29 @@
-title = "2050NG"
-description = "Scenario for 2050 with 2040 grid and higher RE capacities"
-name = "2050NG"
+title = "2040ST-GS"
+description = "Scenario based on TYNDP2018 2040 ST)"
+name = "2040ST-GS"
 
 [model]
 temporal_resolution = 1
 
 [scenario]
-DE_system = "2050ANGUS"
-DE_heat_system = "2050GL"
-EU_load = "100% RES" # european load
-EU_generation = "100% RES" # european generation mix based on
-cost = "2050ZNES" # carrier cost (gas, co2, etc.)
-grid = "2040GCA"
-year = 2050
+DE_system = "" # german data (generation, load, etc.)
+DE_heat_system = "2040GS"
+EU_load = "2040ST" # european load
+EU_generation = "2040 ST" # european generation mix based on TYNDP
+cost = "2040ST" # carrier cost (gas, co2, etc.)
+grid = "2040ST"
 weather_year = 2011
+year = 2040
 grid_loss = 0.03
 pv_profiles = "ninja"
 onshore_profiles = "ninja"
 offshore_profiles = "eGo"
-decentral_heat-flex-share = 1
+decentral_heat-flex-share =  1
 
 [sensitivities.electricity]
-DE-electricity-load = 613e3
-DE-wind-offshore = 33500
-DE-solar-pv = 218e3
-DE-wind-onshore = 150e3
-
+DE-electricity-load = 573e3
 
 [buses]
-
 electricity = [
     "AT",
     "BE",
@@ -58,7 +53,6 @@ biomass = [
   "PL",
   "SE"
 ]
-
 
 [buses.heat]
 #central = ["DE"]

@@ -22,6 +22,9 @@ decentral_heat-flex-share = 1
 
 [sensitivities.electricity]
 DE-electricity-load = 613e3
+DE-wind-offshore = 33500
+DE-solar-pv = 218e3
+DE-wind-onshore = 150e3 # GS
 
 [buses]
 

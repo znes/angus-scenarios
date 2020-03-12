@@ -1,6 +1,7 @@
 import plotly.graph_objs as go
 
 
+
 def hourly_plot(df, scenario, bus, color_dict, conventionals, storages):
     """
     """
@@ -17,7 +18,7 @@ def hourly_plot(df, scenario, bus, color_dict, conventionals, storages):
     df.columns = [c.strip(bus + "-") for c in df.columns]
 
     flexibility = ["import"]
-    dload = ["decentral_heat-hp"]
+    dload = ["decentral_heat-hp", "flex-decentral_heat-hp"]
 
     # create plot
     layout = go.Layout(
@@ -207,7 +208,7 @@ def energy_plot(scenarios, color_dict):
                 x=row.index,
                 y=row.values,
                 text=[
-                    v.round(2) if v > 20 or v < -20 else None
+                    v.round(1) if v > 20 or v < -20 else None
                     for v in row.values
                 ],
                 hovertext=[
