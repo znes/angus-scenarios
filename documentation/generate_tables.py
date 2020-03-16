@@ -3,6 +3,9 @@ import pandas as pd
 from datapackage import Package
 from tabulate import tabulate
 
+tables_path = "documentation/tables"
+if not os.path.exists(tables_path):
+    os.makedirs(tables_path)
 
 technologies = pd.DataFrame(
     # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
@@ -24,14 +27,20 @@ eta = (
 eta.columns = ["tech", "2030", "2040", "2050"]
 print(tabulate(eta.fillna("NA"), tablefmt="pipe", headers="keys"))
 
+eta.to_latex(
+    "documentation/tables/efficiencies.tex",
+    caption="Efficiencies of power generation technologies for scenario years.",
+)
 
 # all parameters --------------------------------------------------------------
-print(
-    tabulate(
-        technologies.sort_index().reset_index().set_index("year").fillna("NA"),
-        tablefmt="pipe",
-        headers="keys",
-    )
+
+technologies_table = (
+    technologies.sort_index().reset_index().set_index("year").fillna("NA")
+)
+print(tabulate(technologies, tablefmt="pipe", headers="keys"))
+technologies_table.to_latex(
+    "documentation/tables/technologies.tex",
+    caption="Technology data for scenario years.",
 )
 
 #  carrier cost assumptions ---------------------------------------------------
@@ -45,14 +54,12 @@ carrier_cost = (
     .sort_index()
 )
 
-print(
-    tabulate(
-        carrier_cost.reset_index().set_index("scenario"),
-        tablefmt="pipe",
-        headers="keys",
-    )
+carrier_cost_table = carrier_cost.reset_index().set_index("scenario")
+print(tabulate(carrier_cost_table, tablefmt="pipe", headers="keys"))
+carrier_cost_table.to_latex(
+    "documentation/tables/carrier_cost.tex",
+    caption="Carrier cost for different scenarios.",
 )
-
 
 # hydro data  ----------------------------------------------------------------
 hydro_data = Package(
@@ -65,14 +72,12 @@ hydro = (
     .set_index(["country", "year"])
     .sort_index()
 )
-print(
-    tabulate(
-        hydro.reset_index().drop("source", axis=1).set_index("country"),
-        tablefmt="pipe",
-        headers="keys",
-    )
+hydro_table = hydro.reset_index().drop("source", axis=1).set_index("country")
+print(tabulate(hydro_table, tablefmt="pipe", headers="keys"))
+hydro_table.to_latex(
+    "documentation/tables/hydro_capacities.tex",
+    caption="Hydro capacities and technology data for different scenario years.",
 )
-
 
 # installed capacities -------------------------------------------------------
 path = os.path.join(os.getcwd(), "datapackages")
@@ -192,7 +197,7 @@ volatile_flh.round(0).to_latex("documentation/tables/volatile_flh.tex")
 
 # biomass potential -----------------------------------------------------------
 biomass = pd.read_csv(
-    os.path.join(path, "2050ANGUS-2040grid", "data/elements/commodity.csv"),
+    os.path.join(path, "2050REF", "data/elements/commodity.csv"),
     sep=";",
     index_col=0,
 )
@@ -202,6 +207,11 @@ biomass.round(2).to_frame().T.to_latex(
     "documentation/tables/biomass_potential.tex"
 )
 print(tabulate((biomass.to_frame()), tablefmt="pipe", headers="keys"))
+
+biomass.to_frame().to_latex(
+    "documentation/tables/biomass_potential.tex",
+    caption="Biomass potential based on the hoptmaps project.",
+)
 
 # load ------------------------------------------------------------------------
 load["name"] = ["-".join(i.split("-")[1:]) for i in load.index]

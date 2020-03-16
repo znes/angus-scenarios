@@ -482,7 +482,6 @@ def _load(countries, data, sensitivities=None):
 def _elements(countries, data, technologies, carrier_cost, emission_factors,
                scenario, scenario_year, sensitivities=None):
 
-
     if sensitivities is not None:
         for k,v in sensitivities.items():
             k = k.split("-")
@@ -506,6 +505,22 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                     "profile": profile,
                     "output_parameters": json.dumps({}),
                 })
+
+            elif tech == "must-run":
+
+                profile = "-".join([b, tech, "profile"])
+                element.update({
+                    "bus": b + "-electricity",
+                    "tech": tech,
+                    "carrier": carrier,
+                    "capacity": data.at[b, (carrier, tech)],
+                    "type": "volatile",
+
+                    "profile": profile,
+                    "output_parameters": json.dumps({
+                        "emission_factor": 0.2 / 0.4}),
+                })
+
             elif tech  == "res":
                 element.update({
                     "bus": b + "-electricity",
@@ -514,9 +529,9 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                     "capacity": data.at[b, (carrier, tech)],
                     "type": "dispatchable",
                     "marginal_cost": 0,
-                    "profile": 0.9,
+                    "profile": 1,
                     "output_parameters": json.dumps({
-                        "summed_max": 6500, # assumption for geothermal and waste etc.
+                        "summed_max": 4500, # assumption for geothermal and waste etc.
                     }),
                 })
 

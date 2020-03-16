@@ -209,6 +209,26 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
         sequences_df.index.name = "timeindex"
         sequences_df.index = building.timeindex(year=str(scenario_year))
 
+    if "NEPC" in scenario:
+
+        must_run_sequences = {}
+
+        must_run_sequences["DE-must-run-profile"] = (
+            df.loc[weather_year][b + "_heat_demand_total"] /
+            df.loc[weather_year][b + "_heat_demand_total"].max()
+        )
+
+        must_run_sequences_df = pd.DataFrame(must_run_sequences)
+        must_run_sequences_df = (must_run_sequences_df * 3 * 8300).clip(upper=8300) /  8300 # calibrate for 2030NEPC
+        must_run_sequences_df.index.name = "timeindex"
+        must_run_sequences_df.index = building.timeindex(year=str(scenario_year))
+
+        building.write_sequences(
+            "volatile_profile.csv",
+            must_run_sequences_df,
+            directory=os.path.join(datapackage_dir, "data/sequences"),
+        )
+
     building.write_elements(
         "heat_load.csv",
         pd.DataFrame([i for i in elements if i["type"] == "load"]).set_index("name"),
