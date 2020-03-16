@@ -24,8 +24,8 @@ decentral_heat-flex-share = 1
 DE-electricity-load = 539e3
 DE-biomass-st = 0
 DE-wind-offshore = 33500
-DE-solar-pv = 150e3
-DE-wind-onshore = 128e3 # GL
+DE-solar-pv = 180e3
+DE-wind-onshore = 143e3 # GL
 
 
 [buses]
