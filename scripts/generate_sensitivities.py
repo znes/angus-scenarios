@@ -1,7 +1,7 @@
 import os
 import toml
 
-flex = range(0, 100, 90)
+flex = [0]
 
 for dir in os.listdir("scenarios"):
     if not os.path.exists("sensitivities"):
