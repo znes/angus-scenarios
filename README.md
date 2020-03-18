@@ -30,6 +30,10 @@ If raw data does not exist run:
 
 ## Build
 
+To generate sensitivities on existing scenario toml files run (adapt):
+
+    python scripts/generate_sensitivities.py
+
 To build the package locally run the python script
 
     python scripts/build.py
