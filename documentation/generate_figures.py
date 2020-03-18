@@ -77,10 +77,11 @@ conventionals = [
     "oil-ocgt",
     "uranium-st",
     "waste-st",
+    "chp-must-run"
 ]
 
 bus = "DE"
-base_scenarios = ["2050REF", "2040DG", "2030DG", "2030NEPC"]
+base_scenarios = ["2050REF", "2050NB", "2040DG", "2040GCA",  "2030DG", "2030NEPC"]
 # GS = [b + "-GS" for b in base_scenarios]
 # base_scenarios = base_scenarios + GS
 
@@ -154,7 +155,30 @@ indicators = pd.concat(
     axis=1,
 )
 
-# heat sysetm investment ------------------------------------------------------
+indicators = indicators.sort_values(by="CO2", ascending=False)
+ax = indicators["CO2"].plot(linestyle="", marker="o", color="skyblue")
+ax.set_ylabel("CO2 Emissions in Mio. tons")
+ax.set_ylim(0, 210)
+
+plt.xticks(rotation=45)
+ax2 = ax.twinx()
+indicators["RES"].plot(linestyle="", marker="o", color="darkred", label = 'RES')
+ax2.set_ylim(0, 1.1)
+ax2.set_ylabel("RE share")
+
+lines, labels = ax.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax2.legend(
+    lines + lines2, labels + labels2, loc="lower left",
+    borderaxespad=0,
+    frameon=False)
+
+ax.grid(linestyle="--", color="lightgray")
+plt.savefig(
+    "documentation/figures/scenario-indicators.pdf"
+)
+
+# heat system investment ------------------------------------------------------
 heat = {}
 for dir in os.listdir(path):
     if not "flex" in dir:
@@ -163,6 +187,11 @@ for dir in os.listdir(path):
             index_col=0,
             parse_dates=True,
         )["DE-flex-decentral_heat-tes"].max()
+        demand = pd.read_csv(
+            os.path.join(path, dir, "output", "DE-flex-decentral_heat-bus.csv"),
+            index_col=0,
+            parse_dates=True,
+        )["DE-flex-decentral_heat-load"].max()
         df = pd.read_csv(
             os.path.join(path, dir, "output", "DE-electricity.csv"),
             index_col=0,
@@ -192,30 +221,39 @@ for dir in os.listdir(path):
             ),
             "value",
         ]
-        heat[dir] = filling / tes
+        heat[dir] = (filling / tes, tes/1e3, filling/1e3, hp/1e3, demand/1e3)
 
-investment = pd.Series(heat)
-investment.name = "P / Q"
+
+investment = pd.DataFrame(heat)
+investment.index = ["Ratio", "TES GW", "TES GWh", "HP GW", "Peak Load GW"]
+investment[base_scenarios].T.round(2)
 investment.sort_index(inplace=True)
-investment.plot(kind="bar")
+
+inv = investment.drop("Ratio")
+ax = inv[base_scenarios].plot(kind="bar", cmap=plt.get_cmap("YlGn"))
+ax.set_ylabel("Investment in GW, GWh")
+ax.grid(linestyle="--", color="lightgray")
+plt.xticks(rotation=45)
+plt.savefig(
+    "documentation/figures/heat-investment.pdf"
+)
 
 
 fig, ax = plt.subplots()
+#base_scenarios = investment.index
 ax.scatter(
-    y=investment[base_scenarios], x=shares.loc[base_scenarios]
+    y=investment.loc["Ratio"][base_scenarios], x=shares.loc[base_scenarios], color="purple"
 )
-for i, txt in enumerate(investment[base_scenarios].index):
-    ax.annotate(txt, (shares[i], investment[i]))
-
-# hourly heat plot -------------------------------------------------------------
-df = pd.read_csv(
-    os.path.join(
-        path, "2050NB", "output", bus + "-flex-decentral_heat-bus.csv"
-    ),
-    index_col=0,
-    parse_dates=True,
+ax.set_xlim(0.55, 1.05)
+ax.set_ylim(2.5, 6)
+ax.grid(linestyle="--", color="lightgray")
+ax.set_ylabel("Ratio of storage capacity to capacity of the TES")
+ax.set_xlabel("RE share")
+for i,j in investment[base_scenarios].iteritems():
+    ax.annotate(i, (shares[i], investment.at["Ratio", i]))
+plt.savefig(
+    "documentation/figures/heat-investment-storage-ratio.pdf"
 )
-# TODO
 
 
 # filling levels --------------------------------------------------------------
@@ -492,7 +530,7 @@ if False:  # for relative
     name = "Relative Deviation"
 else:
     for c in base:
-        comparison[c] = (
+        comparison[c.replace("-flex0", "")] = (
             scenarios[c] - scenarios[c.replace("-flex0", "")]
         ).to_dict()
     comparison = pd.DataFrame(comparison)
@@ -616,7 +654,7 @@ for dir in os.listdir(path):
 tuples = {
     (0, 0): ("2030NEPC-flex0", "2030NEPC"),
     (0, 1): ("2040DG-flex0", "2040DG"),
-    (0, 2): ("2050REF-flex0", "2050REF"),
+    (0, 2): ("2050REF-GS-flex0", "2050REF-GS"),
 }
 fig, axs = plt.subplots(1, 3, sharex=True, sharey=True, figsize=(15, 5))
 
