@@ -4,8 +4,6 @@ import toml
 flex = [0]
 
 for dir in os.listdir("scenarios"):
-    if not os.path.exists("sensitivities"):
-        os.makedirs("sensitivities")
     scenario = toml.load(os.path.join("scenarios", dir))
     for f in flex:
         filename = dir.split(".")[0] + "-flex" + str(f) + ".toml"
