@@ -232,6 +232,7 @@ def storage(
                         "capacity_cost": capacity_cost,
                         "storage_capacity_cost": storage_capacity_cost,
                         "tech": tech,
+                        "marginal_cost": 1,
                         "carrier": carrier,
                         "type": "storage",
                         "efficiency": float(
@@ -240,7 +241,6 @@ def storage(
                                 "value",
                             ])
                         ** 0.5,  # convert roundtrip to input / output efficiency
-                        "marginal_cost": 0,
                         "loss": 0,
                     }
                 )
