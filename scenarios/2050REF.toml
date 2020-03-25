@@ -3,7 +3,7 @@ description = "Refernce scenario for the year 2050 (based on Ehighway 100 % RES)
 name = "2050REF"
 
 [model]
-temporal_resolution = 2
+temporal_resolution = 1
 
 [scenario]
 investment = ["storage"]
