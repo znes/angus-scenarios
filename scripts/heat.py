@@ -2,6 +2,9 @@ import os
 import pandas as pd
 from datapackage import Package
 from oemof.tabular.datapackage import building
+import locale
+
+from locale import atof
 
 # raw_data_path = os.path.join(os.path.expanduser("~"), "oemof-raw-data")
 #
@@ -10,9 +13,18 @@ from oemof.tabular.datapackage import building
 
 from oemof.tools.economics import annuity
 
-def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
-                       decentral_heat_flex_share, sensitivities,
-                       datapackage_dir, raw_data_path):
+
+def german_heat_system(
+    heat_buses,
+    weather_year,
+    scenario,
+    scenario_year,
+    wacc,
+    decentral_heat_flex_share,
+    sensitivities,
+    datapackage_dir,
+    raw_data_path,
+):
     """
     """
     technologies = pd.DataFrame(
@@ -42,22 +54,22 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
         "https://data.open-power-system-data.org/when2heat/"
         "opsd-when2heat-2019-08-06.zip",
         directory=raw_data_path,
-        unzip_file="opsd-when2heat-2019-08-06/"
+        unzip_file="opsd-when2heat-2019-08-06/",
     )
-
 
     df = pd.read_csv(
         os.path.join(filepath, "opsd-when2heat-2019-08-06", "when2heat.csv"),
-        index_col=[0], parse_dates=True, sep=";")
+        index_col=[0],
+        parse_dates=True,
+        sep=";",
+    )
 
-    df = df[
-        ~((df.index.month == 2) & (df.index.day == 29))
-    ]
+    df = df[~((df.index.month == 2) & (df.index.day == 29))]
 
     data["country"] = "DE"
     data.set_index("country", append=True, inplace=True)
     if sensitivities is not None:
-        for k,v in sensitivities.items():
+        for k, v in sensitivities.items():
             k = k.split("-")
             data.at[(k[1], k[2], k[0]), "value"] = v
 
@@ -66,28 +78,47 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
 
     weather_year = str(weather_year)
 
-    el_buses = building.read_elements(
-        "bus.csv",
-        directory=os.path.join(datapackage_dir, "data/elements")
+    locale.setlocale(locale.LC_NUMERIC, "")
+
+    gshp_cop = (
+        df.loc[
+            weather_year,
+            ["DE_COP_GSHP_floor", "DE_COP_GSHP_radiator", "DE_COP_GSHP_water"],
+        ]
+        .applymap(atof)
+        .mean(axis=1)
     )
-    heat_demand_total = float(data.loc[("decentral_heat", "load"), "value"])  * 1000 # MWh
+    ashp_cop = (
+        df.loc[
+            weather_year,
+            ["DE_COP_ASHP_floor", "DE_COP_ASHP_radiator", "DE_COP_ASHP_water"],
+        ]
+        .applymap(atof)
+        .mean(axis=1)
+    )
+
+    el_buses = building.read_elements(
+        "bus.csv", directory=os.path.join(datapackage_dir, "data/elements")
+    )
+    heat_demand_total = (
+        float(data.loc[("decentral_heat", "load"), "value"]) * 1000
+    )  # MWh
     for bustype, buses in heat_buses.items():
         carrier = bustype + "_heat"
-
 
         for b in buses:
             heat_bus = "-".join([b, carrier, "bus"])
             flex_peak_demand_heat = (
-                (df.loc[weather_year][b + "_heat_demand_total"] / # MW
-                 df.loc[weather_year][b + "_heat_demand_total"].sum() *
-                 heat_demand_total).max() * decentral_heat_flex_share
-            )
+                df.loc[weather_year][b + "_heat_demand_total"]
+                / df.loc[weather_year][b + "_heat_demand_total"].sum()  # MW
+                * heat_demand_total
+            ).max() * decentral_heat_flex_share
 
             peak_demand_heat = (
-                (df.loc[weather_year][b + "_heat_demand_total"] / # MW
-                 df.loc[weather_year][b + "_heat_demand_total"].sum() *
-                 heat_demand_total).max() * (1 - decentral_heat_flex_share)
-            )
+                df.loc[weather_year][b + "_heat_demand_total"]
+                / df.loc[weather_year][b + "_heat_demand_total"].sum()  # MW
+                * heat_demand_total
+            ).max() * (1 - decentral_heat_flex_share)
 
             el_buses.loc[heat_bus] = [True, "heat", None, "bus"]
 
@@ -99,32 +130,57 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
                         "name": "-".join([b, carrier, "load"]),
                         "type": "load",
                         "bus": heat_bus,
-                        "amount": heat_demand_total * decentral_heat_flex_share,
+                        "amount": heat_demand_total
+                        * decentral_heat_flex_share,
                         "profile": profile_name,
                         "carrier": carrier,
                     }
                 )
                 elements.append(
                     {
-                        "name": "-".join([b, carrier, "hp"]),
+                        "name": "-".join([b, carrier, "gshp"]),
                         "type": "conversion",
                         "to_bus": heat_bus,
                         "capacity_cost": (
-                            float(technologies.loc[(2050, "fom", "decentral_heat", "hp"), "value"]) +
-                            annuity(
-                                float(technologies.loc[
-                                    (2050, "capex", "decentral_heat", "hp"), "value"]),
-                                float(technologies.loc[
-                                    (2050, "lifetime", "decentral_heat", "hp"), "value"]),
-                                wacc
-                                ) * 1000,  # €/kW -> €/MW
+                            float(
+                                technologies.loc[
+                                    (2050, "fom", "decentral_heat", "gshp"),
+                                    "value",
+                                ]
+                            )
+                            + annuity(
+                                float(
+                                    technologies.loc[
+                                        (
+                                            2050,
+                                            "capex",
+                                            "decentral_heat",
+                                            "gshp",
+                                        ),
+                                        "value",
+                                    ]
+                                ),
+                                float(
+                                    technologies.loc[
+                                        (
+                                            2050,
+                                            "lifetime",
+                                            "decentral_heat",
+                                            "gshp",
+                                        ),
+                                        "value",
+                                    ]
+                                ),
+                                wacc,
+                            )
+                            * 1000,  # €/kW -> €/MW
                         )[0],
                         "from_bus": "DE-electricity",
                         "expandable": True,
-                        "capacity": 0, #flex_peak_demand_heat * 1.1,
-                        "efficiency": 3,
+                        "capacity": flex_peak_demand_heat,
+                        "efficiency": "DE-gshp-profile",
                         "carrier": carrier,
-                        "tech": "hp"
+                        "tech": "gshp",
                     }
                 )
 
@@ -143,32 +199,57 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
                         "name": name,
                         "type": "storage",
                         "bus": heat_bus,
-                        #"capacity": capacity,
-                        "capacity_cost": float(technologies.loc[(2050, "fom", "decentral_heat", "tes"), "value"]) * 1000,
+                        # "capacity": capacity,
+                        "capacity_cost": float(
+                            technologies.loc[
+                                (2050, "fom", "decentral_heat", "tes"), "value"
+                            ]
+                        )
+                        * 1000,
                         "storage_capacity_cost": (
-                                annuity(
-                                float(technologies.loc[
-                                    (2050, "capex", "decentral_heat", "tes"), "value"]),
-                                float(technologies.loc[
-                                    (2050, "lifetime", "decentral_heat", "tes"), "value"]),
-                                wacc
-                                ) * 1000,  # €/kWh -> €/MWh
+                            annuity(
+                                float(
+                                    technologies.loc[
+                                        (
+                                            2050,
+                                            "capex",
+                                            "decentral_heat",
+                                            "tes",
+                                        ),
+                                        "value",
+                                    ]
+                                ),
+                                float(
+                                    technologies.loc[
+                                        (
+                                            2050,
+                                            "lifetime",
+                                            "decentral_heat",
+                                            "tes",
+                                        ),
+                                        "value",
+                                    ]
+                                ),
+                                wacc,
+                            )
+                            * 1000,  # €/kWh -> €/MWh
                         )[0],
                         "expandable": True,
                         # "storage_capacity": capacity * float(technologies.loc[
                         #     (2050, "max_hours", carrier, "tes"),
                         #     "value"
                         # ]),
-                        "efficiency": float(technologies.loc[
-                            (2050, "efficiency", carrier, "tes"),
-                            "value"
-                        ])**0.5, # rountrip conversion
+                        "efficiency": float(
+                            technologies.loc[
+                                (2050, "efficiency", carrier, "tes"), "value"
+                            ]
+                        )
+                        ** 0.5,  # rountrip conversion
                         "loss": technologies.loc[
-                            (2050, "loss", carrier, "tes"),
-                            "value"
+                            (2050, "loss", carrier, "tes"), "value"
                         ],
                         "carrier": carrier,
-                        "tech": "tes"
+                        "tech": "tes",
                     }
                 )
             else:
@@ -177,51 +258,63 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
                         "name": "-".join([b, carrier, "load"]),
                         "type": "load",
                         "bus": heat_bus,
-                        "amount": heat_demand_total * (1 - decentral_heat_flex_share),
+                        "amount": heat_demand_total
+                        * (1 - decentral_heat_flex_share),
                         "profile": profile_name,
                         "carrier": carrier,
                     }
                 )
                 elements.append(
                     {
-                        "name": "-".join([b, carrier, "hp"]),
+                        "name": "-".join([b, carrier, "gshp"]),
                         "type": "conversion",
                         "to_bus": heat_bus,
                         "capacity_cost": 0,
                         "expandable": False,
                         "from_bus": "DE-electricity",
                         "capacity": peak_demand_heat * 1.1,
-                        "efficiency": 3,
+                        "efficiency": "DE-gshp-profile",
                         "carrier": carrier,
-                        "tech": "hp"
+                        "tech": "gshp",
                     }
                 )
 
-
-
-
-
-
         sequences[profile_name] = (
-            df.loc[weather_year][b + "_heat_demand_total"] /
-            df.loc[weather_year][b + "_heat_demand_total"].sum())
+            df.loc[weather_year][b + "_heat_demand_total"]
+            / df.loc[weather_year][b + "_heat_demand_total"].sum()
+        )
         sequences_df = pd.DataFrame(sequences)
         sequences_df.index.name = "timeindex"
         sequences_df.index = building.timeindex(year=str(scenario_year))
+
+    sequences_cop = pd.concat([gshp_cop, ashp_cop], axis=1)
+    sequences_cop.columns = ["DE-gshp-profile", "DE-ashp-profile"]
+    sequences_cop.index.name = "timeindex"
+    sequences_cop.index = building.timeindex(year=str(scenario_year))
+
+    building.write_sequences(
+        "efficiency_profile.csv",
+        sequences_cop,
+        directory=os.path.join(datapackage_dir, "data/sequences"),
+    )
 
     if "NEPC" in scenario:
 
         must_run_sequences = {}
 
         must_run_sequences["DE-must-run-profile"] = (
-            df.loc[weather_year][b + "_heat_demand_total"] /
-            df.loc[weather_year][b + "_heat_demand_total"].max()
+            df.loc[weather_year][b + "_heat_demand_total"]
+            / df.loc[weather_year][b + "_heat_demand_total"].max()
         )
 
         must_run_sequences_df = pd.DataFrame(must_run_sequences)
-        must_run_sequences_df = (must_run_sequences_df * 3 * 8300).clip(upper=8300) /  8300 # calibrate for 2030NEPC
+        must_run_sequences_df = (must_run_sequences_df * 3 * 8300).clip(
+            upper=8300
+        ) / 8300  # calibrate for 2030NEPC
         must_run_sequences_df.index.name = "timeindex"
-        must_run_sequences_df.index = building.timeindex(year=str(scenario_year))
+        must_run_sequences_df.index = building.timeindex(
+            year=str(scenario_year)
+        )
 
         building.write_sequences(
             "volatile_profile.csv",
@@ -231,19 +324,25 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
 
     building.write_elements(
         "heat_load.csv",
-        pd.DataFrame([i for i in elements if i["type"] == "load"]).set_index("name"),
+        pd.DataFrame([i for i in elements if i["type"] == "load"]).set_index(
+            "name"
+        ),
         directory=os.path.join(datapackage_dir, "data/elements"),
     )
 
     building.write_elements(
         "heatpump.csv",
-        pd.DataFrame([i for i in elements if i["type"] == "conversion"]).set_index("name"),
+        pd.DataFrame(
+            [i for i in elements if i["type"] == "conversion"]
+        ).set_index("name"),
         directory=os.path.join(datapackage_dir, "data/elements"),
     )
 
     building.write_elements(
         "heat_storage.csv",
-        pd.DataFrame([i for i in elements if i["type"] == "storage"]).set_index("name"),
+        pd.DataFrame(
+            [i for i in elements if i["type"] == "storage"]
+        ).set_index("name"),
         directory=os.path.join(datapackage_dir, "data/elements"),
     )
 
@@ -251,7 +350,7 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
         "bus.csv",
         el_buses,
         directory=os.path.join(datapackage_dir, "data/elements"),
-        replace=True
+        replace=True,
     )
 
     building.write_sequences(

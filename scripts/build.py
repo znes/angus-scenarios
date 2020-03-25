@@ -221,6 +221,7 @@ def build(config):
             "profile": ["load", "volatile", "volatile_invest", "ror", "reservoir", "heat_load"],
             "from_to_bus": ["link", "conversion", "conversion_invest", "heatpump"],
             "chp": [],
+            "efficiency": ["heatpump"]
         },
         path=datapackage_dir,
     )
