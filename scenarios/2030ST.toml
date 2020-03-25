@@ -3,6 +3,7 @@ description = "Scenario based on TYNDP2018 ST 2030"
 name = "2030ST"
 
 [scenario]
+investment = ["storage"]
 DE_system = "" # german data (generation, load, etc.)
 DE_heat_system = "2030GL"
 EU_load = "2030ST" # european load

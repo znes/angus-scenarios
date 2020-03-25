@@ -6,6 +6,7 @@ name = "2040ST"
 temporal_resolution = 1
 
 [scenario]
+investment = ["storage"]
 DE_system = "" # german data (generation, load, etc.)
 DE_heat_system = "2040GL"
 EU_load = "2040ST" # european load

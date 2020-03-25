@@ -3,6 +3,7 @@ description = "Scenario based on TYNDP2018 2040 GCA"
 name = "2040GCA-GS"
 
 [scenario]
+investment = ["storage"]
 DE_system = "" # german data (generation, load, etc.)
 DE_heat_system = "2040GS"
 EU_load = "2040GCA" # european load
