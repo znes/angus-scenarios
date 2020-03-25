@@ -74,7 +74,7 @@ def storage(
 
     elements = {}
     storages = [
-        ("lithium", "battery"), ("cavern", "acaes"), ("hydrogen", "storage")]
+        ("lithium", "battery"), ("hydrogen", "storage")]
     for b in countries:
         for carrier, tech in storages:
 
