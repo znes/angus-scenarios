@@ -70,8 +70,6 @@ def storage(
         potential["source"] == "Brown & Schlachtberger"
     ]
 
-    scenario_year = 2050
-
     elements = {}
     storages = [
         ("lithium", "battery"), ("hydrogen", "storage")]
