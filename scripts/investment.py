@@ -73,7 +73,8 @@ def storage(
     scenario_year = 2050
 
     elements = {}
-    storages = [("lithium", "battery"), ("cavern", "acaes"), ("hydrogen", "storage")]
+    storages = [
+        ("lithium", "battery"), ("cavern", "acaes"), ("hydrogen", "storage")]
     for b in countries:
         for carrier, tech in storages:
 
@@ -258,7 +259,8 @@ def storage(
             element_type + ".csv",
             df.loc[df["type"] == element_type].dropna(how="all", axis=1),
             directory=os.path.join(datapackage_dir, "data", "elements"),
-            replace=True,
+            replace=False,
+            overwrite=True,
         )
 
 

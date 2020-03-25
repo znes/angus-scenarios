@@ -9,7 +9,7 @@ from datapackage import Package
 import pandas as pd
 
 from oemof.tabular.datapackage import building
-
+from oemof.tools.economics import annuity
 
 def tyndp_generation_2018(
     countries, vision, scenario, scenario_year, datapackage_dir, raw_data_path,
@@ -621,34 +621,65 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
 
             elif tech in ["battery", "acaes", "redox", "hydrogen",
                           "storage"]:
-                elements["-".join([b, carrier, tech])] = element
-
-                element.update(
-                    {
-                        "storage_capacity": float(
-                            float(technologies.loc[
-                                (scenario_year,
-                                 "max_hours",
-                                 carrier,
-                                 tech),
-                                "value",
-                            ])
-                            * float(data.at[b, (carrier, tech)])
-                        ),
-                        "capacity": float(data.at[b, (carrier, tech)]),
-                        "bus": b + "-electricity",
-                        "tech": tech,
-                        "carrier": carrier,
-                        "type": "storage",
-                        "efficiency": float(
-                            technologies.loc[
-                                (scenario_year, "efficiency", carrier, tech),
-                                "value",
-                            ])
-                        ** 0.5,  # convert roundtrip to input / output efficiency
-                        "marginal_cost": 0,
-                        "loss": 0,
-                    }
-                )
+                pass
+                #
+                # elements["-".join([b, carrier, tech])] = element
+                #
+                # element.update(
+                #     {
+                #         "storage_capacity": float(
+                #             float(technologies.loc[
+                #                 (scenario_year,
+                #                  "max_hours",
+                #                  carrier,
+                #                  tech),
+                #                 "value",
+                #             ])
+                #             * float(data.at[b, (carrier, tech)])
+                #         ),
+                #         "capacity": float(data.at[b, (carrier, tech)]),
+                #         "bus": b + "-electricity",
+                #         "tech": tech,
+                #         "expandable": False,
+                #         "capacity_cost": (
+                #             float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
+                #             annuity(
+                #                 float(technologies.loc[
+                #                     (2050, "capex_energy", carrier, tech), "value"]),
+                #                 float(technologies.loc[
+                #                     (2050, "lifetime", carrier, tech), "value"]),
+                #                 0.05
+                #                 ) * 1000,  # €/kWh -> €/MWh
+                #         )[0],
+                #         "storage_capacity_cost": (
+                #             annuity(
+                #                 float(technologies.loc[
+                #                     (2050, "capex_power", carrier, tech), "value"]),
+                #                 float(technologies.loc[
+                #                     (2050, "lifetime", carrier, tech), "value"]),
+                #                 0.05
+                #                 ) * 1000,  # €/kW -> €/MW
+                #         )[0],
+                #
+                #         "invest_relation_input_capacity": 1 / float(technologies.loc[
+                #                 (scenario_year, "max_hours", carrier, tech),
+                #                 "value",
+                #             ]),
+                #         "invest_relation_output_capacity": 1 / float(technologies.loc[
+                #                 (scenario_year, "max_hours", carrier, tech),
+                #                 "value",
+                #             ]),
+                #         "carrier": carrier,
+                #         "type": "storage",
+                #         "efficiency": float(
+                #             technologies.loc[
+                #                 (2050, "efficiency", carrier, tech),
+                #                 "value",
+                #             ])
+                #         ** 0.5,  # convert roundtrip to input / output efficiency
+                #         "marginal_cost": 0,
+                #         "loss": 0,
+                #     }
+                # )
 
     return elements
