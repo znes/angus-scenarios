@@ -12,6 +12,7 @@ chardet==3.0.4
 Click==7.0
 cryptography==2.5
 cycler==0.10.0
+cydets==1.1
 datapackage==1.5.1
 decorator==4.3.2
 dill==0.2.8.2
@@ -20,6 +21,7 @@ et-xmlfile==1.0.1
 geojson==2.4.1
 idna==2.8
 ijson==2.3
+ipykernel==5.2.0
 ipython==7.2.0
 ipython-genutils==0.2.0
 isodate==0.6.0
@@ -28,16 +30,18 @@ jedi==0.13.2
 jsonlines==1.2.0
 jsonpointer==1.14
 jsonschema==2.6.0
-jupyter-core==4.4.0
+jupyter-client==6.1.0
+jupyter-core==4.6.3
 kiwisolver==1.0.1
 linear-tsv==1.1.0
 matplotlib==3.0.2
 nbformat==4.4.0
+nbstripout==0.3.6
 networkx==2.2
 nose==1.3.7
 numpy==1.15.4
 oemof==0.3.1
-oemof.tabular==0.0.2
+-e git+git@github.com:oemof/oemof-tabular.git@8d2aef38caa99343e5fe249e60772470a92f41f0#egg=oemof.tabular
 openpyxl==2.4.11
 pandas==0.23.4
 paramiko==2.4.2
@@ -60,6 +64,7 @@ pyshp==2.0.1
 python-dateutil==2.8.0
 pytz==2018.9
 PyUtilib==5.6.5
+pyzmq==19.0.0
 requests==2.21.0
 retrying==1.3.3
 rfc3986==1.2.0
@@ -73,6 +78,7 @@ SQLAlchemy==1.2.17
 tableschema==1.3.0
 tabulator==1.19.0
 toml==0.10.0
+tornado==6.0.4
 traitlets==4.3.2
 tsam==1.0.2
 unicodecsv==0.14.1
