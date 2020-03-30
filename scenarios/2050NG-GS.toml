@@ -27,6 +27,10 @@ DE-wind-offshore = 33500
 DE-solar-pv = 141e3
 DE-wind-onshore = 128e3 # GS
 
+[sensitivities.biomass]
+DE-biomass-commodity = 0.3 # share of hotmaps potential availabl for electricity
+
+
 [buses]
 
 electricity = [

@@ -589,16 +589,16 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                 )
 
             elif carrier == "biomass":
-                if b == "DE":
-                    if int(scenario_year) > 2040:
-                        bio_flh = {}
-                    else:
-                        bio_flh = {
-                            "summed_min": 6200,
-                            "summed_max": 6200
-                        }
-                else:
-                    bio_flh = {}
+                # if b == "DE":
+                #     if int(scenario_year) > 2040:
+                #         bio_flh = {}
+                #     else:
+                #         bio_flh = {
+                #             "summed_min": 6200,
+                #             "summed_max": 6200
+                #         }
+                # else:
+                #     bio_flh = {}
                 element.update(
                     {
                         "carrier": carrier,
@@ -610,8 +610,8 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                         ],
                         "from_bus": b + "-biomass-bus",
                         "type": "conversion",
-                        "output_parameters": json.dumps(bio_flh
-                        ),
+                        #"output_parameters": json.dumps(bio_flh
+                        #),
                         "carrier_cost": float(
                             carrier_cost.at[(scenario, carrier), "value"]
                         ),

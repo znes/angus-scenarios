@@ -180,5 +180,5 @@ if __name__ == "__main__":
             # compute(s, "gurobi")
 
     datapackages = [d for d in os.listdir("datapackages")]
-    p = mp.Pool(1)
+    p = mp.Pool(5)
     p.map(compute, datapackages)

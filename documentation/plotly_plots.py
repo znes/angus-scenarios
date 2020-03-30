@@ -18,7 +18,7 @@ def hourly_plot(df, scenario, bus, color_dict, conventionals, storages):
     df.columns = [c.strip(bus + "-") for c in df.columns]
 
     flexibility = ["import"]
-    dload = ["decentral_heat-hp", "flex-decentral_heat-hp"]
+    dload = ["decentral_heat-gshp", "flex-decentral_heat-gshp"]
 
     # create plot
     layout = go.Layout(

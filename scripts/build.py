@@ -38,7 +38,10 @@ def build(config):
         config["buses"]["electricity"], datapackage_dir, raw_data_path
     )
 
-    biomass.add(config["buses"], datapackage_dir)
+    biomass.add(
+        config["buses"],
+        config.get("sensitivities", {}).get("biomass"),
+        datapackage_dir)
 
     if config["scenario"].get("DE_system") != "":
         electricity.german_energy_system(
