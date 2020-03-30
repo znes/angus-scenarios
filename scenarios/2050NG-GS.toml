@@ -1,5 +1,5 @@
 title = "2050NG-GS"
-description = "No grid scenario for the year 2050 (based on Ehighway 100 % RES). With additional pv and offshore capacity for 100% RES supply"
+description = "No grid scenario for the year 2050 (based on Ehighway 100 % RES). With additional pv and offshore capacity for 100% RES supply. GS heat demand."
 name = "2050NG-GS"
 
 [model]
@@ -8,7 +8,7 @@ temporal_resolution = 1
 [scenario]
 investment = ["storage"]
 DE_system = "2050ANGUS"
-DE_heat_system = "2050GL"
+DE_heat_system = "2050GS"
 EU_load = "100% RES" # european load
 EU_generation = "100% RES" # european generation mix based on
 cost = "2050ZNES" # carrier cost (gas, co2, etc.)
