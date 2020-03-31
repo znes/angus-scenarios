@@ -13,7 +13,7 @@ for dir in os.listdir("scenarios"):
         for k,v in heat.items():
             for vv in v:
                 filename = dir.split(".")[0] + "-load-" + str(vv) + ".toml"
-                scenario["sensitivities"].update({"heat": {"DE-decentral_heat-load": 284 * (1 + vv/100)}})
+                scenario["sensitivities"].update({"heat": {"DE-decentral_heat-load": 284 * (1 + vv/100) * 1000}})
                 scenario["scenario"]["decentral_heat-flex-share"] = 1
                 scenario["name"] = filename.replace(".toml", "")
                 scenario["title"] = filename.replace(".toml", "")
