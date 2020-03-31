@@ -64,7 +64,16 @@ def german_heat_system(
         sep=";",
     )
 
+    cop =  pd.read_csv(
+        os.path.join(filepath, "opsd-when2heat-2019-08-06", "when2heat.csv"),
+        decimal=",",
+        index_col=[0],
+        parse_dates=True,
+        sep=";",
+    )
+
     df = df[~((df.index.month == 2) & (df.index.day == 29))]
+    cop = cop[~((cop.index.month == 2) & (cop.index.day == 29))]
 
     data["country"] = "DE"
     data.set_index("country", append=True, inplace=True)
@@ -78,22 +87,19 @@ def german_heat_system(
 
     weather_year = str(weather_year)
 
-    locale.setlocale(locale.LC_NUMERIC, "")
 
     gshp_cop = (
-        df.loc[
+        cop.loc[
             weather_year,
             ["DE_COP_GSHP_floor", "DE_COP_GSHP_radiator", "DE_COP_GSHP_water"],
         ]
-        .applymap(atof)
         .mean(axis=1)
     )
     ashp_cop = (
-        df.loc[
+        cop.loc[
             weather_year,
             ["DE_COP_ASHP_floor", "DE_COP_ASHP_radiator", "DE_COP_ASHP_water"],
         ]
-        .applymap(atof)
         .mean(axis=1)
     )
 
