@@ -11,7 +11,7 @@ from shapely import wkt
 import pycountry
 
 
-scenario = "2040GCA"
+scenario = "2050REF"
 
 p = Package(os.path.join("datapackages", scenario, "datapackage.json"))
 
@@ -137,6 +137,6 @@ names = [
 fig = go.Figure(layout=layout, data=lines + names + capacities + demand_color)
 
 fig.write_image(
-    os.path.join("documentation", "grid-scenario" + scenario + ".pdf")
+    os.path.join("documentation", "figures", "grid-scenario" + scenario + ".pdf")
 )
 # off.iplot(fig, filename='e-highway-transshipment-capacities.html')
