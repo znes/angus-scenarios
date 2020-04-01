@@ -254,6 +254,7 @@ def german_heat_system(
                         "loss": technologies.loc[
                             (2050, "loss", carrier, "tes"), "value"
                         ],
+                        "marginal_cost": 0.001, 
                         "carrier": carrier,
                         "tech": "tes",
                     }

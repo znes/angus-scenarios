@@ -1,7 +1,8 @@
 import os
 import toml
 
-heat = {"2050REF.toml": [-40, -30, -20, -10, 0, 10, 20, 30, 40, 50]}
+heat = {"2050REF.toml": [-25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25],
+        "2050REF-GS.toml": [-25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25]}
 total_demand = {"2050REF-GS.toml": 184000, "2050REF.toml": 284000}
 
 for dir in os.listdir("scenarios"):
@@ -18,11 +19,11 @@ for dir in os.listdir("scenarios"):
                 with open(os.path.join("scenarios", filename), mode='w') as w:
                     w.writelines(toml_string)
 
-biomass_share = [0, 20, 40, 60, 80, 100]
+biomass_share = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 for dir in os.listdir("scenarios"):
     scenario = toml.load(os.path.join("scenarios", dir))
     for b in biomass_share:
-        if "2050REF.toml" == dir:
+        if "2050REF" == dir:
             if not "-load" in dir:
                 filename = dir.split(".")[0] + "-bio-" + str(b) + ".toml"
                 scenario["sensitivities"].update({"biomass": {"DE-biomass-commodity": b / 100}})
