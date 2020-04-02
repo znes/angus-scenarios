@@ -124,7 +124,7 @@ def build(config):
 
     # for all countries add german capacities based
     if config["scenario"].get("investment"):
-        investment.storage(
+        investment.greenfield(
             datapackage_dir,
             raw_data_path,
             config["scenario"]["cost"],

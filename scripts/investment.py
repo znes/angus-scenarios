@@ -10,7 +10,7 @@ import pandas as pd
 from oemof.tabular.datapackage import building
 from oemof.tools.economics import annuity
 
-def storage(
+def greenfield(
     datapackage_dir,
     raw_data_path,
     cost_scenario,
@@ -73,66 +73,69 @@ def storage(
     elements = {}
     storages = [
         ("lithium", "battery"), ("hydrogen", "storage")]
+    renewables = [("solar", "pv"), ("wind", "onshore")]
+    investment = storages + renewables
     for b in countries:
-        for carrier, tech in storages:
+        for carrier, tech in investment:
 
             element = {}
             elements["-".join([b, carrier, tech])] = element
-            # if tech not in storages:
-            #     capacity_cost = (
-            #         float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
-            #         annuity(
-            #             float(technologies.loc[
-            #                 (scenario_year, "capex", carrier, tech), "value"]),
-            #             float(technologies.loc[
-            #                 (scenario_year, "lifetime", carrier, tech), "value"]),
-            #             wacc
-            #             ) * 1000,  # €/kW -> €/M
-            #     )[0]
-            # else:
-            capacity_cost = (
-                annuity(
-                    float(technologies.loc[
-                        (scenario_year, "capex_power", carrier, tech), "value"]),
-                    float(technologies.loc[
-                        (scenario_year, "lifetime", carrier, tech), "value"]),
-                    wacc
-                    ) * 1000,  # €/kW -> €/MW
-            )[0]
 
-            storage_capacity_cost = (
-                float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
-                annuity(
-                    float(technologies.loc[
-                        (scenario_year, "capex_energy", carrier, tech), "value"]),
-                    float(technologies.loc[
-                        (scenario_year, "lifetime", carrier, tech), "value"]),
-                    wacc
-                    ) * 1000,  # €/kWh -> €/MWh
-            )[0]
-            #
-            # if tech in ["onshore", "offshore", "pv"]:
-            #
-            #     potential_mapper = {
-            #         "onshore": "wind_onshore", "offshore": "wind_offshore", "pv": "pv"}
-            #     if tech == "offshore" and b in ["CH", "CZ", "AT", "LU"]:
-            #         pass
-            #     else:
-            #         profile = "-".join([b, tech, "profile"])
-            #         element.update({
-            #             "bus": b + "-electricity",
-            #             "tech": tech,
-            #             "carrier": carrier,
-            #             "capacity_potential": float(
-            #                 potential.loc[(b, potential_mapper[tech]),
-            #                               "capacity_potential"]),
-            #             "capacity": 0,
-            #             "expandable": True,
-            #             "capacity_cost": capacity_cost,
-            #             "type": "volatile",
-            #             "profile": profile,
-            #             "output_parameters": json.dumps({}),
-            #         })
+            if (carrier, tech) in renewables:
+                capacity_cost = (
+                    float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
+                    annuity(
+                        float(technologies.loc[
+                            (scenario_year, "capex", carrier, tech), "value"]),
+                        float(technologies.loc[
+                            (scenario_year, "lifetime", carrier, tech), "value"]),
+                        wacc
+                        ) * 1000,  # €/kW -> €/M
+                )[0]
+            else:
+                capacity_cost = (
+                    annuity(
+                        float(technologies.loc[
+                            (scenario_year, "capex_power", carrier, tech), "value"]),
+                        float(technologies.loc[
+                            (scenario_year, "lifetime", carrier, tech), "value"]),
+                        wacc
+                        ) * 1000,  # €/kW -> €/MW
+                )[0]
+
+                storage_capacity_cost = (
+                    float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
+                    annuity(
+                        float(technologies.loc[
+                            (scenario_year, "capex_energy", carrier, tech), "value"]),
+                        float(technologies.loc[
+                            (scenario_year, "lifetime", carrier, tech), "value"]),
+                        wacc
+                        ) * 1000,  # €/kWh -> €/MWh
+                )[0]
+                #
+            if tech in ["onshore", "offshore", "pv"]:
+
+                potential_mapper = {
+                    "onshore": "wind_onshore", "offshore": "wind_offshore", "pv": "pv"}
+                if tech == "offshore" and b in ["CH", "CZ", "AT", "LU"]:
+                    pass
+                else:
+                    profile = "-".join([b, tech, "profile"])
+                    element.update({
+                        "bus": b + "-electricity",
+                        "tech": tech,
+                        "carrier": carrier,
+                        "capacity_potential": float(
+                            potential.loc[(b, potential_mapper[tech]),
+                                          "capacity_potential"]),
+                        "capacity": 0,
+                        "expandable": True,
+                        "capacity_cost": capacity_cost,
+                        "type": "volatile",
+                        "profile": profile,
+                        "output_parameters": json.dumps({}),
+                    })
             #
             # elif carrier in [
             #     "gas",
@@ -250,7 +253,7 @@ def storage(
     df = pd.DataFrame.from_dict(elements, orient="index")
     for element_type in [
         # "dispatchable",
-        # "volatile",
+        "volatile",
         # "conversion",
         "storage"
     ]:

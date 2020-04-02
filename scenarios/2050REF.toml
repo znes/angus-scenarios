@@ -7,6 +7,7 @@ temporal_resolution = 1
 
 [scenario]
 investment = ["storage"]
+co2_limit = 10e6
 DE_system = "2050ANGUS"
 DE_heat_system = "2050GL"
 EU_load = "100% RES" # european load
