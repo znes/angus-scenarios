@@ -124,6 +124,7 @@ def ehighway(
                 "tech": "transshipment",
                 "from_to_capacity": capacity,
                 "to_from_capacity": capacity,
+                "marginal_cost": 0.0001,
                 # "length": row["Length"],
             }
 
@@ -204,7 +205,8 @@ def tyndp(buses, grid_loss, scenario, datapackage_dir, raw_data_path):
                 "to_bus": successor,
                 "tech": "transshipment",
                 "from_to_capacity": row["=>"],  # still need to think how to
-                "to_from_capacity": row["<="]
+                "to_from_capacity": row["<="],
+                "marginal_cost": 0.0001,
             }
 
             elements[element_name] = element

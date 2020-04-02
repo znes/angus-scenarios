@@ -210,6 +210,7 @@ def storage(
             #         }
             #     )
 
+
             if (carrier, tech) in storages:
                 elements["-".join([b, carrier, tech])] = element
                 element.update(
@@ -229,6 +230,7 @@ def storage(
                         "expandable": True,
                         "capacity_cost": capacity_cost,
                         "storage_capacity_cost": storage_capacity_cost,
+                        "storage_capacity_initial": 0.5,
                         "tech": tech,
                         "marginal_cost": 1,
                         "carrier": carrier,
