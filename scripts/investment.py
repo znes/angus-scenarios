@@ -73,7 +73,8 @@ def greenfield(
     elements = {}
     storages = [
         ("lithium", "battery"), ("hydrogen", "storage")]
-    renewables = [("solar", "pv"), ("wind", "onshore")]
+
+    renewables = []
     investment = storages + renewables
     for b in countries:
         for carrier, tech in investment:

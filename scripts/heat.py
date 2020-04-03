@@ -109,6 +109,7 @@ def german_heat_system(
     heat_demand_total = (
         float(data.loc[("decentral_heat", "load"), "value"]) * 1000
     )  # MWh
+
     for bustype, buses in heat_buses.items():
         carrier = bustype + "_heat"
 
@@ -254,7 +255,7 @@ def german_heat_system(
                         "loss": technologies.loc[
                             (2050, "loss", carrier, "tes"), "value"
                         ],
-                        "marginal_cost": 0.001, 
+                        "marginal_cost": 0.001,
                         "carrier": carrier,
                         "tech": "tes",
                     }
@@ -279,7 +280,7 @@ def german_heat_system(
                         "capacity_cost": 0,
                         "expandable": False,
                         "from_bus": "DE-electricity",
-                        "capacity": peak_demand_heat * 1.1,
+                        "capacity": peak_demand_heat,
                         "efficiency": "DE-gshp-profile",
                         "carrier": carrier,
                         "tech": "gshp",

@@ -128,7 +128,7 @@ def build(config):
             datapackage_dir,
             raw_data_path,
             config["scenario"]["cost"],
-            ["DE"],
+            config["buses"]["electricity"],
             technologies,
             config["scenario"]["year"],
             0.05
