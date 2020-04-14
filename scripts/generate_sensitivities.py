@@ -3,7 +3,7 @@ import toml
 
 heat = {"2050REF.toml": [-30, -20, -10, 0, 10, 20, 30],
         "2050REF-GS.toml": [-30, -20, -10, 0, 10, 20, 30]}
-total_demand = {"2050REF-GS.toml": 184000, "2050REF.toml": 284000}
+total_demand = {"2050REF-GS.toml": 284000, "2050REF.toml": 184000}
 
 for dir in os.listdir("scenarios"):
     scenario = toml.load(os.path.join("scenarios", dir))
