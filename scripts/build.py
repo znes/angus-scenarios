@@ -4,6 +4,7 @@ import multiprocessing as mp
 import pandas as pd
 from datapackage import Package
 
+import toml
 from oemof.tabular import datapackage
 import bus, capacity_factors, electricity, grid, biomass, load, hydro, heat, investment
 from fuchur.cli import Scenario
@@ -228,6 +229,9 @@ def build(config):
         },
         path=datapackage_dir,
     )
+    toml_string = toml.dumps(config)
+    with open(os.path.join(datapackage_dir, config["name"] + ".toml"), mode='w') as w:
+        w.writelines(toml_string)
 
 
 if __name__ == "__main__":
