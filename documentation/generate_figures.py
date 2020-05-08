@@ -1,7 +1,7 @@
 import os
 import pandas as pd
-
-# import numpy as np
+from cydets.algorithm import detect_cycles
+## import numpy as np
 
 # import plotly.io as pio
 import plotly.offline as offline
@@ -44,8 +44,8 @@ color = {
     "import": "mediumpurple",
     "storage": "plum",
     "mixed-st": "chocolate",
-    "decentral_heat-hp": "darkcyan",
-    "flex-decentral_heat-hp": "darkcyan",
+    "decentral_heat-gshp": "darkcyan",
+    "flex-decentral_heat-gshp": "darkcyan",
     "fossil": "darkgray",
 }
 color_dict = {name: colors.to_hex(color) for name, color in color.items()}
@@ -81,9 +81,9 @@ conventionals = [
 ]
 
 bus = "DE"
-base_scenarios = ["2050REF", "2050NB", "2040DG", "2040GCA",  "2030DG", "2030NEPC"]
-# GS = [b + "-GS" for b in base_scenarios]
-# base_scenarios = base_scenarios + GS
+base_scenarios = ["2050REF", "2040DG", "2040GCA", "2030DG"]
+#GS = [b + "-GS" for b in base_scenarios]
+#base_scenarios = base_scenarios + GS
 
 exclude = []
 
@@ -114,9 +114,10 @@ electricity_demand = {}
 shares_supply = {}
 shares_demand = {}
 excess = {}
+imports = {}
+conv_supply = {}
 for dir in os.listdir(path):
     if dir not in exclude:
-
         df = pd.read_csv(
             os.path.join(path, dir, "output", bus + "-electricity.csv"),
             index_col=0,
@@ -126,12 +127,16 @@ for dir in os.listdir(path):
         total_supply = sum(
             sums.get(bus + "-" + k, 0) for k in renewables + conventionals
         )
+        conv_supply[dir] = sum(
+            sums.get(bus + "-" + k, 0) for k in conventionals
+        ) / 1e6
+        imports[dir] = df["import"].clip(0).sum() / 1e6
         re_supply = sum(sums.get(bus + "-" + k, 0) for k in renewables)
         excess[dir] = df[bus + "-electricity-excess"].sum() / 1e6
         shares_demand[dir] = (re_supply - excess[dir]) / df[
             [
-                bus + "-flex-decentral_heat-hp",
-                bus + "-decentral_heat-hp",
+                bus + "-flex-decentral_heat-gshp",
+                bus + "-decentral_heat-gshp",
                 bus + "-electricity-load",
             ]
         ].sum().sum()
@@ -139,11 +144,12 @@ for dir in os.listdir(path):
 
         electricity_demand[dir] = df[
             [
-                bus + "-flex-decentral_heat-hp",
-                bus + "-decentral_heat-hp",
+                bus + "-flex-decentral_heat-gshp",
+                bus + "-decentral_heat-gshp",
                 bus + "-electricity-load",
             ]
         ].sum()
+
 
 
 shares = pd.Series(shares_supply).sort_index()
@@ -178,8 +184,10 @@ plt.savefig(
     "documentation/figures/scenario-indicators.pdf"
 )
 
-# heat system investment ------------------------------------------------------
+# system investment ------------------------------------------------------
 heat = {}
+peak_demand = {}
+heat_storage = {}
 for dir in os.listdir(path):
     if not "flex" in dir:
         filling = pd.read_csv(
@@ -187,11 +195,16 @@ for dir in os.listdir(path):
             index_col=0,
             parse_dates=True,
         )["DE-flex-decentral_heat-tes"].max()
-        demand = pd.read_csv(
+        heat_bus = pd.read_csv(
             os.path.join(path, dir, "output", "DE-flex-decentral_heat-bus.csv"),
             index_col=0,
             parse_dates=True,
-        )["DE-flex-decentral_heat-load"].max()
+        )
+
+        peak_demand[dir] = heat_bus["DE-flex-decentral_heat-load"].max()
+
+        heat_storage[dir] = heat_bus["DE-flex-decentral_heat-tes"].clip(0).sum()/1e6
+
         df = pd.read_csv(
             os.path.join(path, dir, "output", "DE-electricity.csv"),
             index_col=0,
@@ -201,16 +214,29 @@ for dir in os.listdir(path):
             os.path.join(path, dir, "output", "capacities.csv"),
             index_col=[0, 1, 2, 3, 4],
         )
+
+
         hp = capacity.loc[
             (
-                "DE-flex-decentral_heat-hp",
+                "DE-flex-decentral_heat-gshp",
                 "DE-flex-decentral_heat-bus",
                 "invest",
-                "hp",
+                "gshp",
+                "flex-decentral_heat",
+            ),
+            "value",
+        ]  + \
+        capacity.loc[
+            (
+                "DE-flex-decentral_heat-gshp",
+                "DE-flex-decentral_heat-bus",
+                "capacity",
+                "gshp",
                 "flex-decentral_heat",
             ),
             "value",
         ]
+
         tes = capacity.loc[
             (
                 "DE-flex-decentral_heat-tes",
@@ -221,23 +247,71 @@ for dir in os.listdir(path):
             ),
             "value",
         ]
-        heat[dir] = (filling / tes, tes/1e3, filling/1e3, hp/1e3, demand/1e3)
+
+        heat[dir] = (tes/1e3, filling/1e3, hp/1e3)
+
+elstorage = {}
+for dir in os.listdir(path):
+    capacity = pd.read_csv(
+        os.path.join(path, dir, "output", "capacities.csv"),
+        index_col=[0, 1, 2, 3, 4],
+    )
+    hydstor = capacity.loc[
+        (
+            "DE-hydrogen-storage",
+            "DE-electricity",
+            "invest",
+            "storage",
+            "hydrogen",
+        ),
+        "value",
+    ]
+
+    lithstor = capacity.loc[
+        (
+            "DE-lithium-battery",
+            "DE-electricity",
+            "invest",
+            "battery",
+            "lithium",
+        ),
+        "value",
+    ]
+    elstorage[dir] = (lithstor, hydstor)
 
 
+elstorage = pd.DataFrame(elstorage)
+elstorage.index = ["Lithium", "Hydrogen"]
+flex0 = elstorage[[c for c in elstorage.columns if "flex" in c]]
+flex100 = elstorage[[c for c in elstorage.columns if not "flex" in c]]
+
+flex0.columns = [c.replace("-flex0", "") for c in flex0.columns]
+flex0.sub(flex100).T.plot(kind="bar", color=["r","g"])
+
+plt.scatter(flex0.loc["Lithium"], flex100.loc["Lithium"])
+flex0["2050REF"]
+flex100["2050REF"]
+#pd.Series(heat_storage)[base_scenarios]
 investment = pd.DataFrame(heat)
-investment.index = ["Ratio", "TES GW", "TES GWh", "HP GW", "Peak Load GW"]
+investment.index = ["TES (GW)", "TES (GWh)", "HP (GW)"]
 investment[base_scenarios].T.round(2)
 investment.sort_index(inplace=True)
 
-inv = investment.drop("Ratio")
-ax = inv[base_scenarios].plot(kind="bar", cmap=plt.get_cmap("YlGn"))
+
+#inv.loc["TES (GWh)"] / inv.loc["P. Load (GW)"]
+inv = investment[base_scenarios]
+x=list(inv.columns)
+x.sort()
+ax = inv[x].plot(kind="bar", cmap=plt.get_cmap("RdYlGn"))
 ax.set_ylabel("Investment in GW, GWh")
+lgd = ax.legend(loc=0, ncol=2)
 ax.grid(linestyle="--", color="lightgray")
 plt.xticks(rotation=45)
 plt.savefig(
-    "documentation/figures/heat-investment.pdf"
+    "documentation/figures/heat-investment.pdf",
+    bbox_extra_artists=(lgd,),
+    bbox_inches="tight",
 )
-
 
 fig, ax = plt.subplots()
 #base_scenarios = investment.index
@@ -250,37 +324,93 @@ ax.grid(linestyle="--", color="lightgray")
 ax.set_ylabel("Ratio of storage capacity to capacity of the TES")
 ax.set_xlabel("RE share")
 for i,j in investment[base_scenarios].iteritems():
-    ax.annotate(i, (shares[i], investment.at["Ratio", i]))
+    if not "GS" in i:
+        ax.annotate(i, (shares[i], investment.at["Ratio", i]))
+    else:
+        ax.annotate(i, (shares[i], investment.at["Ratio", i]))
 plt.savefig(
     "documentation/figures/heat-investment-storage-ratio.pdf"
 )
 
 
 # filling levels --------------------------------------------------------------
+cycles = {}
 for dir in os.listdir(path):
     if dir not in exclude:
-        filling_levels = pd.read_csv(
-            os.path.join(path, dir, "output", "filling_levels.csv"),
-            index_col=[0],
-            parse_dates=True,
-        )
-        offline.plot(
-            filling_level_plot(
-                df,
-                scenario=dir,
-                bus=bus,
-                storages=storages + ["hydro-reservoir"],
-                color_dict=color_dict,
-            ),
-            filename=os.path.join(
-                interactive_figures, dir + "-filling-levels.html"
-            ),
-            auto_open=False,
-        )
+        if not "flex" in dir:
+            df = pd.read_csv(
+                os.path.join(path, dir, "output", "filling_levels.csv"),
+                index_col=[0],
+                parse_dates=True,
+            )
+            cycles[dir] = detect_cycles(df["DE-flex-decentral_heat-tes"])
+            offline.plot(
+                filling_level_plot(
+                    df,
+                    scenario=dir,
+                    bus=bus,
+                    storages=storages + ["hydro-reservoir"],
+                    color_dict=color_dict,
+                ),
+                filename=os.path.join(
+                    interactive_figures, dir + "-filling-levels.html"
+                ),
+                auto_open=False,
+            )
+
+
+
+#cycles['amplitude'] = cycles['doc']
+
+#cycles['amplitude'] = cycles['amplitude'] * (max(series)-min(series))
+tuples = {
+    (0, 0): "2030DG",
+    (0, 1): "2040GCA",
+    (1, 0): "2040ST",
+    (1, 1): "2040DG",
+    (2, 0): "2050REF",
+    (2, 1): "2050REF-GS"
+}
+fig, axs = plt.subplots(3, 2, sharex=True, sharey=True, figsize=(5, 10))
+
+for k,v in tuples.items():
+    # axs[k].hist(
+    #     cycles[v]["duration"] / np.timedelta64(1, 'h'),
+    #     bins=200, color="m", label=v
+    # )
+    # axs[k].hist(
+    #     x=cycles[v]["duration"] / np.timedelta64(1, 'h'),
+    #     y=cycles[v]["doc"],
+    #     marker="x", s=2, color="m", label=v
+    # )
+    #axs[k].set_xlim(0,450)
+    axs[k].legend()
+
+for v in tuples.values():
+    ax = sns.jointplot(
+        x=cycles[v]["duration"] / np.timedelta64(1, 'h'),
+        y=cycles[v]["doc"],
+        marginal_kws=dict(bins=100, rug=True),
+        kind='scatter', color="darkblue", edgecolor="skyblue")
+    ax.set_axis_labels("Duration of cycle in h", "Normalised depth of cycle")
+    plt.savefig("documentation/figures/cycles-{}.pdf".format(v))
+
+
+
+(cycles["2040DG"]["duration"] / np.timedelta64(1, 'h')).plot()
+kwargs = dict(alpha=0.5, bins=200)
+plt.hist((cycles["2040ST"]["duration"] / np.timedelta64(1, 'h')), color='g', label="2040ST", **kwargs)
+plt.hist(cycles["2040GCA"]["duration"] / np.timedelta64(1, 'h'), color='b', label="2040GCA", **kwargs)
+plt.hist(cycles["2040DG"]["duration"] / np.timedelta64(1, 'h'), color='r', label='2040DG', **kwargs)
+#plt.hist(cycles["2050REF"]["duration"] / np.timedelta64(1, 'h'), color='y', label='2050REF', **kwargs)
+plt.gca().set(title='Frequency Histogram of Diamond Depths', ylabel='Frequency')
+plt.xlim(0,100)
+plt.legend();
 
 # hourly plots ---------------------------------------------------------------
+
 for dir in os.listdir(path):
-    if dir not in exclude:
+    if dir in base_scenarios:
         supply_demand = pd.read_csv(
             os.path.join(
                 path, dir, "output", "-".join([bus, "electricity"]) + ".csv"
@@ -340,6 +470,7 @@ for dir in os.listdir(path):
         capacities.index = [i.replace(bus + "-", "") for i in capacities.index]
 
         value = capacities["value"]
+        value = value.groupby(value.index).sum()     # sum investemnt and existing capacity
         value.name = dir
         _df = pd.concat([_df, value], axis=1, sort=False)
 
@@ -353,7 +484,12 @@ offline.plot(
 )
 
 # matplotlib  static figure
-_df = _df[[c for c in _df.columns if not "flex" in c]]
+_df = _df[base_scenarios]
+aux = dict()
+for x in shares[base_scenarios].sort_values().index:
+ aux[x] = _df[x].values
+_df  = pd.DataFrame(aux, index=_df.index)
+
 conv = [c for c in conventionals if c in _df.index]
 _df.loc["fossil"] = _df.loc[conv].sum()
 _df = _df.drop(conv)
@@ -363,7 +499,7 @@ _df.loc["storage"] = _df.loc[stor].sum()
 _df = _df.drop(stor)
 
 de = _df / 1000
-de.sort_index(axis=1, inplace=True)
+#de.sort_index(axis=1, inplace=True)
 ax = (de.T).plot(
     kind="bar", stacked=True, color=[color_dict.get(c) for c in de.index]
 )
@@ -377,6 +513,16 @@ lgd = ax.legend(
 ax.set_ylabel("Installed capacity in GW")
 ax.grid(linestyle="--", lw=0.2)
 plt.xticks(rotation=45)
+
+
+ax2 = ax.twinx()
+ax2.set_ylim(0, 1)
+plt.plot(
+    shares[base_scenarios].sort_values().index,
+    shares[base_scenarios].sort_values(), "o")
+ax2.set_ylabel("RE share")
+
+
 
 # plt.plot(figsize=(10, 5))
 plt.savefig(
@@ -401,8 +547,8 @@ for dir in os.listdir(path):
             for ct in [
                 "electricity-load",
                 "electricity-excess",
-                "flex-decentral_heat-hp",
-                "decentral_heat-hp",
+                "flex-decentral_heat-gshp",
+                "decentral_heat-gshp",
             ]
             if ("-").join([bus, ct]) in df.columns
         ]
@@ -443,6 +589,7 @@ scenarios.sort_index(axis=1, inplace=True)
 
 # energy plot ----------------------------------------------------------------
 scenarios_plot = scenarios[[c for c in scenarios.columns if not "flex" in c]]
+scenarios_plot = scenarios[base_scenarios]
 ax = scenarios_plot.T.plot(
     kind="bar",
     stacked=True,
@@ -513,13 +660,15 @@ offline.plot(
 # sns.despine(left=True, bottom=True)
 
 # scenario comparision flex / no flex -----------------------------------------
+scenarios.loc["fossil"] = scenarios.loc[conventionals].sum()
+
 base = [
     c for c in scenarios.columns if "flex0" in c
 ]  # and not "flex100" in c]
 comparison = {}
 if False:  # for relative
     for c in base:
-        comparison[c] = (
+        comparison[c.replace("-flex0", "")] = (
             scenarios[c] / scenarios[c.replace("-flex0", "")] - 1
         ).to_dict()
     comparison = pd.DataFrame(comparison)
@@ -538,15 +687,26 @@ else:
         index={"import-cos": "export", "electricity-excess-cos": "excess"},
         inplace=True,
     )
+
+
     comparison.loc[["export", "excess"]] = (
         comparison.loc[["export", "excess"]] * -1
     )
     name = "Absoltue Deviation in TWh"
 comparison = (
-    comparison.loc[["import", "export", "storage", "excess"]].round(3).T
+    comparison.loc[["import", "export", "storage", "excess", "fossil"]].round(3).T
 )
+
+aux = dict()
+for x in shares[base_scenarios].sort_values().index:
+ aux[x] = comparison.loc[x].values
+comparison  = pd.DataFrame(aux, index=comparison.columns).T
+
 comparison = comparison.stack()
-comparison = comparison.to_frame()
+
+
+
+comparison = comparison.loc[base_scenarios].to_frame()
 comparison.reset_index(inplace=True)
 
 # sns.set_palette("RdBu_r", 6)
@@ -554,8 +714,8 @@ ax = sns.barplot(
     x="level_0", y=0, hue="level_1", data=comparison, palette="YlGnBu"
 )
 
-sns.despine(left=True, bottom=True)
-ax.grid(linestyle="--", color="gray")
+#sns.despine(left=True, bottom=True)
+ax.grid(linestyle="--", color="lightgray", lw=0.5)
 ax.set_ylabel(name)
 ax.set_xlabel("Scenario")
 
@@ -568,11 +728,12 @@ lgd = ax.legend(
     borderaxespad=0,
     frameon=False,
 )
-shares_ = shares[[c for c in scenarios.columns if not "flex" in c]]
 
 ax2 = ax.twinx()
 ax2.set_ylim(0, 1)
-plt.plot(shares_.index, shares_, "o")
+plt.plot(
+    shares[base_scenarios].sort_values().index,
+    shares[base_scenarios].sort_values(), "o")
 ax2.set_ylabel("RE share")
 
 plt.savefig(
@@ -622,41 +783,57 @@ plt.savefig(
 sorted = {}
 unsorted = {}
 for dir in os.listdir(path):
-    if dir not in exclude:
-        data_path = os.path.join(path, dir, "output", "shadow_prices.csv")
-        sprices = pd.read_csv(data_path, index_col=[0], parse_dates=True)[
-            bus + "-electricity"
-        ]
-        sorted[dir] = sprices.sort_values().values
-        unsorted[dir] = sprices.values
+    data_path = os.path.join(path, dir, "output", "shadow_prices.csv")
+    sprices = pd.read_csv(data_path, index_col=[0], parse_dates=True)[
+        bus + "-electricity"
+    ]
+    sorted[dir] = sprices.sort_values().values
+    unsorted[dir] = sprices.values
 
 renewables = ["wind-onshore", "wind-offshore", "solar-pv", "hydro-ror"]
 timestamps = {}
 shadow_prices = {}
 rload = {}
 for dir in os.listdir(path):
-    if dir not in exclude:
-        data_path = os.path.join(path, dir, "output", bus + "-electricity.csv")
-        country_electricity_df = pd.read_csv(
-            data_path, index_col=[0], parse_dates=True
-        )
-        country_electricity_df["rload"] = country_electricity_df[
-            ("-").join([bus, "electricity-load"])
-        ] - country_electricity_df[
-            [("-").join([bus, i]) for i in renewables]
-        ].sum(
-            axis=1
-        )
+    data_path = os.path.join(path, dir, "output", bus + "-electricity.csv")
+    country_electricity_df = pd.read_csv(
+        data_path, index_col=[0], parse_dates=True
+    )
+    country_electricity_df["rload"] = country_electricity_df[
+        ("-").join([bus, "electricity-load"])
+    ] - country_electricity_df[
+        [("-").join([bus, i]) for i in renewables]
+    ].sum(
+        axis=1
+    )
 
-        rload[dir] = country_electricity_df["rload"].values
-        timestamps[dir] = country_electricity_df.index
+    rload[dir] = country_electricity_df["rload"].values
+    timestamps[dir] = country_electricity_df.index
+
+# resiudal load plot ---------------------------------------
+rload_df  = pd.DataFrame(rload)[base_scenarios] / 1e3
+rload_df.sort_index(axis=1, inplace=True)
+for c in rload_df[base_scenarios].columns:
+    rload_df[c] = rload_df[c].sort_values(ascending=False).values
+
+ax = rload_df.plot(cmap="RdYlBu")
+ax.grid(linestyle="--", lw="0.5")
+ax.set_ylabel("Residualload in GW")
+#ax.axhline(y=0, color='black', lw=1)
+ax.set_xlim(-50, 8860)
+ax.set_xlabel("Hour")
+plt.savefig(
+    "documentation/figures/rload.pdf", bbox_inches="tight"
+)
+
 
 tuples = {
-    (0, 0): ("2030NEPC-flex0", "2030NEPC"),
-    (0, 1): ("2040DG-flex0", "2040DG"),
-    (0, 2): ("2050REF-GS-flex0", "2050REF-GS"),
+    (0, 0): ("2050REF-GS-flex0", "2050REF-GS"),
+    (0, 1): ("2030DG-flex0", "2030DG"),
+    (0, 2): ("2050REF-flex0", "2050REF"),
+    (0, 3): ("2040DG-flex0", "2040DG")
 }
-fig, axs = plt.subplots(1, 3, sharex=True, sharey=True, figsize=(15, 5))
+fig, axs = plt.subplots(1, 4, sharex=True, sharey=True, figsize=(15, 5))
 
 for k, values in tuples.items():
     for v in values:
@@ -691,10 +868,6 @@ plt.savefig(
 )
 
 # boxplot for prices  --------------------------------------------------------
-x = pd.DataFrame(unsorted, index=timestamps["2050REF"])[
-    ["2050REF-flex0", "2050REF"]
-]
-x = pd.concat([x.loc[x.index.month == i] for i in range(1, 13)], axis=1)
 
 df = pd.DataFrame(unsorted)[base_scenarios]
 df.columns = [i.replace("flex", "") for i in df.columns]
@@ -741,6 +914,7 @@ for dir in os.listdir("results"):
         exchange_df = pd.concat([exchange_df, exchange])
 
 
+
 im = exchange_df.sum(axis=1).clip(lower=0)
 im = im.unstack()
 im = im[compare[1]] - im[compare[0]]
@@ -750,11 +924,12 @@ im["day"] = im.index.dayofyear.values
 im["hour"] = im.index.hour.values
 im.set_index(["hour", "day"], inplace=True)
 im = im.unstack("day")
-im = im.droplevel(0, axis=1)
-im.sort_index(ascending=True, inplace=True)
+im.columns = im.columns.droplevel(0)
 
+im.sort_index(ascending=True, inplace=True)
 ex = exchange_df.sum(axis=1).clip(upper=0)
 ex = ex.unstack() * -1
+
 ex = ex[compare[1]] - ex[compare[0]]
 ex = ex[~((ex - ex.mean()).abs() > 3 * ex.std())]
 ex = ex.to_frame()
@@ -762,7 +937,7 @@ ex["day"] = ex.index.dayofyear.values
 ex["hour"] = ex.index.hour.values
 ex.set_index(["hour", "day"], inplace=True)
 ex = ex.unstack("day")
-ex = ex.droplevel(0, axis=1)
+ex.columns = ex.columns.droplevel(0)
 ex.sort_index(ascending=True, inplace=True)
 
 fig, axs = plt.subplots(2, 1)
@@ -806,10 +981,11 @@ axs[0].set_xticklabels("")
 
 # plt.suptitle("Transmission Deviation for \n {0} vs. {1}".format(compare[0], compare[1]))
 plt.savefig(
-    "documentation/figures/heat-plot-{}.pdf".format(compare[0]),
+    "documentation/figures/exchange-heat-plot-{}.pdf".format(compare[0]),
     # bbox_extra_artists=(lgd,),
     bbox_inches="tight",
 )
+
 
 # sorted transmission duration ------------------------------------------------
 sorted_exchange = pd.DataFrame(

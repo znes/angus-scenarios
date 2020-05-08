@@ -207,19 +207,20 @@ def german_heat_system(
                         "type": "storage",
                         "bus": heat_bus,
                         # "capacity": capacity,
-                        "capacity_cost": float(
-                            technologies.loc[
-                                (2050, "fom", "decentral_heat", "tes"), "value"
-                            ]
-                        )
-                        * 1000,
+                        "capacity_cost": 0,
                         "storage_capacity_cost": (
+                                float(
+                                    technologies.loc[
+                                        (2050, "fom", "decentral_heat", "tes"), "value"
+                                ])
+                        * 1000) +
+                        (
                             annuity(
                                 float(
                                     technologies.loc[
                                         (
                                             2050,
-                                            "capex",
+                                            "capex_energy",
                                             "decentral_heat",
                                             "tes",
                                         ),

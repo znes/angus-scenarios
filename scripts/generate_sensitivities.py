@@ -1,13 +1,12 @@
 import os
 import toml
 
-
-
-demand = {"2030DG.toml": "2030GS" ,"2040DG.toml": "2040GS", "2050REF.toml": "2050GS"}
-
+demand = {
+    "2030DG.toml": "2030GS" ,
+    "2040DG.toml": "2040GS",
+    "2050REF.toml": "2050GS"}
 
 for k,v  in demand.items():
-    print(k,v)
     scenario = toml.load(os.path.join("scenarios", k))
     filename = k.split(".")[0] + "-GS.toml"
     scenario["scenario"]["DE_heat_system"] = v
@@ -18,7 +17,7 @@ for k,v  in demand.items():
     with open(os.path.join("scenarios", filename), mode='w') as w:
         w.writelines(toml_string)
 
-biomass_share = [10, 30, 50, 70, 90]
+biomass_share = [0, 20, 40, 60, 80]
 for dir in os.listdir("scenarios"):
     scenario = toml.load(os.path.join("scenarios", dir))
     for b in biomass_share:

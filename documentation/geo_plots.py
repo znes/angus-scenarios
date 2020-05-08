@@ -10,7 +10,7 @@ from shapely.geometry import LineString
 from shapely import wkt
 import pycountry
 
-
+# select scenario
 scenario = "2050REF"
 
 p = Package(os.path.join("datapackages", scenario, "datapackage.json"))
