@@ -11,9 +11,16 @@ import pandas as pd
 from oemof.tabular.datapackage import building
 from oemof.tools.economics import annuity
 
+
 def tyndp_generation_2018(
-    countries, vision, scenario, scenario_year, datapackage_dir, raw_data_path,
-    ccgt_share=0.66, sensitivities=None
+    countries,
+    vision,
+    scenario,
+    scenario_year,
+    datapackage_dir,
+    raw_data_path,
+    ccgt_share=0.66,
+    sensitivities=None,
 ):
     """Extracts TYNDP2018 generation data and writes to datapackage for oemof
     tabular usage
@@ -48,15 +55,17 @@ def tyndp_generation_2018(
         .set_index(["year", "country"])
         .loc[scenario_year]
     )
-    storage_capacities.drop("phs",axis=1, inplace=True)
+    storage_capacities.drop("phs", axis=1, inplace=True)
 
     storage_capacities.rename(
         columns={
             "acaes": ("cavern", "acaes"),
             "redox": ("redox", "battery"),
             "lithium": ("lithium", "battery"),
-            "hydrogen": ("hydrogen", "storage")
-        }, inplace=True)
+            "hydrogen": ("hydrogen", "storage"),
+        },
+        inplace=True,
+    )
 
     filepath = building.download_data(
         "https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP2018/"
@@ -100,7 +109,7 @@ def tyndp_generation_2018(
         ("solar", "thermal"),
         ("solar", "pv"),
         ("wind", "onshore"),
-        ("wind","offshore"),
+        ("wind", "offshore"),
     ]
 
     df = df.rename(columns=dict(zip(colnames, newnames)))
@@ -116,7 +125,8 @@ def tyndp_generation_2018(
             ),
             df,
         ],
-        axis=1, sort=True,
+        axis=1,
+        sort=True,
     )
 
     df = df.groupby("country").sum()
@@ -126,7 +136,9 @@ def tyndp_generation_2018(
 
     # as raw data is divided in turbine and pump (where turbine is also from
     # pump storages as well as reservoirs)
-    df[("hydro", "rsv")] = (df[("hydro", "rsv")] - df[("hydro", "phs")]).clip(0)
+    df[("hydro", "rsv")] = (df[("hydro", "rsv")] - df[("hydro", "phs")]).clip(
+        0
+    )
 
     technologies = pd.DataFrame(
         # Package('/home/planet/data/datapackages/technology-cost/datapackage.json')
@@ -161,8 +173,15 @@ def tyndp_generation_2018(
 
     df = pd.concat([df, storage_capacities], axis=1, sort=True)
     elements = _elements(
-        countries, df, technologies, carrier_cost, emission_factors,
-        scenario, scenario_year, sensitivities)
+        countries,
+        df,
+        technologies,
+        carrier_cost,
+        emission_factors,
+        scenario,
+        scenario_year,
+        sensitivities,
+    )
     # load = _load(countries, df)
     # for k,v in load.items():
     #     v.update(load[k])
@@ -186,8 +205,7 @@ def german_energy_system(
     cost_scenario,
     technologies,
     scenario_year,
-    sensitivities
-
+    sensitivities,
 ):
     """Extracts german specific scenario data from input datapackage
 
@@ -220,7 +238,6 @@ def german_energy_system(
         .loc[(scenario_name, scenario_year)]
     )
 
-
     carrier_package = Package(
         "https://raw.githubusercontent.com/ZNES-datapackages/"
         "angus-input-data/master/carrier/datapackage.json"
@@ -250,16 +267,21 @@ def german_energy_system(
     _data.name = "DE"
     _data = _data.to_frame().T
 
-
     elements = _elements(
-        countries, _data, technologies, carrier_cost, emission_factors,
-        cost_scenario, scenario_year, sensitivities)
+        countries,
+        _data,
+        technologies,
+        carrier_cost,
+        emission_factors,
+        cost_scenario,
+        scenario_year,
+        sensitivities,
+    )
     load = _load(countries, _data, sensitivities)
-    for k,v in elements.items():
+    for k, v in elements.items():
         v.update(load[k])
 
     df = pd.DataFrame.from_dict(elements, orient="index")
-
 
     element_list = [
         "dispatchable",
@@ -285,7 +307,7 @@ def ehighway_generation(
     datapackage_dir=None,
     raw_data_path=None,
     ccgt_share=0.66,
-    scenario_year=2050
+    scenario_year=2050,
 ):
     """
     """
@@ -328,17 +350,17 @@ def ehighway_generation(
         .set_index(["year", "country"])
         .loc[scenario_year]
     )
-    storage_capacities.drop("phs",axis=1, inplace=True)
+    storage_capacities.drop("phs", axis=1, inplace=True)
 
     storage_capacities.rename(
         columns={
             "acaes": ("cavern", "acaes"),
             "redox": ("redox", "battery"),
             "lithium": ("lithium", "battery"),
-            "hydrogen": ("hydrogen", "storage")
-        }, inplace=True)
-
-
+            "hydrogen": ("hydrogen", "storage"),
+        },
+        inplace=True,
+    )
 
     carrier_package = Package(
         "https://raw.githubusercontent.com/ZNES-datapackages/"
@@ -380,11 +402,17 @@ def ehighway_generation(
     data = pd.concat([data, storage_capacities], axis=1, sort=True)
 
     elements = _elements(
-        countries, data, technologies, carrier_cost, emission_factors,
-        cost_scenario, scenario_year)
+        countries,
+        data,
+        technologies,
+        carrier_cost,
+        emission_factors,
+        cost_scenario,
+        scenario_year,
+    )
 
     load = _load(countries, data)
-    for k,v in elements.items():
+    for k, v in elements.items():
         v.update(load[k])
 
     df = pd.DataFrame.from_dict(elements, orient="index")
@@ -448,10 +476,11 @@ def shortage(datapackage_dir):
 
     building.write_elements("shortage.csv", elements, directory=path)
 
+
 def _load(countries, data, sensitivities=None):
 
     if sensitivities is not None:
-        for k,v in sensitivities.items():
+        for k, v in sensitivities.items():
             k = k.split("-")
 
             data.at[k[0], (k[1], k[2])] = v
@@ -479,11 +508,19 @@ def _load(countries, data, sensitivities=None):
     return elements
 
 
-def _elements(countries, data, technologies, carrier_cost, emission_factors,
-               scenario, scenario_year, sensitivities=None):
+def _elements(
+    countries,
+    data,
+    technologies,
+    carrier_cost,
+    emission_factors,
+    scenario,
+    scenario_year,
+    sensitivities=None,
+):
 
     if sensitivities is not None:
-        for k,v in sensitivities.items():
+        for k, v in sensitivities.items():
             k = k.split("-")
             data.at[k[0], (k[1], k[2])] = v
 
@@ -496,47 +533,55 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
             if tech in ["onshore", "offshore", "pv"]:
 
                 profile = "-".join([b, tech, "profile"])
-                element.update({
-                    "bus": b + "-electricity",
-                    "tech": tech,
-                    "carrier": carrier,
-                    "capacity": data.at[b, (carrier, tech)],
-                    "type": "volatile",
-                    "expandable": False,
-                    "capacity_cost": 0,
-                    "capacity_potential": 0,
-                    "profile": profile,
-                    "output_parameters": json.dumps({}),
-                })
+                element.update(
+                    {
+                        "bus": b + "-electricity",
+                        "tech": tech,
+                        "carrier": carrier,
+                        "capacity": data.at[b, (carrier, tech)],
+                        "type": "volatile",
+                        "expandable": False,
+                        "capacity_cost": 0,
+                        "capacity_potential": 0,
+                        "profile": profile,
+                        "output_parameters": json.dumps({}),
+                    }
+                )
 
             elif tech == "must-run":
 
                 profile = "-".join([b, tech, "profile"])
-                element.update({
-                    "bus": b + "-electricity",
-                    "tech": tech,
-                    "carrier": carrier,
-                    "capacity": data.at[b, (carrier, tech)],
-                    "type": "volatile",
+                element.update(
+                    {
+                        "bus": b + "-electricity",
+                        "tech": tech,
+                        "carrier": carrier,
+                        "capacity": data.at[b, (carrier, tech)],
+                        "type": "volatile",
+                        "profile": profile,
+                        "output_parameters": json.dumps(
+                            {"emission_factor": 0.2 / 0.4}
+                        ),
+                    }
+                )
 
-                    "profile": profile,
-                    "output_parameters": json.dumps({
-                        "emission_factor": 0.2 / 0.4}),
-                })
-
-            elif tech  == "res":
-                element.update({
-                    "bus": b + "-electricity",
-                    "tech": tech,
-                    "carrier": carrier,
-                    "capacity": data.at[b, (carrier, tech)],
-                    "type": "dispatchable",
-                    "marginal_cost": 0,
-                    "profile": 1,
-                    "output_parameters": json.dumps({
-                        "summed_max": 4500, # assumption for geothermal and waste etc.
-                    }),
-                })
+            elif tech == "res":
+                element.update(
+                    {
+                        "bus": b + "-electricity",
+                        "tech": tech,
+                        "carrier": carrier,
+                        "capacity": data.at[b, (carrier, tech)],
+                        "type": "dispatchable",
+                        "marginal_cost": 0,
+                        "profile": 1,
+                        "output_parameters": json.dumps(
+                            {
+                                "summed_max": 4500  # assumption for geothermal and waste etc.
+                            }
+                        ),
+                    }
+                )
 
             elif carrier in [
                 "gas",
@@ -560,17 +605,18 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                 )
 
                 emission_factor = float(
-                    emission_factors.at[carrier, "value"] /
-                    technologies.loc[
-                        (scenario_year, "efficiency", carrier, tech), "value"]
+                    emission_factors.at[carrier, "value"]
+                    / technologies.loc[
+                        (scenario_year, "efficiency", carrier, tech), "value"
+                    ]
                 )
 
                 element.update(
                     {
                         "carrier": carrier,
-                        "carrier_cost": float(carrier_cost.at[
-                            (scenario, carrier), "value"
-                        ]),
+                        "carrier_cost": float(
+                            carrier_cost.at[(scenario, carrier), "value"]
+                        ),
                         "efficiency": float(
                             technologies.loc[
                                 (scenario_year, "efficiency", carrier, tech),
@@ -585,9 +631,9 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                             (2050, "avf", carrier, tech), "value"
                         ],
                         "tech": tech,
-                        "output_parameters": json.dumps({
-                            "emission_factor": emission_factor}
-                        )
+                        "output_parameters": json.dumps(
+                            {"emission_factor": emission_factor}
+                        ),
                     }
                 )
 
@@ -613,8 +659,8 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                         ],
                         "from_bus": b + "-biomass-bus",
                         "type": "conversion",
-                        #"output_parameters": json.dumps(bio_flh
-                        #),
+                        # "output_parameters": json.dumps(bio_flh
+                        # ),
                         "carrier_cost": float(
                             carrier_cost.at[(scenario, carrier), "value"]
                         ),
@@ -622,8 +668,7 @@ def _elements(countries, data, technologies, carrier_cost, emission_factors,
                     }
                 )
 
-            elif tech in ["battery", "acaes", "redox", "hydrogen",
-                          "storage"]:
+            elif tech in ["battery", "acaes", "redox", "hydrogen", "storage"]:
                 pass
                 #
                 # elements["-".join([b, carrier, tech])] = element

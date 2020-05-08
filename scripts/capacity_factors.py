@@ -7,8 +7,14 @@ from datetime import datetime
 from oemof.tabular.datapackage import building
 import pandas as pd
 
+
 def eGo_offshore_wind_profiles(
-    buses, weather_year, scenario_year, datapackage_dir, raw_data_path, correction_factor=0.8
+    buses,
+    weather_year,
+    scenario_year,
+    datapackage_dir,
+    raw_data_path,
+    correction_factor=0.8,
 ):
     """
     Parameter
@@ -30,9 +36,9 @@ def eGo_offshore_wind_profiles(
         directory=raw_data_path,
     )
     wind = pd.read_csv(
-        filepath, parse_dates=True,
-        index_col=0, header=[0,1,2,3,4])
-    wind.columns = wind.columns.droplevel([0,2,3,4])
+        filepath, parse_dates=True, index_col=0, header=[0, 1, 2, 3, 4]
+    )
+    wind.columns = wind.columns.droplevel([0, 2, 3, 4])
     wind.reset_index(inplace=True)
 
     sequences_df = pd.DataFrame()
@@ -44,22 +50,23 @@ def eGo_offshore_wind_profiles(
         directory=raw_data_path,
     )
     wind_2050 = pd.read_csv(
-        filepath_2050, parse_dates=True,
-        index_col=0, header=[0,1,2,3,4])
-    wind_2050.columns = wind_2050.columns.droplevel([0,2,3,4])
-    wind_2050["DE_wind_offshore"]  =  (
-        wind_2050["DEdr19_wind_offshore"] * 0.2 +
-        wind_2050["DEdr20_wind_offshore"] * 0.4 +
-        wind_2050["DEdr21_wind_offshore"] * 0.4)
+        filepath_2050, parse_dates=True, index_col=0, header=[0, 1, 2, 3, 4]
+    )
+    wind_2050.columns = wind_2050.columns.droplevel([0, 2, 3, 4])
+    wind_2050["DE_wind_offshore"] = (
+        wind_2050["DEdr19_wind_offshore"] * 0.2
+        + wind_2050["DEdr20_wind_offshore"] * 0.4
+        + wind_2050["DEdr21_wind_offshore"] * 0.4
+    )
     wind_2050.reset_index(inplace=True)
     wind_2050["DE_wind_onshore"] = wind["DE_wind_onshore"]
     wind = wind_2050
 
-
     for c in buses:
         if c + "_wind_offshore" in wind.columns:
-            sequences_df[c + "-offshore-profile"] = wind[c + "_wind_offshore"] * correction_factor # correction factor
-
+            sequences_df[c + "-offshore-profile"] = (
+                wind[c + "_wind_offshore"] * correction_factor
+            )  # correction factor
 
     sequences_df.index = building.timeindex(year=str(scenario_year))
 
@@ -68,6 +75,7 @@ def eGo_offshore_wind_profiles(
         sequences_df,
         directory=os.path.join(datapackage_dir, "data", "sequences"),
     )
+
 
 def ninja_pv_profiles(
     buses, weather_year, scenario_year, datapackage_dir, raw_data_path
@@ -183,6 +191,7 @@ def ninja_onshore_wind_profiles(
         sequences_df,
         directory=os.path.join(datapackage_dir, "data", "sequences"),
     )
+
 
 def ninja_offshore_wind_profiles(
     buses, weather_year, scenario_year, datapackage_dir, raw_data_path

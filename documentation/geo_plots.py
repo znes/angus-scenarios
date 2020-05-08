@@ -23,9 +23,7 @@ regions["geometry"] = regions["geometry"].apply(wkt.loads)
 
 conns = pd.DataFrame(p.get_resource("link").read(keyed=True)).set_index("name")
 
-phs = pd.DataFrame(p.get_resource("phs").read(keyed=True)).set_index(
-    "name"
-)
+phs = pd.DataFrame(p.get_resource("phs").read(keyed=True)).set_index("name")
 
 conns_geo = conns.copy()
 
@@ -41,7 +39,7 @@ conns_geo["geometry"] = conns_geo.apply(
 
 
 layout = go.Layout(
-    #title="Transmission capacities in scenario {}".format(scenario),
+    # title="Transmission capacities in scenario {}".format(scenario),
     geo=dict(
         resolution=50,
         showframe=False,
@@ -104,8 +102,7 @@ capacities = [
 demand_color = [
     go.Choropleth(
         locations=[
-            pycountry.countries.get(alpha_2=r[0:2]).alpha_3
-            for r in phs.index
+            pycountry.countries.get(alpha_2=r[0:2]).alpha_3 for r in phs.index
         ],
         z=phs.capacity.astype(float) / 1e3,
         text="",
@@ -115,7 +112,7 @@ demand_color = [
         marker_line_color="lightgray",
         marker_line_width=0.5,
         colorbar_tickprefix="",
-        colorbar_len  = 1,
+        colorbar_len=1,
         zmax=16,
         zmin=0,
         colorbar_title="Capacity in GW",
@@ -137,6 +134,8 @@ names = [
 fig = go.Figure(layout=layout, data=lines + names + capacities + demand_color)
 
 fig.write_image(
-    os.path.join("documentation", "figures", "grid-scenario" + scenario + ".pdf")
+    os.path.join(
+        "documentation", "figures", "grid-scenario" + scenario + ".pdf"
+    )
 )
 # off.iplot(fig, filename='e-highway-transshipment-capacities.html')

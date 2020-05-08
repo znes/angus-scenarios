@@ -8,15 +8,14 @@ from oemof.tabular.datapackage import building
 import pandas as pd
 
 
-def tyndp(buses, scenario, datapackage_dir, raw_data_path, sensitivities
-):
+def tyndp(buses, scenario, datapackage_dir, raw_data_path, sensitivities):
     """
     """
     filepath = building.download_data(
         "https://www.entsoe.eu/Documents/TYNDP%20documents/TYNDP2018/"
         "Scenarios%20Data%20Sets/Input%20Data.xlsx",
         directory=raw_data_path,
-        sensitivities=None
+        sensitivities=None,
     )
 
     df = pd.read_excel(filepath, sheet_name="Demand")

@@ -42,7 +42,8 @@ def build(config):
     biomass.add(
         config["buses"],
         config.get("sensitivities", {}).get("biomass"),
-        datapackage_dir)
+        datapackage_dir,
+    )
 
     if config["scenario"].get("DE_system") != "":
         electricity.german_energy_system(
@@ -52,14 +53,12 @@ def build(config):
             scenario_year=config["scenario"]["year"],
             cost_scenario=config["scenario"]["cost"],
             technologies=technologies,
-            sensitivities=config.get("sensitivities", {}).get("electricity")
+            sensitivities=config.get("sensitivities", {}).get("electricity"),
         )
 
         DE_set = set(["DE"])
     else:
         DE_set = set()
-
-
 
     if config["scenario"]["year"] == 2050:
 
@@ -86,7 +85,7 @@ def build(config):
             config["scenario"]["EU_load"],
             datapackage_dir,
             raw_data_path,
-            sensitivities=config.get("sensitivities", {}).get("electricity")
+            sensitivities=config.get("sensitivities", {}).get("electricity"),
         )
 
         electricity.tyndp_generation_2018(
@@ -96,10 +95,8 @@ def build(config):
             config["scenario"]["year"],
             datapackage_dir,
             raw_data_path,
-            sensitivities=None
+            sensitivities=None,
         )
-
-
 
     if config["scenario"]["grid"] == "100% RES":
         # for 2050 add the ehighway grid
@@ -112,7 +109,6 @@ def build(config):
             raw_data_path,
         )
 
-
     elif config["scenario"]["grid"] in ["2030", "2040GCA", "2040DG", "2040ST"]:
         grid.tyndp(
             config["buses"]["electricity"],
@@ -121,7 +117,6 @@ def build(config):
             datapackage_dir,
             raw_data_path,
         )
-
 
     # for all countries add german capacities based
     if config["scenario"].get("investment"):
@@ -132,7 +127,7 @@ def build(config):
             config["buses"]["electricity"],
             technologies,
             config["scenario"]["year"],
-            0.05
+            0.05,
         )
 
     # the same for all scenarios
@@ -157,8 +152,9 @@ def build(config):
     else:
         pass
 
-    hydro.generation(config, config["scenario"]["year"],
-                     datapackage_dir, raw_data_path)
+    hydro.generation(
+        config, config["scenario"]["year"], datapackage_dir, raw_data_path
+    )
 
     pv_profiles(
         config["buses"]["electricity"],
@@ -188,7 +184,6 @@ def build(config):
 
     electricity.shortage(datapackage_dir)
 
-
     if config["buses"].get("heat"):
         heat.german_heat_system(
             config["buses"]["heat"],
@@ -199,8 +194,8 @@ def build(config):
             config["scenario"]["decentral_heat-flex-share"],
             config.get("sensitivities", {}).get("heat"),
             datapackage_dir,
-            raw_data_path)
-
+            raw_data_path,
+        )
 
     datapackage.building.infer_metadata(
         package_name=config["name"],
@@ -222,15 +217,29 @@ def build(config):
                 "shortage",
                 "commodity",
             ],
-            "profile": ["load", "volatile", "volatile_invest", "ror", "reservoir", "heat_load"],
-            "from_to_bus": ["link", "conversion", "conversion_invest", "heatpump"],
+            "profile": [
+                "load",
+                "volatile",
+                "volatile_invest",
+                "ror",
+                "reservoir",
+                "heat_load",
+            ],
+            "from_to_bus": [
+                "link",
+                "conversion",
+                "conversion_invest",
+                "heatpump",
+            ],
             "chp": [],
-            "efficiency": ["heatpump"]
+            "efficiency": ["heatpump"],
         },
         path=datapackage_dir,
     )
     toml_string = toml.dumps(config)
-    with open(os.path.join(datapackage_dir, config["name"] + ".toml"), mode='w') as w:
+    with open(
+        os.path.join(datapackage_dir, config["name"] + ".toml"), mode="w"
+    ) as w:
         w.writelines(toml_string)
 
 
@@ -239,8 +248,8 @@ if __name__ == "__main__":
     for dir in dirs:
         scenarios = [
             Scenario.from_path(os.path.join(dir, s))
-            for s in os.listdir(dir) if "20"
-            in s and not os.path.isdir(os.path.join(dir, s))
+            for s in os.listdir(dir)
+            if "20" in s and not os.path.isdir(os.path.join(dir, s))
         ]
 
         p = mp.Pool(20)

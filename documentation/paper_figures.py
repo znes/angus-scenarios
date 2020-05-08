@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from cydets.algorithm import detect_cycles
+
 ## import numpy as np
 
 # import plotly.io as pio
@@ -77,12 +78,11 @@ conventionals = [
     "oil-ocgt",
     "uranium-st",
     "waste-st",
-    "chp-must-run"
+    "chp-must-run",
 ]
 
 bus = "DE"
 base_scenarios = ["2050REF", "2040DG", "2040GCA", "2030DG"]
-#base_scenarios = ["2050REF", "2050REF-GS", "2040DG", "2040DG-GS", "2040GCA", "2030DG-GS", "2030DG"]
 
 
 heat = {}
@@ -97,14 +97,18 @@ for dir in os.listdir(path):
             parse_dates=True,
         )["DE-flex-decentral_heat-tes"].max()
         heat_bus[dir] = pd.read_csv(
-            os.path.join(path, dir, "output", "DE-flex-decentral_heat-bus.csv"),
+            os.path.join(
+                path, dir, "output", "DE-flex-decentral_heat-bus.csv"
+            ),
             index_col=0,
             parse_dates=True,
         )
 
         peak_demand[dir] = heat_bus[dir]["DE-flex-decentral_heat-load"].max()
 
-        heat_storage[dir] = heat_bus[dir]["DE-flex-decentral_heat-tes"].clip(0).sum()/1e6
+        heat_storage[dir] = (
+            heat_bus[dir]["DE-flex-decentral_heat-tes"].clip(0).sum() / 1e6
+        )
 
         df = pd.read_csv(
             os.path.join(path, dir, "output", "DE-electricity.csv"),
@@ -116,27 +120,28 @@ for dir in os.listdir(path):
             index_col=[0, 1, 2, 3, 4],
         )
 
-
-        hp = capacity.loc[
-            (
-                "DE-flex-decentral_heat-gshp",
-                "DE-flex-decentral_heat-bus",
-                "invest",
-                "gshp",
-                "flex-decentral_heat",
-            ),
-            "value",
-        ]  + \
-        capacity.loc[
-            (
-                "DE-flex-decentral_heat-gshp",
-                "DE-flex-decentral_heat-bus",
-                "capacity",
-                "gshp",
-                "flex-decentral_heat",
-            ),
-            "value",
-        ]
+        hp = (
+            capacity.loc[
+                (
+                    "DE-flex-decentral_heat-gshp",
+                    "DE-flex-decentral_heat-bus",
+                    "invest",
+                    "gshp",
+                    "flex-decentral_heat",
+                ),
+                "value",
+            ]
+            + capacity.loc[
+                (
+                    "DE-flex-decentral_heat-gshp",
+                    "DE-flex-decentral_heat-bus",
+                    "capacity",
+                    "gshp",
+                    "flex-decentral_heat",
+                ),
+                "value",
+            ]
+        )
 
         tes = capacity.loc[
             (
@@ -150,15 +155,7 @@ for dir in os.listdir(path):
         ]
 
         heat[dir] = (tes, filling, hp)
-#
-# dft = heat_bus["2050REF"]
-# dft = dft.rename(columns={
-#     "DE-flex-decentral_heat-tes": "TES",
-#     "DE-flex-decentral_heat-gshp": "HP",
-#     "DE-flex-decentral_heat-load": "Load"}
-# ) / 1e3
-# dft.loc["2050-02-01":"2050-02-07"].plot(color=["darkcyan", "darkred", "m"])
-# dft.loc["2050-08-05":"2050-08-13"].plot(color=["darkcyan", "darkred", "m"])
+
 
 investment = pd.DataFrame(heat) / 1e3
 investment.index = ["TES (GW)", "TES (GWh)", "HP (GW)"]
@@ -166,9 +163,9 @@ investment[base_scenarios].T.round(2)
 investment.sort_index(inplace=True)
 
 investment.loc["TES (GWh)"] / investment.loc["HP (GW)"]
- #inv.loc["TES (GWh)"] / inv.loc["P. Load (GW)"]
+# inv.loc["TES (GWh)"] / inv.loc["P. Load (GW)"]
 inv = investment[base_scenarios]
-x=list(inv.columns)
+x = list(inv.columns)
 x.sort()
 ax = inv[x].plot(kind="bar", cmap=plt.get_cmap("coolwarm"))
 ax.set_ylabel("Investment in GW(h)")
@@ -179,7 +176,7 @@ lgd = ax.legend(
     # frameon=False,
     ncol=2,
 )
-ax.set_ylim(0,170)
+ax.set_ylim(0, 170)
 plt.xticks(rotation=0)
 ax.grid(linestyle="--", lw=0.5, color="lightgray")
 
@@ -198,7 +195,7 @@ for dir in os.listdir(path):
         index_col=[0, 1, 2, 3, 4],
     )
 
-    for bus in  [
+    for bus in [
         "AT",
         "BE",
         "CH",
@@ -210,7 +207,7 @@ for dir in os.listdir(path):
         "LU",
         "NO",
         "PL",
-        "SE"
+        "SE",
     ]:
         hydstor = capacity.loc[
             (
@@ -243,16 +240,20 @@ scenario = "2050REF-bio"
 bio_cols = [c for c in elstorage.columns if scenario in c]
 bio = elstorage[bio_cols]
 bio_investment = investment[[c for c in bio_cols if not "flex" in c]]
-bio_investment.columns =  [c.replace(scenario +"-", "") for c in bio_investment.columns]
+bio_investment.columns = [
+    c.replace(scenario + "-", "") for c in bio_investment.columns
+]
 bio.index = ["Lithium", "Hydrogen"]
 bio = bio / 1e3
 bioflex0 = bio[[c for c in bio.columns if "flex0" in c]]
 bioflex0.columns = [c.replace("-flex0", "") for c in bioflex0.columns]
 bioflex100 = bio[[c for c in bio.columns if not "flex0" in c]]
 bioflex0.columns = [c.replace(scenario + "-", "") for c in bioflex0.columns]
-bioflex100.columns = [c.replace(scenario + "-", "") for c in bioflex100.columns]
+bioflex100.columns = [
+    c.replace(scenario + "-", "") for c in bioflex100.columns
+]
 
-#(elstorage.loc[0, "2050REF-bio-0"]  - elstorage.loc[0, "2050REF"]) / elstorage.loc[0, "2050REF"] * 100
+# (elstorage.loc[0, "2050REF-bio-0"]  - elstorage.loc[0, "2050REF"]) / elstorage.loc[0, "2050REF"] * 100
 x = list(bioflex0.columns)
 x.sort()
 x.sort(key=len)
@@ -261,23 +262,28 @@ ax = bioflex0[x].T.plot(marker="*", color=["m", "skyblue"])
 bioflex100.index = [i + "-flex" for i in bioflex100.index]
 bioflex100[x].T.plot(ax=ax, linestyle="--", marker="*", color=["m", "skyblue"])
 ax.set_xticks(range(5))
-ax.set_xticklabels(["{}".format(int(150.2 * int(i)/100)) for i in x])
+ax.set_xticklabels(["{}".format(int(150.2 * int(i) / 100)) for i in x])
 ax.grid(linestyle="--", lw=0.5, color="lightgray")
-#ax.set_ylim(0, 38)
-ax.axvline(x=1.5, ymin=0.0, ymax=40, color='black', lw=1)
+# ax.set_ylim(0, 38)
+ax.axvline(x=1.5, ymin=0.0, ymax=40, color="black", lw=1)
 ax.set_ylabel("Investment in GW")
 ax.set_xlabel("Biomass potential in TWh")
 ax.legend(loc=0, labels=["Li", "Hy", "Li-flex", "Hy-flex"], ncol=2)
 
 ax2 = ax.twinx()
 ax2.set_ylabel("Change in TES (GWh) investment in %")
-( -100 *
-    (bio_investment.loc["TES (GWh)", "0"] - bio_investment.loc["TES (GWh)", x]) /
-    bio_investment.loc["TES (GWh)", "0"]).plot(ax=ax2, color="orange", marker="o", linestyle="")
-#bio_investment.loc["TES (GWh)", x].plot(ax=ax2, color="orange", marker="o", linestyle="")
+(
+    -100
+    * (
+        bio_investment.loc["TES (GWh)", "0"]
+        - bio_investment.loc["TES (GWh)", x]
+    )
+    / bio_investment.loc["TES (GWh)", "0"]
+).plot(ax=ax2, color="orange", marker="o", linestyle="")
+# bio_investment.loc["TES (GWh)", x].plot(ax=ax2, color="orange", marker="o", linestyle="")
 ax2.set_ylim(-25, 25)
 ax2.legend(loc=3, labels=["TES"])
-ax.set_xticklabels(["{}".format(int(150.2 * int(i)/100)) for i in x])
+ax.set_xticklabels(["{}".format(int(150.2 * int(i) / 100)) for i in x])
 plt.savefig(
     "documentation/figures/bio-{}-sensitivity.pdf".format(scenario),
     bbox_inches="tight",
@@ -288,14 +294,18 @@ scenario = "2050REF-load"
 load_cols = [c for c in elstorage.columns if scenario in c]
 load = elstorage[load_cols]
 load_investment = investment[[c for c in load_cols if not "flex" in c]]
-load_investment.columns =  [c.replace("2050REF-load-", "") for c in load_investment.columns]
+load_investment.columns = [
+    c.replace("2050REF-load-", "") for c in load_investment.columns
+]
 load.index = ["Lithium", "Hydrogen"]
 load = load / 1e3
 loadflex0 = load[[c for c in load.columns if "flex0" in c]]
 loadflex0.columns = [c.replace("-flex0", "") for c in loadflex0.columns]
 loadflex100 = load[[c for c in load.columns if not "flex0" in c]]
 loadflex0.columns = [c.replace(scenario + "-", "") for c in loadflex0.columns]
-loadflex100.columns = [c.replace(scenario + "-", "") for c in loadflex100.columns]
+loadflex100.columns = [
+    c.replace(scenario + "-", "") for c in loadflex100.columns
+]
 elstorage["2050REF-flex0"]
 
 x = list(loadflex0.columns)
@@ -306,38 +316,42 @@ x.sort()
 x = [str(i) for i in x]
 
 
-loadflex0.loc["Lithium", x] - loadflex100.loc["Lithium-flex", x]
-
-
-#ax = (loadflex0[x].T.sub(loadflex0["0"]).divide(loadflex0["0"])).plot(marker="*", color=["m", "skyblue"])
+# ax = (loadflex0[x].T.sub(loadflex0["0"]).divide(loadflex0["0"])).plot(marker="*", color=["m", "skyblue"])
 ax = loadflex0[x].T.plot(marker="*", color=["m", "skyblue"])
 loadflex100.index = [i + "-flex" for i in loadflex100.index]
-loadflex100[x].T.plot(ax=ax, linestyle="--", marker="*", color=["m", "skyblue"])
-#ax = (loadflex100[x].T.sub(loadflex100["0"]).divide(loadflex100["0"])).plot(ax=ax, linestyle="--", marker="*", color=["m", "skyblue"])
+loadflex100[x].T.plot(
+    ax=ax, linestyle="--", marker="*", color=["m", "skyblue"]
+)
+# ax = (loadflex100[x].T.sub(loadflex100["0"]).divide(loadflex100["0"])).plot(ax=ax, linestyle="--", marker="*", color=["m", "skyblue"])
 
 ax.set_xticks(range(7))
 ax.set_xticklabels([str(i) for i in x])
 ax.grid(linestyle="--", lw=0.5, color="lightgray")
-#ax.set_ylim(0, 10)
-ax.axvline(x=3, ymin=0.0, ymax=40, color='black', lw=1)
+# ax.set_ylim(0, 10)
+ax.axvline(x=3, ymin=0.0, ymax=40, color="black", lw=1)
 ax.set_ylabel("Investment in GW")
 ax.set_xlabel("Change in heat load in % ")
 ax.legend(loc=0, labels=["Li", "Hy", "Li-flex", "Hy-flex"], ncol=2)
 
 ax2 = ax.twinx()
 ax2.set_ylabel("Change in TES (GWh) investment in %")
-( -100 *
-    (load_investment.loc["TES (GWh)", "0"] - load_investment.loc["TES (GWh)", x]) /
-    load_investment.loc["TES (GWh)", "0"]).plot(ax=ax2, color="orange", marker="o", linestyle="")
+(
+    -100
+    * (
+        load_investment.loc["TES (GWh)", "0"]
+        - load_investment.loc["TES (GWh)", x]
+    )
+    / load_investment.loc["TES (GWh)", "0"]
+).plot(ax=ax2, color="orange", marker="o", linestyle="")
 
 # x = ( -100 *
 #     (load_investment.loc["TES (GWh)", "0"] - load_investment.loc["TES (GWh)", x]) /
 #     load_investment.loc["TES (GWh)", "0"])
 # x.reset_index()
-ax2.set_ylim(-25,25)
+ax2.set_ylim(-25, 25)
 ax2.legend(loc=4, labels=["TES"])
 
-#load_investment.loc["TES (GWh)", x].plot(ax=ax2, color="orange", marker="o", linestyle="")
+# load_investment.loc["TES (GWh)", x].plot(ax=ax2, color="orange", marker="o", linestyle="")
 
 plt.savefig(
     "documentation/figures/load-{}-sensitivity.pdf".format(scenario),
@@ -346,7 +360,11 @@ plt.savefig(
 
 a = elstorage.xs("2050REF", level=1, axis=1)
 b = elstorage.xs("2050REF-flex0", level=1, axis=1)
-ax = a.sub(b).T.divide(1e3).plot(kind="barh", stacked=False, color=["m", "skyblue"])
+ax = (
+    a.sub(b)
+    .T.divide(1e3)
+    .plot(kind="barh", stacked=False, color=["m", "skyblue"])
+)
 
 
 # storage investment plot -----------------------------------------------------
@@ -354,32 +372,33 @@ elstorage.index = ["Lithium", "Hydrogen"]
 flex0 = elstorage[[c for c in elstorage.columns if "flex" in c]]
 flex100 = elstorage[[c for c in elstorage.columns if not "flex" in c]]
 flex0.columns = [c.replace("-flex0", "") for c in flex0.columns]
-add = flex0.sub(flex100)#
+add = flex0.sub(flex100)  #
 add.index = [i + "-inv" for i in add.index]
 df = pd.concat([add, flex100], sort=False)
 df.sort_index(inplace=True)
 df = df / 1e3
 
 
-
 base_scenarios.sort()
-fig, axs = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(10,5))
+fig, axs = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(10, 5))
 
 df.loc[[f for f in df.index if "Lithium" in f]][
-    [b for b in base_scenarios if b in df.columns]].T.plot(kind="bar", stacked=True, color=["plum", "m"], ax=axs[0])
+    [b for b in base_scenarios if b in df.columns]
+].T.plot(kind="bar", stacked=True, color=["plum", "m"], ax=axs[0])
 axs[0].grid(linestyle="--", lw=0.5, color="lightgray")
-df.loc[[f for f in df.index if "Hydro" in f]][[
-    b for b in base_scenarios if b in df.columns]].T.plot(kind="bar", color=["skyblue", "darkblue"], stacked=True, ax=axs[1])
+df.loc[[f for f in df.index if "Hydro" in f]][
+    [b for b in base_scenarios if b in df.columns]
+].T.plot(kind="bar", color=["skyblue", "darkblue"], stacked=True, ax=axs[1])
 for tick in axs[0].get_xticklabels():
     tick.set_rotation(0)
 
 axs[1].grid(linestyle="--", lw=0.5, color="lightgray")
 axs[0].set_ylabel("Investment in GW")
-lgd = axs[0].legend(
-)
+lgd = axs[0].legend()
 
-x =df.loc[[f for f in df.index if "Hydro" in f]][[
-    b for b in base_scenarios if b in df.columns]]
+x = df.loc[[f for f in df.index if "Hydro" in f]][
+    [b for b in base_scenarios if b in df.columns]
+]
 x.iloc[1] / x.sum()
 plt.xticks(rotation=0)
 
@@ -419,61 +438,65 @@ for dir in os.listdir(path):
     if sum(df["DE-lithium-battery"] != 0):
         cycles_l[dir] = detect_cycles(df["DE-lithium-battery"])
 
-
-
-#cycles['amplitude'] = cycles['doc']
-#cycles['amplitude'] = cycles['amplitude'] * (max(series)-min(series))
-
-#cycles_h["2050REF-flex0"] = cycles_h["2050REF-flex0"][cycles_h["2050REF-flex0"]["duration"] < pd.Timedelta('5 days')]
-#cycles_h["2050REF"] = cycles_h["2050REF"][cycles_h["2050REF"]["duration"] < pd.Timedelta('5 days')]
-
 for v in base_scenarios:
     if v in cycles:
         ax = sns.jointplot(
-            x=cycles[v]["duration"] / np.timedelta64(1, 'h'),
+            x=cycles[v]["duration"] / np.timedelta64(1, "h"),
             y=cycles[v]["doc"],
             marginal_kws=dict(bins=100, rug=True),
-            kind='scatter', color="darkblue", edgecolor="skyblue")
-        ax.set_axis_labels("Duration of cycle in h", "Normalised depth of cycle")
+            kind="scatter",
+            color="darkblue",
+            edgecolor="skyblue",
+        )
+        ax.set_axis_labels(
+            "Duration of cycle in h", "Normalised depth of cycle"
+        )
         plt.savefig("documentation/figures/cycles-tes-{}.pdf".format(v))
     if v in cycles_l:
         ax = sns.jointplot(
-            x=cycles_l[v]["duration"] / np.timedelta64(1, 'h'),
+            x=cycles_l[v]["duration"] / np.timedelta64(1, "h"),
             y=cycles_l[v]["doc"],
             marginal_kws=dict(bins=100, rug=True),
-            kind='scatter', color="m", edgecolor="purple")
-        ax.set_axis_labels("Duration of cycle in h", "Normalised depth of cycle")
+            kind="scatter",
+            color="m",
+            edgecolor="purple",
+        )
+        ax.set_axis_labels(
+            "Duration of cycle in h", "Normalised depth of cycle"
+        )
         plt.savefig("documentation/figures/cycles-lithium-{}.pdf".format(v))
     if v in cycles_h:
         ax = sns.jointplot(
-            x=cycles_h[v]["duration"] / np.timedelta64(1, 'h'),
+            x=cycles_h[v]["duration"] / np.timedelta64(1, "h"),
             y=cycles_h[v]["doc"],
             marginal_kws=dict(bins=100, rug=True),
-            kind='scatter', color="skyblue", edgecolor="darkblue")
-        ax.set_axis_labels("Duration of cycle in h", "Normalised depth of cycle")
+            kind="scatter",
+            color="skyblue",
+            edgecolor="darkblue",
+        )
+        ax.set_axis_labels(
+            "Duration of cycle in h", "Normalised depth of cycle"
+        )
         plt.savefig("documentation/figures/cycles-hydrogen-{}.pdf".format(v))
 
 # filling levels plain -----
-hydrogen = {}
-select = base_scenarios #+ [b + "-flex0" for b in base_scenarios]
-for dir in os.listdir(path):
-    if dir in select:
-        df = pd.read_csv(
-            os.path.join(path, dir, "output", "filling_levels.csv"),
-            index_col=[0],
-            parse_dates=True,
-        )
-        hydrogen[dir] = df["DE-flex-decentral_heat-tes"].values
+# hydrogen = {}
+# select = base_scenarios #+ [b + "-flex0" for b in base_scenarios]
+# for dir in os.listdir(path):
+#     if dir in select:
+#         df = pd.read_csv(
+#             os.path.join(path, dir, "output", "filling_levels.csv"),
+#             index_col=[0],
+#             parse_dates=True,
+#         )
+#         hydrogen[dir] = df["DE-flex-decentral_heat-tes"].values
 
-# select = "2050REF"
-# unsorted = {k: v for k, v in hydrogen.items()}
-# pd.DataFrame(unsorted).loc[1:1000,select].plot()
 
-# comparison of transmission -------------------------------------------------
+# comparison of storage operation -------------------------------------------------
 
 storage_df = pd.DataFrame()
-storage_type = "DE-lithium-battery"#flex-decentral_heat-tes"
-bus = "DE-electricity.csv" #flex-decentral_heat-bus.csv"
+storage_type = "DE-lithium-battery"  # flex-decentral_heat-tes"
+bus = "DE-electricity.csv"  # flex-decentral_heat-bus.csv"
 compare = ("2050REF-flex0", "2050REF")
 for dir in os.listdir("results"):
     if dir in compare:
@@ -495,7 +518,7 @@ im.columns = im.columns.droplevel(0)
 im = im[compare[1]] - im[compare[0]]
 
 
-#im = im[~((im - im.mean()).abs() > 3 * im.std())]
+# im = im[~((im - im.mean()).abs() > 3 * im.std())]
 im = im.to_frame()
 im["day"] = im.index.dayofyear.values
 im["hour"] = im.index.hour.values
@@ -510,7 +533,7 @@ ex = ex.unstack() * -1
 ex.columns = ex.columns.droplevel(0)
 ex = ex[compare[1]] - ex[compare[0]]
 
-#ex = ex[~((ex - ex.mean()).abs() > 3 * ex.std())]
+# ex = ex[~((ex - ex.mean()).abs() > 3 * ex.std())]
 ex = ex.to_frame()
 ex["day"] = ex.index.dayofyear.values
 ex["hour"] = ex.index.hour.values
@@ -562,7 +585,9 @@ axs[0].set_xticklabels("")
 
 # plt.suptitle("Transmission Deviation for \n {0} vs. {1}".format(compare[0], compare[1]))
 plt.savefig(
-    "documentation/figures/"+ storage_type + "-heat-plot-{}.pdf".format(compare[0]),
+    "documentation/figures/"
+    + storage_type
+    + "-heat-plot-{}.pdf".format(compare[0]),
     # bbox_extra_artists=(lgd,),
     bbox_inches="tight",
 )
@@ -586,9 +611,9 @@ for dir in os.listdir(path):
         total_supply = sum(
             sums.get(bus + "-" + k, 0) for k in renewables + conventionals
         )
-        conv_supply[dir] = sum(
-            sums.get(bus + "-" + k, 0) for k in conventionals
-        ) / 1e6
+        conv_supply[dir] = (
+            sum(sums.get(bus + "-" + k, 0) for k in conventionals) / 1e6
+        )
         imports[dir] = df["import"].clip(0).sum() / 1e6
         re_supply = sum(sums.get(bus + "-" + k, 0) for k in renewables)
         excess[dir] = df[bus + "-electricity-excess"].sum() / 1e6
@@ -623,7 +648,9 @@ for dir in os.listdir(path):
         capacities.index = [i.replace(bus + "-", "") for i in capacities.index]
 
         value = capacities["value"]
-        value = value.groupby(value.index).sum()     # sum investemnt and existing capacity
+        value = value.groupby(
+            value.index
+        ).sum()  # sum investemnt and existing capacity
         value.name = dir
         _df = pd.concat([_df, value], axis=1, sort=False)
 
@@ -632,7 +659,7 @@ _df = _df[base_scenarios]
 aux = dict()
 for x in shares[base_scenarios].sort_values().index:
     aux[x] = _df[x].values
-_df  = pd.DataFrame(aux, index=_df.index)
+_df = pd.DataFrame(aux, index=_df.index)
 
 conv = [c for c in conventionals if c in _df.index]
 _df.loc["fossil"] = _df.loc[conv].sum()
@@ -645,7 +672,7 @@ _df = _df.drop("storage")
 _df = _df.drop("other-res")
 
 de = _df / 1000
-#de.sort_index(axis=1, inplace=True)
+# de.sort_index(axis=1, inplace=True)
 ax = (de.T).plot(
     kind="bar", stacked=True, color=[color_dict.get(c) for c in de.index]
 )
@@ -664,7 +691,10 @@ ax2 = ax.twinx()
 ax2.set_ylim(0, 1)
 plt.plot(
     shares[base_scenarios].sort_values().index,
-    shares[base_scenarios].sort_values(), "*", color="darkred")
+    shares[base_scenarios].sort_values(),
+    "*",
+    color="darkred",
+)
 ax2.set_ylabel("RE share")
 
 # plt.plot(figsize=(10, 5))

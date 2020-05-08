@@ -16,14 +16,12 @@ from pyomo.environ import Expression
 from fuchur.cli import Scenario
 
 
-
-def compute(
-    datapackage, solver="gurobi"
-):
+def compute(datapackage, solver="gurobi"):
     """
     """
     config = Scenario.from_path(
-        os.path.join("scenarios", datapackage + ".toml"))
+        os.path.join("scenarios", datapackage + ".toml")
+    )
     emission_limit = config["scenario"].get("co2_limit")
 
     temporal_resolution = config.get("model", {}).get("temporal_resolution", 1)
@@ -73,13 +71,17 @@ def compute(
 
     # add emission as expression to model
     BUSES = [b for b in es.nodes if isinstance(b, Bus)]
+
     def emission_rule(m, b, t):
-        expr = sum(m.flow[inflow, outflow, t]
-               * m.timeincrement[t]
-               * getattr(flows[inflow, outflow], "emission_factor", 0)
-               for (inflow, outflow) in flows if outflow is b
-              )
+        expr = sum(
+            m.flow[inflow, outflow, t]
+            * m.timeincrement[t]
+            * getattr(flows[inflow, outflow], "emission_factor", 0)
+            for (inflow, outflow) in flows
+            if outflow is b
+        )
         return expr
+
     m.emissions = Expression(BUSES, m.TIMESTEPS, rule=emission_rule)
 
     m.receive_duals()
@@ -87,7 +89,6 @@ def compute(
     m.solve(solver)
 
     m.results = m.results()
-
 
     pp.write_results(m, output_path)
 
@@ -112,13 +113,12 @@ def compute(
                 "conversion",
                 "backpressure",
                 "extraction",
-            #    "storage",
+                #    "storage",
                 "reservoir",
             ],
         )
-        #.clip(0)
-        .sum()
-        .reset_index()
+        # .clip(0)
+        .sum().reset_index()
     )
     supply_sum["from"] = supply_sum.apply(
         lambda x: "-".join(x["from"].label.split("-")[1::]), axis=1
@@ -134,7 +134,9 @@ def compute(
     ## grid
     imports = pd.DataFrame()
     link_results = pp.component_results(m.es, m.results).get("link")
-    link_results.to_csv(os.path.join(scenario_path, "output", "transmission.csv"))
+    link_results.to_csv(
+        os.path.join(scenario_path, "output", "transmission.csv")
+    )
 
     for b in [b.label for b in es.nodes if isinstance(b, Bus)]:
         if link_results is not None and m.es.groups[b] in list(
@@ -153,12 +155,13 @@ def compute(
 
     summary["total_supply"] = summary.sum(axis=1)
     summary["RE-supply"] = (
-        summary["wind-onshore"] +
-        summary["wind-offshore"] +
-        summary["biomass-st"] +
-        summary["hydro-ror"] +
-        summary["hydro-reservoir"] +
-        summary["solar-pv"])
+        summary["wind-onshore"]
+        + summary["wind-offshore"]
+        + summary["biomass-st"]
+        + summary["hydro-ror"]
+        + summary["hydro-reservoir"]
+        + summary["solar-pv"]
+    )
     if "other-res" in summary:
         summary["RE-supply"] += summary["other-res"]
 
@@ -168,16 +171,18 @@ def compute(
     summary["export"] = imports[imports < 0].sum() / 1e6 * temporal_resolution
     summary.to_csv(os.path.join(scenario_path, "summary.csv"))
 
-    emissions = pd.Series(
-        {key: value() for key,value in m.emissions.items()}).unstack().T
+    emissions = (
+        pd.Series({key: value() for key, value in m.emissions.items()})
+        .unstack()
+        .T
+    )
     emissions.to_csv(os.path.join(scenario_path, "emissions.csv"))
-
 
 
 if __name__ == "__main__":
     # scenarios = ["2050ANGUS-2040grid"]
     # for s in scenarios:
-            # compute(s, "gurobi")
+    # compute(s, "gurobi")
 
     datapackages = [d for d in os.listdir("datapackages")]
     p = mp.Pool(5)

@@ -30,24 +30,24 @@ def add(buses, sensitivities, datapackage_dir):
         bio_potential["source"] == "hotmaps"
     ].to_dict()
 
-
     if buses.get("biomass"):
         for b in buses["biomass"]:
             bus_name = "-".join([b, "biomass", "bus"])
             commodity_name = "-".join([b, "biomass", "commodity"])
 
-            factor = 1 # scaling factor for biomass potential
+            factor = 1  # scaling factor for biomass potential
 
             if sensitivities is not None:
                 factor = sensitivities.get(commodity_name, 1)
-                
+
             commodities[commodity_name] = {
                 "type": "commodity",
                 "tech": "commodity",
                 "carrier": "biomass",
                 "bus": bus_name,
                 "amount": float(bio_potential["value"].get((b, "biomass"), 0))
-                * 1e6 * factor,  # TWh -> MWh
+                * 1e6
+                * factor,  # TWh -> MWh
             }
 
             bus_elements[bus_name] = {

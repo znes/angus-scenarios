@@ -64,7 +64,7 @@ def german_heat_system(
         sep=";",
     )
 
-    cop =  pd.read_csv(
+    cop = pd.read_csv(
         os.path.join(filepath, "opsd-when2heat-2019-08-06", "when2heat.csv"),
         decimal=",",
         index_col=[0],
@@ -87,21 +87,14 @@ def german_heat_system(
 
     weather_year = str(weather_year)
 
-
-    gshp_cop = (
-        cop.loc[
-            weather_year,
-            ["DE_COP_GSHP_floor", "DE_COP_GSHP_radiator", "DE_COP_GSHP_water"],
-        ]
-        .mean(axis=1)
-    )
-    ashp_cop = (
-        cop.loc[
-            weather_year,
-            ["DE_COP_ASHP_floor", "DE_COP_ASHP_radiator", "DE_COP_ASHP_water"],
-        ]
-        .mean(axis=1)
-    )
+    gshp_cop = cop.loc[
+        weather_year,
+        ["DE_COP_GSHP_floor", "DE_COP_GSHP_radiator", "DE_COP_GSHP_water"],
+    ].mean(axis=1)
+    ashp_cop = cop.loc[
+        weather_year,
+        ["DE_COP_ASHP_floor", "DE_COP_ASHP_radiator", "DE_COP_ASHP_water"],
+    ].mean(axis=1)
 
     el_buses = building.read_elements(
         "bus.csv", directory=os.path.join(datapackage_dir, "data/elements")
@@ -209,12 +202,15 @@ def german_heat_system(
                         # "capacity": capacity,
                         "capacity_cost": 0,
                         "storage_capacity_cost": (
-                                float(
-                                    technologies.loc[
-                                        (2050, "fom", "decentral_heat", "tes"), "value"
-                                ])
-                        * 1000) +
-                        (
+                            float(
+                                technologies.loc[
+                                    (2050, "fom", "decentral_heat", "tes"),
+                                    "value",
+                                ]
+                            )
+                            * 1000
+                        )
+                        + (
                             annuity(
                                 float(
                                     technologies.loc[

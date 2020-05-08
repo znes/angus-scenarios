@@ -7,6 +7,7 @@ import re
 from oemof.tabular.datapackage import building
 import pandas as pd
 
+
 def _prepare_frame(df):
     """ Prepare dataframe from ehighway excel sheet, see function:
     ehighway_grid()
@@ -163,7 +164,7 @@ def tyndp(buses, grid_loss, scenario, datapackage_dir, raw_data_path):
         "2030": ["CBA Capacities", "Unnamed: 3"],
         "2040GCA": ["Unnamed: 8", "Unnamed: 9"],
         "2040ST": ["Unnamed: 5", "Unnamed: 6"],
-        "2040DG": ["Unnamed: 6", "Unnamed: 7"]
+        "2040DG": ["Unnamed: 6", "Unnamed: 7"],
     }
 
     df = pd.read_excel(

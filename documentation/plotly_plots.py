@@ -1,7 +1,6 @@
 import plotly.graph_objs as go
 
 
-
 def hourly_plot(df, scenario, bus, color_dict, conventionals, storages):
     """
     """

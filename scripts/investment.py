@@ -10,6 +10,7 @@ import pandas as pd
 from oemof.tabular.datapackage import building
 from oemof.tools.economics import annuity
 
+
 def greenfield(
     datapackage_dir,
     raw_data_path,
@@ -17,7 +18,7 @@ def greenfield(
     countries,
     technologies,
     scenario_year,
-    wacc
+    wacc,
 ):
     """Extracts german specific scenario data from input datapackage
 
@@ -34,7 +35,6 @@ def greenfield(
     raw_data_path: string
         Path where raw data file is located
     """
-
 
     # carrier_package = Package(
     #     "https://raw.githubusercontent.com/ZNES-datapackages/"
@@ -66,13 +66,10 @@ def greenfield(
         .read(keyed=True)
     )
     potential = pd.DataFrame(potential).set_index(["country", "tech"])
-    potential = potential.loc[
-        potential["source"] == "Brown & Schlachtberger"
-    ]
+    potential = potential.loc[potential["source"] == "Brown & Schlachtberger"]
 
     elements = {}
-    storages = [
-        ("lithium", "battery"), ("hydrogen", "storage")]
+    storages = [("lithium", "battery"), ("hydrogen", "storage")]
 
     renewables = []
     investment = storages + renewables
@@ -84,59 +81,102 @@ def greenfield(
 
             if (carrier, tech) in renewables:
                 capacity_cost = (
-                    float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
-                    annuity(
-                        float(technologies.loc[
-                            (scenario_year, "capex", carrier, tech), "value"]),
-                        float(technologies.loc[
-                            (scenario_year, "lifetime", carrier, tech), "value"]),
-                        wacc
-                        ) * 1000,  # €/kW -> €/M
+                    float(
+                        technologies.loc[
+                            (scenario_year, "fom", carrier, tech), "value"
+                        ]
+                    )
+                    + annuity(
+                        float(
+                            technologies.loc[
+                                (scenario_year, "capex", carrier, tech),
+                                "value",
+                            ]
+                        ),
+                        float(
+                            technologies.loc[
+                                (scenario_year, "lifetime", carrier, tech),
+                                "value",
+                            ]
+                        ),
+                        wacc,
+                    )
+                    * 1000,  # €/kW -> €/M
                 )[0]
             else:
                 capacity_cost = (
                     annuity(
-                        float(technologies.loc[
-                            (scenario_year, "capex_power", carrier, tech), "value"]),
-                        float(technologies.loc[
-                            (scenario_year, "lifetime", carrier, tech), "value"]),
-                        wacc
-                        ) * 1000,  # €/kW -> €/MW
+                        float(
+                            technologies.loc[
+                                (scenario_year, "capex_power", carrier, tech),
+                                "value",
+                            ]
+                        ),
+                        float(
+                            technologies.loc[
+                                (scenario_year, "lifetime", carrier, tech),
+                                "value",
+                            ]
+                        ),
+                        wacc,
+                    )
+                    * 1000,  # €/kW -> €/MW
                 )[0]
 
                 storage_capacity_cost = (
-                    float(technologies.loc[(scenario_year, "fom", carrier, tech), "value"]) +
-                    annuity(
-                        float(technologies.loc[
-                            (scenario_year, "capex_energy", carrier, tech), "value"]),
-                        float(technologies.loc[
-                            (scenario_year, "lifetime", carrier, tech), "value"]),
-                        wacc
-                        ) * 1000,  # €/kWh -> €/MWh
+                    float(
+                        technologies.loc[
+                            (scenario_year, "fom", carrier, tech), "value"
+                        ]
+                    )
+                    + annuity(
+                        float(
+                            technologies.loc[
+                                (scenario_year, "capex_energy", carrier, tech),
+                                "value",
+                            ]
+                        ),
+                        float(
+                            technologies.loc[
+                                (scenario_year, "lifetime", carrier, tech),
+                                "value",
+                            ]
+                        ),
+                        wacc,
+                    )
+                    * 1000,  # €/kWh -> €/MWh
                 )[0]
                 #
             if tech in ["onshore", "offshore", "pv"]:
 
                 potential_mapper = {
-                    "onshore": "wind_onshore", "offshore": "wind_offshore", "pv": "pv"}
+                    "onshore": "wind_onshore",
+                    "offshore": "wind_offshore",
+                    "pv": "pv",
+                }
                 if tech == "offshore" and b in ["CH", "CZ", "AT", "LU"]:
                     pass
                 else:
                     profile = "-".join([b, tech, "profile"])
-                    element.update({
-                        "bus": b + "-electricity",
-                        "tech": tech,
-                        "carrier": carrier,
-                        "capacity_potential": float(
-                            potential.loc[(b, potential_mapper[tech]),
-                                          "capacity_potential"]),
-                        "capacity": 0,
-                        "expandable": True,
-                        "capacity_cost": capacity_cost,
-                        "type": "volatile",
-                        "profile": profile,
-                        "output_parameters": json.dumps({}),
-                    })
+                    element.update(
+                        {
+                            "bus": b + "-electricity",
+                            "tech": tech,
+                            "carrier": carrier,
+                            "capacity_potential": float(
+                                potential.loc[
+                                    (b, potential_mapper[tech]),
+                                    "capacity_potential",
+                                ]
+                            ),
+                            "capacity": 0,
+                            "expandable": True,
+                            "capacity_cost": capacity_cost,
+                            "type": "volatile",
+                            "profile": profile,
+                            "output_parameters": json.dumps({}),
+                        }
+                    )
             #
             # elif carrier in [
             #     "gas",
@@ -214,20 +254,24 @@ def greenfield(
             #         }
             #     )
 
-
             if (carrier, tech) in storages:
                 elements["-".join([b, carrier, tech])] = element
                 element.update(
                     {
-
-                        "invest_relation_input_capacity": 1 / float(technologies.loc[
+                        "invest_relation_input_capacity": 1
+                        / float(
+                            technologies.loc[
                                 (scenario_year, "max_hours", carrier, tech),
                                 "value",
-                            ]),
-                        "invest_relation_output_capacity": 1 / float(technologies.loc[
+                            ]
+                        ),
+                        "invest_relation_output_capacity": 1
+                        / float(
+                            technologies.loc[
                                 (scenario_year, "max_hours", carrier, tech),
                                 "value",
-                            ]),
+                            ]
+                        ),
                         "capacity": 0,
                         "storage_capacity": 0,
                         "bus": b + "-electricity",
@@ -243,20 +287,19 @@ def greenfield(
                             technologies.loc[
                                 (scenario_year, "efficiency", carrier, tech),
                                 "value",
-                            ])
+                            ]
+                        )
                         ** 0.5,  # convert roundtrip to input / output efficiency
                         "loss": 0,
                     }
                 )
-
-
 
     df = pd.DataFrame.from_dict(elements, orient="index")
     for element_type in [
         # "dispatchable",
         "volatile",
         # "conversion",
-        "storage"
+        "storage",
     ]:
 
         building.write_elements(
@@ -271,7 +314,7 @@ def greenfield(
 def _load(countries, data, sensitivities=None):
 
     if sensitivities is not None:
-        for k,v in sensitivities.items():
+        for k, v in sensitivities.items():
             k = k.split("-")
             data.at[k[0], (k[1], k[2])] = v
 

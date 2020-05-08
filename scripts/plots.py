@@ -43,7 +43,6 @@ color = {
 color_dict = {name: colors.to_hex(color) for name, color in color.items()}
 
 
-
 def merit_order_plot(scenario, prices, storages):
     prices = prices[scenario]
     prices = prices.sort_values(by=["shadow_price"])
