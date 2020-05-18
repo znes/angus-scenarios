@@ -82,7 +82,7 @@ conventionals = [
 ]
 
 bus = "DE"
-base_scenarios = ["2050REF", "2040DG", "2040GCA", "2030DG"]
+base_scenarios = ["2030NEPC", "2050REF", "2040DG", "2040GCA", "2030DG"]
 
 exclude = []
 
@@ -186,16 +186,16 @@ plt.savefig("documentation/figures/scenario-indicators.pdf")
 
 
 # filling levels --------------------------------------------------------------
-cycles = {}
+
 for dir in os.listdir(path):
-    if dir not in base_scenarios:
+    if dir in base_scenarios:
         if not "flex" in dir:
             df = pd.read_csv(
                 os.path.join(path, dir, "output", "filling_levels.csv"),
                 index_col=[0],
                 parse_dates=True,
             )
-            cycles[dir] = detect_cycles(df["DE-flex-decentral_heat-tes"])
+
             offline.plot(
                 filling_level_plot(
                     df,
@@ -396,6 +396,7 @@ scenarios.sort_index(axis=1, inplace=True)
 # energy plot ----------------------------------------------------------------
 scenarios_plot = scenarios[[c for c in scenarios.columns if not "flex" in c]]
 scenarios_plot = scenarios[base_scenarios]
+scenarios_plot = scenarios_plot[scenarios_plot.columns.sort_values()]
 ax = scenarios_plot.T.plot(
     kind="bar",
     stacked=True,
@@ -674,30 +675,30 @@ plt.savefig(
 
 
 # sorted transmission duration ------------------------------------------------
-sorted_exchange = pd.DataFrame(
-    {c: sorted(exchange_df[c].values) for c in exchange_df.columns}
-)
-sorted_exchange.columns = [
-    c.strip("-electricity") for c in sorted_exchange.columns
-]
-data = sorted_exchange.stack().to_frame()
-data.index.names = ["t", "ctr"]
-data.reset_index(inplace=True)
-sns.set_palette("cubehelix", 11)
-ax = sns.lineplot(x="t", y=0, hue="ctr", data=data)
-ax.grid(linestyle="--", color="gray")
-ax.set_ylabel("Tranmission in GW")
-ax.set_xlabel("Hours")
-lgd = ax.legend(
-    title="",
-    # loc="upper left",
-    bbox_to_anchor=(1.1, 1.3),
-    ncol=4,
-    borderaxespad=0,
-    frameon=False,
-)
-plt.savefig(
-    "documentation/figures/transmission.pdf",
-    bbox_extra_artists=(lgd,),
-    bbox_inches="tight",
+# sorted_exchange = pd.DataFrame(
+#     {c: sorted(exchange_df[c].values) for c in exchange_df.columns}
+# )
+# sorted_exchange.columns = [
+#     c.strip("-electricity") for c in sorted_exchange.columns
+# ]
+# data = sorted_exchange.stack().to_frame()
+# data.index.names = ["t", "ctr"]
+# data.reset_index(inplace=True)
+# sns.set_palette("cubehelix", 11)
+# ax = sns.lineplot(x="t", y=0, hue="ctr", data=data)
+# ax.grid(linestyle="--", color="gray")
+# ax.set_ylabel("Tranmission in GW")
+# ax.set_xlabel("Hours")
+# lgd = ax.legend(
+#     title="",
+#     # loc="upper left",
+#     bbox_to_anchor=(1.1, 1.3),
+#     ncol=4,
+#     borderaxespad=0,
+#     frameon=False,
+# )
+# plt.savefig(
+#     "documentation/figures/sorted-transmission-DE.pdf",
+#     bbox_extra_artists=(lgd,),
+#     bbox_inches="tight",
 )

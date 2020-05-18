@@ -37,7 +37,7 @@ eta.to_latex(
 technologies_table = (
     technologies.sort_index().reset_index().set_index("year").fillna("NA")
 )
-print(tabulate(technologies, tablefmt="pipe", headers="keys"))
+print(tabulate(technologies_table, tablefmt="pipe", headers="keys"))
 technologies_table.to_latex(
     "documentation/tables/technologies.tex",
     caption="Technology data for scenario years.",
@@ -81,9 +81,11 @@ hydro_table.to_latex(
 
 # installed capacities -------------------------------------------------------
 path = os.path.join(os.getcwd(), "datapackages")
+rpath = os.path.join(os.getcwd(), "results")
 results_path = os.path.join(os.getcwd(), "results")
 df = pd.DataFrame()
 load = pd.DataFrame()
+heat_load = pd.DataFrame()
 storage = pd.DataFrame()
 
 for dir in os.listdir(path):
@@ -113,6 +115,14 @@ for dir in os.listdir(path):
     )
     conversion.rename(columns={"to_bus": "bus"}, inplace=True)
 
+    _heat_load = pd.read_csv(
+        os.path.join(path, dir, "data/elements/heat_load.csv"), sep=";", index_col=0
+    )
+
+    _heat_load["scenario"] = dir
+
+    heat_load = pd.concat([heat_load, _heat_load], sort=True)
+
     _load = pd.read_csv(
         os.path.join(path, dir, "data/elements/load.csv"), sep=";", index_col=0
     )
@@ -122,6 +132,63 @@ for dir in os.listdir(path):
     capacities = pd.concat([conv, renew, conversion, phs, storage], sort=True)
     capacities["scenario"] = dir
     df = pd.concat([df, capacities], sort=True)
+
+# electricity storage investment ---------------------------------------------
+
+elstorage = {}
+for dir in os.listdir(rpath):
+    capacity = pd.read_csv(
+        os.path.join(rpath, dir, "output", "capacities.csv"),
+        index_col=[0, 1, 2, 3, 4],
+    )
+
+    for bus in [
+        "AT",
+        "BE",
+        "CH",
+        "CZ",
+        "DE",
+        "DK",
+        "FR",
+        "NL",
+        "LU",
+        "NO",
+        "PL",
+        "SE",
+    ]:
+        hydstor = capacity.loc[
+            (
+                bus + "-hydrogen-storage",
+                bus + "-electricity",
+                "invest",
+                "storage",
+                "hydrogen",
+            ),
+            "value",
+        ]
+
+        lithstor = capacity.loc[
+            (
+                bus + "-lithium-battery",
+                bus + "-electricity",
+                "invest",
+                "battery",
+                "lithium",
+            ),
+            "value",
+        ]
+        elstorage[(bus, dir)] = (lithstor, hydstor)
+
+elstorage = pd.DataFrame(elstorage)
+elstorage.index = ["Lithium", "Hydrogen"]
+elstorage.columns = elstorage.columns.swaplevel()
+elstorage = elstorage[df.scenario.unique()]
+elstorage.columns = elstorage.columns.swaplevel()
+
+elde = elstorage["DE"]
+
+print(tabulate(elde[elde.columns.sort_values()], tablefmt="pipe", headers="keys"))
+
 
 
 storage_capacities = (
@@ -221,6 +288,9 @@ load = (load.unstack(1) / 1e6).round(2)
 load.index = [i.split("-")[0] for i in load.index]
 print(tabulate(load, tablefmt="pipe", headers="keys"))
 
+
+heat_load = heat_load.loc["DE-flex-decentral_heat-load"]
+print(tabulate(heat_load.set_index("scenario")["amount"].to_frame() / 1e6, tablefmt="pipe", headers="keys"))
 
 ## all countries
 for dir in os.listdir("datapackages"):

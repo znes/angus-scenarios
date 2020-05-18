@@ -4,18 +4,11 @@ from cydets.algorithm import detect_cycles
 
 ## import numpy as np
 
-# import plotly.io as pio
-import plotly.offline as offline
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import seaborn as sns
-from documentation.plotly_plots import (
-    filling_level_plot,
-    hourly_plot,
-    stacked_plot,
-    energy_plot,
-)
+
 
 
 color = {
@@ -82,7 +75,7 @@ conventionals = [
 ]
 
 bus = "DE"
-base_scenarios = ["2050REF", "2040DG", "2040GCA", "2030DG"]
+base_scenarios = ["2030NEPC", "2050REF", "2040DG", "2040GCA", "2030DG"]
 
 
 heat = {}
