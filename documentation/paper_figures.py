@@ -12,6 +12,7 @@ import seaborn as sns
 
 
 color = {
+    "hydro": "aqua",
     "conventional": "dimgrey",
     "cavern-acaes": "crimson",
     "redox-battery": "violet",
@@ -20,7 +21,7 @@ color = {
     "uranium-st": "yellow",
     "gas-ocgt": "gray",
     "gas-ccgt": "lightgray",
-    "solar-pv": "lightyellow",
+    "solar-pv": "lightgoldenrodyellow",
     "wind-onshore": "skyblue",
     "wind-offshore": "steelblue",
     "biomass-st": "yellowgreen",
@@ -75,7 +76,7 @@ conventionals = [
 ]
 
 bus = "DE"
-base_scenarios = ["2030NEPC", "2050REF", "2040DG", "2040GCA", "2030DG"]
+base_scenarios = ["2050REF", "2040DG", "2040GCA", "2030DG"]
 
 
 heat = {}
@@ -487,103 +488,103 @@ for v in base_scenarios:
 
 # comparison of storage operation -------------------------------------------------
 
-storage_df = pd.DataFrame()
-storage_type = "DE-lithium-battery"  # flex-decentral_heat-tes"
-bus = "DE-electricity.csv"  # flex-decentral_heat-bus.csv"
-compare = ("2050REF-flex0", "2050REF")
-for dir in os.listdir("results"):
-    if dir in compare:
-        storage = pd.read_csv(
-            os.path.join(path, dir, "output", bus),
-            sep=",",
-            index_col=0,
-            parse_dates=True,
-            header=[0],
-        )[storage_type]
-        storage = storage.to_frame()
-        storage["scenario"] = dir
-        storage.set_index("scenario", append=True, inplace=True)
-        storage_df = pd.concat([storage, storage_df])
+    storage_df = pd.DataFrame()
+    storage_type = "DE-flex-decentral_heat-tes" # "lithium-battery"
+    bus = "DE-flex-decentral_heat-bus.csv"  # electricity.csv"
+    compare = ("2050REF-flex0", "2050REF")
+    for dir in os.listdir("results"):
+        if dir in compare:
+            storage = pd.read_csv(
+                os.path.join(path, dir, "output", bus),
+                sep=",",
+                index_col=0,
+                parse_dates=True,
+                header=[0],
+            )[storage_type]
+            storage = storage.to_frame()
+            storage["scenario"] = dir
+            storage.set_index("scenario", append=True, inplace=True)
+            storage_df = pd.concat([storage, storage_df])
 
-im = storage_df.clip(lower=0)
-im = im.unstack()
-im.columns = im.columns.droplevel(0)
-im = im[compare[1]] - im[compare[0]]
-
-
-# im = im[~((im - im.mean()).abs() > 3 * im.std())]
-im = im.to_frame()
-im["day"] = im.index.dayofyear.values
-im["hour"] = im.index.hour.values
-im.set_index(["hour", "day"], inplace=True)
-im = im.unstack("day")
-im.columns = im.columns.droplevel(0)
-
-im.sort_index(ascending=True, inplace=True)
-
-ex = storage_df.clip(upper=0)
-ex = ex.unstack() * -1
-ex.columns = ex.columns.droplevel(0)
-ex = ex[compare[1]] - ex[compare[0]]
-
-# ex = ex[~((ex - ex.mean()).abs() > 3 * ex.std())]
-ex = ex.to_frame()
-ex["day"] = ex.index.dayofyear.values
-ex["hour"] = ex.index.hour.values
-ex.set_index(["hour", "day"], inplace=True)
-ex = ex.unstack("day")
-ex.columns = ex.columns.droplevel(0)
-ex.sort_index(ascending=True, inplace=True)
-
-fig, axs = plt.subplots(2, 1)
-im = im / 1e3
-ex = ex / 1e3
-
-vmax = max(ex.max().max(), im.max().max())
-vmin = min(ex.min().min(), im.min().min())
-# vmax = 8
-# vmin = -8
-axs[0] = sns.heatmap(
-    data=im,
-    xticklabels=False,
-    yticklabels=4,
-    cmap="RdPu",
-    vmax=vmax,
-    vmin=vmin,
-    ax=axs[0],
-    cbar_kws={"label": "Discharge in GW"},
-)
-axs[1] = sns.heatmap(
-    data=ex,
-    xticklabels=40,
-    yticklabels=4,
-    cmap="RdPu",
-    vmax=vmax,
-    vmin=vmin,
-    ax=axs[1],
-    cbar_kws={"label": "Charge in GW"},
-)
-
-for a in axs:
-    a.set_yticklabels(axs[1].get_yticklabels(), rotation=0, fontsize=8)
-    a.set_xticklabels(axs[1].get_xticklabels(), rotation=0, fontsize=8)
-    a.set_ylim(0, 24)
-    a.set_xlim(0, 365)
-    a.set_ylabel("Hour of Day", fontsize=8)
-
-axs[1].set_xlabel("Day of Year")
-axs[0].set_xlabel("")
-axs[0].set_xticklabels("")
+    im = storage_df.clip(lower=0)
+    im = im.unstack()
+    im.columns = im.columns.droplevel(0)
+    im = im[compare[1]] - im[compare[0]]
 
 
-# plt.suptitle("Transmission Deviation for \n {0} vs. {1}".format(compare[0], compare[1]))
-plt.savefig(
-    "documentation/figures/"
-    + storage_type
-    + "-heat-plot-{}.pdf".format(compare[0]),
-    # bbox_extra_artists=(lgd,),
-    bbox_inches="tight",
-)
+    # im = im[~((im - im.mean()).abs() > 3 * im.std())]
+    im = im.to_frame()
+    im["day"] = im.index.dayofyear.values
+    im["hour"] = im.index.hour.values
+    im.set_index(["hour", "day"], inplace=True)
+    im = im.unstack("day")
+    im.columns = im.columns.droplevel(0)
+
+    im.sort_index(ascending=True, inplace=True)
+
+    ex = storage_df.clip(upper=0)
+    ex = ex.unstack() * -1
+    ex.columns = ex.columns.droplevel(0)
+    ex = ex[compare[1]] - ex[compare[0]]
+
+    # ex = ex[~((ex - ex.mean()).abs() > 3 * ex.std())]
+    ex = ex.to_frame()
+    ex["day"] = ex.index.dayofyear.values
+    ex["hour"] = ex.index.hour.values
+    ex.set_index(["hour", "day"], inplace=True)
+    ex = ex.unstack("day")
+    ex.columns = ex.columns.droplevel(0)
+    ex.sort_index(ascending=True, inplace=True)
+
+    fig, axs = plt.subplots(2, 1)
+    im = im / 1e3
+    ex = ex / 1e3
+
+    vmax = max(ex.max().max(), im.max().max())
+    vmin = min(ex.min().min(), im.min().min())
+    # vmax = 8
+    # vmin = -8
+    axs[0] = sns.heatmap(
+        data=im,
+        xticklabels=False,
+        yticklabels=4,
+        cmap="coolwarm",
+        vmax=vmax,
+        vmin=vmin,
+        ax=axs[0],
+        cbar_kws={"label": "Discharge in GW"},
+    )
+    axs[1] = sns.heatmap(
+        data=ex,
+        xticklabels=40,
+        yticklabels=4,
+        cmap="coolwarm", # RdPu
+        vmax=vmax,
+        vmin=vmin,
+        ax=axs[1],
+        cbar_kws={"label": "Charge in GW"},
+    )
+
+    for a in axs:
+        a.set_yticklabels(axs[1].get_yticklabels(), rotation=0, fontsize=8)
+        a.set_xticklabels(axs[1].get_xticklabels(), rotation=0, fontsize=8)
+        a.set_ylim(0, 24)
+        a.set_xlim(0, 365)
+        a.set_ylabel("Hour of Day", fontsize=8)
+
+    axs[1].set_xlabel("Day of Year")
+    axs[0].set_xlabel("")
+    axs[0].set_xticklabels("")
+
+
+    # plt.suptitle("Transmission Deviation for \n {0} vs. {1}".format(compare[0], compare[1]))
+    plt.savefig(
+        "documentation/figures/"
+        + storage_type
+        + "-heat-plot-{}.pdf".format(compare[0]),
+        # bbox_extra_artists=(lgd,),
+        bbox_inches="tight",
+    )
 
 # re shares -------------------------------------------------------------------
 electricity_demand = {}
@@ -657,6 +658,10 @@ _df = pd.DataFrame(aux, index=_df.index)
 conv = [c for c in conventionals if c in _df.index]
 _df.loc["fossil"] = _df.loc[conv].sum()
 _df = _df.drop(conv)
+
+hydro = [c for c in renewables if "hydro" in c]
+_df.loc["hydro"] = _df.loc[hydro].sum()
+_df = _df.drop(hydro)
 
 stor = [c for c in storages if c in _df.index]
 _df.loc["storage"] = _df.loc[stor].sum()
