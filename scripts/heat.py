@@ -110,12 +110,12 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
                         "type": "conversion",
                         "to_bus": heat_bus,
                         "capacity_cost": (
-                            float(technologies.loc[(2050, "fom", "decentral_heat", "hp"), "value"]) +
+                            float(technologies.loc[(2050, "fom", "decentral_heat", "gshp"), "value"]) +
                             annuity(
                                 float(technologies.loc[
-                                    (2050, "capex", "decentral_heat", "hp"), "value"]),
+                                    (2050, "capex", "decentral_heat", "gshp"), "value"]),
                                 float(technologies.loc[
-                                    (2050, "lifetime", "decentral_heat", "hp"), "value"]),
+                                    (2050, "lifetime", "decentral_heat", "gshp"), "value"]),
                                 wacc
                                 ) * 1000,  # €/kW -> €/MW
                         )[0],
@@ -148,7 +148,7 @@ def german_heat_system(heat_buses, weather_year, scenario, scenario_year, wacc,
                         "storage_capacity_cost": (
                                 annuity(
                                 float(technologies.loc[
-                                    (2050, "capex", "decentral_heat", "tes"), "value"]),
+                                    (2050, "capex_energy", "decentral_heat", "tes"), "value"]),
                                 float(technologies.loc[
                                     (2050, "lifetime", "decentral_heat", "tes"), "value"]),
                                 wacc

@@ -1,9 +1,9 @@
 ---
 title: ANGUS II Scenario Description
 author: Simon Hilpert and Clemens Wingenbach
-date: January, 2020
-header: This is fancy
-footer: So is this
+date: June, 2020
+header: Europa Universität Flensburg
+footer: ANGUS II
 geometry: "left=2cm, right=2cm, top=2cm, bottom=2cm"
 bibliography: angus-literature.bib
 abstract:
@@ -155,13 +155,13 @@ The set of all volatile components includes all *wind-onshore*, *wind-offshore*,
 
 Commodities are modelled with an upper limit on the aggregated flow of the component:
 
-$$\sum_t x^{flow}{k}(t) \leq c^{amount}_k, \qquad \forall k \in K$$
+$$\sum_t x^{flow}{k}(t) \leq c^{amount}_k \qquad \forall k \in K$$
 
 ## Conversion Processes
 
 Biomass units are modelled with a conversion process with the following equation:
 
-$$x^{flow}_{c, to}(t) = c^{efficiencty}_{c} \cdot x^{flow}_{c, from}(t), \qquad \forall c  \in C, \forall t \in T$$
+$$x^{flow}_{c, to}(t) = c^{efficiencty}_{c} \cdot x^{flow}_{c, from}(t) \qquad \forall c  \in C, \forall t \in T$$
 
 In combination with the commodity components, their supply can be limited.
 
@@ -195,7 +195,7 @@ The mathematical representation of the storage for all storages $s \in S$ will i
 
 Intertemporal energy balance of the storage:
 
-$$ x^{level}_{s}(t) = \eta^{loss\_rate} x^{level}_{s}(t) + \eta x^{flow}_{s, in} - \eta x^{flow}_{s, out}(t) \qquad \forall t \in T,  \forall s \in S$$
+$$ x^{level}_{s}(t) = \eta^{loss\_rate} x^{level}_{s}(t) + \eta_{in} \cdot x^{flow}_{s, in} -  \frac{x^{flow}_{s, out}(t)}{\eta_{out}} \qquad \forall t \in T,  \forall s \in S$$
 
 Bounds of the storage level variable $x^{level}_s(t)$:
 
@@ -215,7 +215,7 @@ denotes the time constant in days.
 
 Transmission lines are modelled with a transhipment approach.
 
-$$x^{flow}_{from, n}(t) = c^{loss}_{n} \cdot x^{flow}_{n, to}(t), \qquad \forall n  \in N, \forall t \in T$$
+$$x^{flow}_{from, n}(t) = c^{loss}_{n} \cdot x^{flow}_{n, to}(t) \qquad \forall n  \in N, \forall t \in T$$
 
 ## Component overview
 
@@ -248,9 +248,6 @@ corresponding type (i.e. oemof tabular class) and set.
 | electricity | line      | link         | n          | N       |
 
 
-
-
-\newpage
 # ANGUS Scenario Assumptions
 
 ## Spatial and temporal resolution
@@ -276,9 +273,7 @@ The grid for 2030 and 2040 is based on the TYNDP2018 (see Annex), while the grid
 the installed transmission capacities of the 2050 electricity system. The transmission
 system is modelled with a transshipment approach assuming a loss of 0.03 on the lines.
 
-![Installed transmission capacities in 2050.\label{grid_2050}](figures/grid-scenarioANGUS2050.pdf){width=50%}
-
-
+![Installed transmission capacities in 2050.\label{grid_2050}](figures/grid-scenario2050REF.pdf){width=50%}
 
 ## Demand
 
@@ -316,27 +311,12 @@ residential heating and 25 TWh additional demand for electric vehicles are consu
 In contrast, within the BMWI scenarios, 17.8 TWh electricity for
 heatpumps is consumed. These values are in the range with the RESCUE green
 late (GL) and green supreme (GS) scenarios with 57 TWh_th and 95 TWh_th respectively
-(assuming an coefficienct of performance of approximately 3). Therefore, for 2050  
-both  scenarios are used as a basis for additional electricity demand due to
-space heating.
+(assuming an coefficienct of performance of approximately 3).
 
-The total electricity demand for the different scenarios is given in the Table
-below.
+The total conventional electricity demand for the different scenarios is given
+in the Table below.
 
-|    |   2030NEPC |   2040GCA |   2050ANGUS |   2050ANGUS-nb |   2050ZNES |
-|:---|-----------:|----------:|------------:|---------------:|-----------:|
-| AT |      76.55 |     80.5  |       84.82 |          84.82 |      84.82 |
-| BE |      88.78 |     91.52 |      121.25 |         121.25 |     121.25 |
-| CH |      58.28 |     57.93 |       77.33 |          77.33 |      77.33 |
-| CZ |      70.86 |     76.43 |       71.76 |          71.76 |      71.76 |
-| DE |     547    |    575.86 |      665.7  |         665.7  |     665.7  |
-| DK |      46.96 |     53.78 |       42.67 |          42.67 |      42.67 |
-| FR |     466.74 |    468.62 |      649.45 |         649.45 |     649.45 |
-| LU |      11.05 |      8.26 |        7.38 |           7.38 |       7.38 |
-| NL |     118.53 |    136.61 |      160.72 |         160.72 |     160.72 |
-| NO |     149.93 |    148.09 |      102.02 |         102.02 |     102.02 |
-| PL |     206.68 |    251.3  |      172.22 |         172.22 |     172.22 |
-| SE |     143.04 |    145.84 |      131.56 |         131.56 |     131.56 |
+
 
 
 Demand profiles are calculated from the OPSD dataset of the ENTSOE
@@ -352,8 +332,6 @@ processes are not modelled.
 *Electric vehicles are modelled without specific profile for charging / discharging but only
 with a constant additional base load.
 
-
-
 ## Generation capacity
 
 The different scenarios are based on the NEP2019, TYNDP2018 and the e-Highway
@@ -363,19 +341,14 @@ project.
 capacities of neighbouring countries are based on the TYNDP2018-2030ST vision. The
 renewable share of produced energy in Germany in this scenario is approx. 68 %.
 * 2040GCA: This scenario is based on the TYNDP2018-GCA vision.
-* 2050ZNES: The base scenario is the e-Highway 100 % RES scenario. This scenario
+* 2050REF: The base scenario is the e-Highway 100 % RES scenario. This scenario
 strongly depends on hydro capacity expansion in Norway and also substantial biomass
-capacity/energy. Based on the input data, this scenario has an renewable
-energy supply share of approx. 95 % .
-* 2050ANGUS: Therefore, an adapted ANGUS scenario has been developed to
-model 100% renewable energy scenarios with different sensitivities such
-as the no-biomass (nb).
+capacity/energy.
 
 The installed capacities in Germany are shown in the Figure \ref{installed_capacities}
 below.
 
-![Installed generation capacity in Germany from 2030 to 2050 with different shares of renewables in 2050. The 2050ZNES scenario
-has a RE-share of 95% and 2050ANGUS scenario 100% RE-share of supply in Germany. Hydro capacities are not shown.\label{installed_capacities}](figures/installed_capacities.pdf){width=100%}
+![Installed generation capacity in Germany from 2030 to 2050 with different shares of renewables in 2050. \label{installed_capacities}](figures/DE-installed_capacities.pdf){width=100%}
 
 Note that only the scenarios 2030NEPC, 2040GCA, 2050ANGUS-(nb) depict a path towards
 100% renewable energy supply.
@@ -448,9 +421,6 @@ and Sweden the reservoir inflow has been scaled up to match with the e-Highway r
 Similary, the run of river units for all countries except Sweden and Norway have been
 scaled by a factor of 1.6. The resulting fullloadhours are show in the Table below.
 
-
-
-
 \clearpage
 
 # Annex
@@ -460,256 +430,354 @@ scaled by a factor of 1.6. The resulting fullloadhours are show in the Table bel
 Figure \ref{supply_demand} shows the energy supply and demand for each scenario.
 
 ![Energy supply and demand for all scenarios. Storage capacities have been aggregated.
-\label{supply_demand}](figures/energy.pdf){width=100%}
+\label{supply_demand}](figures/DE-aggregated_supply_demand.pdf){width=100%}
 
 \newpage
 ## Hydro data
 
-| country   |   year |      rsv |      phs |        ror |   ror-share |   phs-max-hours |   rsv-max-hours |
-|:----------|-------:|---------:|---------:|-----------:|------------:|----------------:|----------------:|
-| AT        |   2030 |  4787.52 |  6055.33 |  4671.9    |    0.493889 |              33 |             857 |
-| AT        |   2040 |  4787.52 |  6055.33 |  4671.9    |    0.493889 |              33 |             857 |
-| AT        |   2050 |  5676    | 10733    |  7401.16   |    0.565961 |              33 |             857 |
-| BE        |   2030 |   158    |  1150    |   117      |    0.425455 |               4 |             500 |
-| BE        |   2040 |   158    |  1908    |   117      |    0.425455 |               4 |             500 |
-| BE        |   2050 |     0    |  2308    |   331.972  |    1        |               4 |             500 |
-| CH        |   2030 |  8987    |  4593    |  4139      |    0.315328 |             136 |             906 |
-| CH        |   2040 |  8987    |  6722    |  4139      |    0.315328 |             136 |             906 |
-| CH        |   2050 |  8130    |  5443    |  4122.7    |    0.336473 |             136 |             906 |
-| CZ        |   2030 |    50    |  1000    |   365      |    0.879518 |               5 |            1111 |
-| CZ        |   2040 |    50    |  1145    |   365      |    0.879518 |               5 |            1111 |
-| CZ        |   2050 |   819    |  1787    |   454.846  |    0.357065 |               5 |            1111 |
-| DE        |   2030 |   995.9  |  9791.6  |  4329      |    0.812973 |               6 |             592 |
-| DE        |   2040 |   620    | 10244    |  4329      |    0.874722 |               6 |             592 |
-| DE        |   2050 |   620    | 12799    |  4233      |    0.872244 |               6 |             592 |
-| DK        |   2030 |     0    |     0    |     6.6082 |    1        |               6 |                 |
-| DK        |   2040 |     0    |     0    |     6.6082 |    1        |               6 |                 |
-| DK        |   2050 |     0    |     0    |    13.3102 |    1        |               6 |                 |
-| FR        |   2030 |  8197    |  5500    | 13797      |    0.627307 |              15 |            1201 |
-| FR        |   2040 |  8000    |  5500    | 13600      |    0.62963  |              15 |            1201 |
-| FR        |   2050 | 18200    | 13420    | 10318.6    |    0.36182  |              15 |            1201 |
-| LU        |   2030 |   284    |  1026    |    34      |    0.106918 |               4 |            2840 |
-| LU        |   2040 |   284    |  1026    |    34      |    0.106918 |               4 |            2840 |
-| LU        |   2050 |     0    |  1650.68 |   149.203  |    1        |               4 |            2840 |
-| NL        |   2030 |     0    |     0    |    38      |    1        |               6 |                 |
-| NL        |   2040 |     0    |  2500    |    38      |    1        |               6 |                 |
-| NL        |   2050 |     0    |     0    |   104.435  |    1        |               6 |                 |
-| NO        |   2030 | 34702.2  |  1114.71 |     0      |    0        |             314 |            3139 |
-| NO        |   2040 | 34702.2  |  1114.71 |     0      |    0        |             314 |            3139 |
-| NO        |   2050 | 42473    | 17291    | 28141      |    0.398518 |             314 |            3139 |
-| PL        |   2030 |     0    |  1488    |  1033      |    1        |               5 |            5477 |
-| PL        |   2040 |     0    |  2292    |  1033      |    1        |               5 |            5477 |
-| PL        |   2050 |     0    |  3790    |  2078.8    |    1        |               5 |            5477 |
-| SE        |   2030 | 16184    |     0    |     0      |    0        |             793 |            3456 |
-| SE        |   2040 | 16184    |     0    |     0      |    0        |             793 |            3456 |
-| SE        |   2050 | 21383.3  |     0    | 10775.2    |    0.335066 |             793 |            3456 |
+| country   |   year |      phs |   phs-max-hours |        ror |   ror-share |      rsv |   rsv-factor |   rsv-max-hours |
+|:----------|-------:|---------:|----------------:|-----------:|------------:|---------:|-------------:|----------------:|
+| AT        |   2015 |  2971.1  |              33 |  5542.7    |   0.6515    |  2964.9  |    1         |             857 |
+| AT        |   2030 |  6055.33 |              33 |  4671.9    |   0.493889  |  4787.52 |    1.61473   |             857 |
+| AT        |   2040 |  6055.33 |              33 |  4671.9    |   0.493889  |  4787.52 |    1.61473   |             857 |
+| AT        |   2050 | 10733    |              33 |  7401.16   |   0.565961  |  5676    |    1.9144    |             857 |
+| BE        |   2015 |  1308    |               4 |   114.56   |   1         |     0    |    1         |             500 |
+| BE        |   2030 |  1150    |               4 |   117      |   0.425455  |   158    |    1         |             500 |
+| BE        |   2040 |  1908    |               4 |   117      |   0.425455  |   158    |    1         |             500 |
+| BE        |   2050 |  2308    |               4 |   331.972  |   1         |     0    |    0         |             500 |
+| CH        |   2015 |  3940    |             136 |   190      |   0.0381388 |  4791.8  |    1         |             906 |
+| CH        |   2030 |  4593    |             136 |  4139      |   0.315328  |  8987    |    1.8755    |             906 |
+| CH        |   2040 |  6722    |             136 |  4139      |   0.315328  |  8987    |    1.8755    |             906 |
+| CH        |   2050 |  5443    |             136 |  4122.7    |   0.336473  |  8130    |    1.69665   |             906 |
+| CZ        |   2015 |  1175    |               5 |   440      |   0.40367   |   650    |    1         |            1111 |
+| CZ        |   2030 |  1000    |               5 |   365      |   0.879518  |    50    |    0.0769231 |            1111 |
+| CZ        |   2040 |  1145    |               5 |   365      |   0.879518  |    50    |    0.0769231 |            1111 |
+| CZ        |   2050 |  1787    |               5 |   454.846  |   0.357065  |   819    |    1.26      |            1111 |
+| DE        |   2015 |  8699    |               6 |  3988.62   |   0.724332  |  1518    |    1         |             592 |
+| DE        |   2030 |  9791.6  |               6 |  4329      |   0.812973  |   995.9  |    0.656061  |             592 |
+| DE        |   2040 | 10244    |               6 |  4329      |   0.874722  |   620    |    0.408432  |             592 |
+| DE        |   2050 | 12799    |               6 |  4233      |   0.872244  |   620    |    0.408432  |             592 |
+| DK        |   2015 |     0    |               6 |     9      |   1         |     0    |    1         |                 |
+| DK        |   2030 |     0    |               6 |     6.6082 |   1         |     0    |    0         |                 |
+| DK        |   2040 |     0    |               6 |     6.6082 |   1         |     0    |    0         |                 |
+| DK        |   2050 |     0    |               6 |    13.3102 |   1         |     0    |    0         |                 |
+| FR        |   2015 |  4965    |              15 | 10314      |   0.556671  |  8214    |    1         |            1201 |
+| FR        |   2030 |  5500    |              15 | 13797      |   0.627307  |  8197    |    0.99793   |            1201 |
+| FR        |   2040 |  5500    |              15 | 13600      |   0.62963   |  8000    |    0.973947  |            1201 |
+| FR        |   2050 | 13420    |              15 | 10318.6    |   0.36182   | 18200    |    2.21573   |            1201 |
+| LU        |   2015 |     0    |               4 |    25      |   0.694444  |    11    |    1         |            2840 |
+| LU        |   2030 |  1026    |               4 |    34      |   0.106918  |   284    |   25.8182    |            2840 |
+| LU        |   2040 |  1026    |               4 |    34      |   0.106918  |   284    |   25.8182    |            2840 |
+| LU        |   2050 |  1650.68 |               4 |   149.203  |   1         |     0    |    0         |            2840 |
+| NL        |   2015 |     0    |               6 |    38      |   1         |     0    |    1         |                 |
+| NL        |   2030 |     0    |               6 |    38      |   1         |     0    |    0         |                 |
+| NL        |   2040 |  2500    |               6 |    38      |   1         |     0    |    0         |                 |
+| NL        |   2050 |     0    |               6 |   104.435  |   1         |     0    |    0         |                 |
+| NO        |   2015 |     0    |             314 |  1351.8    |   0.0478322 | 26909.5  |    1         |            3139 |
+| NO        |   2030 |  1114.71 |             314 |     0      |   0         | 34702.2  |    1.28959   |            3139 |
+| NO        |   2040 |  1114.71 |             314 |     0      |   0         | 34702.2  |    1.28959   |            3139 |
+| NO        |   2050 | 17291    |             314 | 28141      |   0.398518  | 42473    |    1.57836   |            3139 |
+| PL        |   2015 |  1770.12 |               5 |   377.84   |   0.707552  |   156.17 |    1         |            5477 |
+| PL        |   2030 |  1488    |               5 |  1033      |   1         |     0    |    0         |            5477 |
+| PL        |   2040 |  2292    |               5 |  1033      |   1         |     0    |    0         |            5477 |
+| PL        |   2050 |  3790    |               5 |  2078.8    |   1         |     0    |    0         |            5477 |
+| SE        |   2015 |     0    |             793 |     0      |   0         | 15956    |    1         |            3456 |
+| SE        |   2030 |     0    |             793 |     0      |   0         | 16184    |    1.01429   |            3456 |
+| SE        |   2040 |     0    |             793 |     0      |   0         | 16184    |    1.01429   |            3456 |
+| SE        |   2050 |     0    |             793 | 10775.2    |   0.335066  | 21383.3  |    1.34014   |            3456 |
+
 
 \newpage
 ## Carrier cost
 
-| scenario   | carrier   |   value | unit    | source         |
-|:-----------|:----------|--------:|:--------|:---------------|
-| 2030DG     | biomass   |  30.32  | EUR/MWh | HeatRoadMap    |
-| 2030DG     | co2       |  50     | EUR/t   | TYNDP2018      |
-| 2030DG     | coal      |   9.72  | EUR/MWh | TYNDP2018      |
-| 2030DG     | gas       |  31.68  | EUR/MWh | TYNDP2018      |
-| 2030DG     | lignite   |   3.96  | EUR/MWh | TYNDP2018      |
-| 2030DG     | mixed     |   6.7   | EUR/MWh | Own Assumption |
-| 2030DG     | oil       |  78.48  | EUR/MWh | TYNDP2018      |
-| 2030DG     | uranium   |   1.692 | EUR/MWh | TYNDP2018      |
-| 2030DG     | waste     |   6.7   | EUR/MWh | Own Assumption |
-| 2030NEPC   | biomass   |   5     | EUR/MWh | Own Assumption |
-| 2030NEPC   | co2       |  29.4   | EUR/t   | NEP2019        |
-| 2030NEPC   | coal      |   8.4   | EUR/MWh | NEP2019        |
-| 2030NEPC   | gas       |  26.4   | EUR/MWh | NEP2019        |
-| 2030NEPC   | lignite   |   5.6   | EUR/MWh | NEP2019        |
-| 2030NEPC   | mixed     |   6.7   | EUR/MWh | Own Assumption |
-| 2030NEPC   | oil       |  48.3   | EUR/MWh | NEP2019        |
-| 2030NEPC   | uranium   |   1.692 | EUR/MWh | TYNDP2018      |
-| 2030NEPC   | waste     |   6.7   | EUR/MWh | IRENA2015      |
-| 2040GCA    | biomass   |  30.32  | EUR/MWh | HeatRoadMap    |
-| 2040GCA    | co2       | 126     | EUR/t   | TYNDP2018      |
-| 2040GCA    | coal      |   6.48  | EUR/MWh | TYNDP2018      |
-| 2040GCA    | gas       |  30.24  | EUR/MWh | TYNDP2018      |
-| 2040GCA    | lignite   |   3.96  | EUR/MWh | TYNDP2018      |
-| 2040GCA    | mixed     |   6.7   | EUR/MWh | Own Assumption |
-| 2040GCA    | oil       |  50.22  | EUR/MWh | TYNDP2018      |
-| 2040GCA    | uranium   |   1.692 | EUR/MWh | TYNDP2018      |
-| 2040GCA    | waste     |   6.7   | EUR/MWh | Own Assumption |
-| 2050ZNES   | biomass   |  34.89  | EUR/MWh | HeatRoadMap    |
-| 2050ZNES   | co2       | 150     | EUR/t   | Own Assumption |
-| 2050ZNES   | coal      |   7.97  | EUR/MWh | HeatRoadMap    |
-| 2050ZNES   | gas       |  43.72  | EUR/MWh | HeatRoadMap    |
-| 2050ZNES   | lignite   |   6     | EUR/MWh | Own Assumption |
-| 2050ZNES   | mixed     |   6.7   | EUR/MWh | Own Assumption |
-| 2050ZNES   | oil       |  47.63  | EUR/MWh | HeatRoadMap    |
-| 2050ZNES   | uranium   |   1.692 | EUR/MWh | Own Assumption |
-| 2050ZNES   | waste     |  30     | EUR/MWh | Own Assumption |
+The 2050ZNES values have been used for all 2050 scenarios.
+
+| scenario   | carrier   | source         | unit    |   value |
+|:-----------|:----------|:---------------|:--------|--------:|
+| 2030DG     | biomass   | HeatRoadMap    | EUR/MWh |  30.32  |
+| 2030DG     | co2       | TYNDP2018      | EUR/t   |  50     |
+| 2030DG     | coal      | TYNDP2018      | EUR/MWh |   9.72  |
+| 2030DG     | gas       | TYNDP2018      | EUR/MWh |  31.68  |
+| 2030DG     | lignite   | TYNDP2018      | EUR/MWh |   3.96  |
+| 2030DG     | mixed     | Own Assumption | EUR/MWh |   6.7   |
+| 2030DG     | oil       | TYNDP2018      | EUR/MWh |  78.48  |
+| 2030DG     | uranium   | TYNDP2018      | EUR/MWh |   1.692 |
+| 2030DG     | waste     | Own Assumption | EUR/MWh |   6.7   |
+| 2030EUCO   | biomass   | HeatRoadMap    | EUR/MWh |  30.32  |
+| 2030EUCO   | co2       | TYNDP2018      | EUR/t   |  27     |
+| 2030EUCO   | coal      | TYNDP2018      | EUR/MWh |  15.48  |
+| 2030EUCO   | gas       | TYNDP2018      | EUR/MWh |  24.84  |
+| 2030EUCO   | lignite   | TYNDP2018      | EUR/MWh |   7.92  |
+| 2030EUCO   | mixed     | Own Assumption | EUR/MWh |   6.7   |
+| 2030EUCO   | oil       | TYNDP2018      | EUR/MWh |  73.8   |
+| 2030EUCO   | uranium   | TYNDP2018      | EUR/MWh |   1.692 |
+| 2030EUCO   | waste     | Own Assumption | EUR/MWh |   6.7   |
+| 2030NEPC   | biomass   | Own Assumption | EUR/MWh |   5     |
+| 2030NEPC   | co2       | NEP2019        | EUR/t   |  29.4   |
+| 2030NEPC   | coal      | NEP2019        | EUR/MWh |   8.4   |
+| 2030NEPC   | gas       | NEP2019        | EUR/MWh |  26.4   |
+| 2030NEPC   | lignite   | NEP2019        | EUR/MWh |   5.6   |
+| 2030NEPC   | mixed     | Own Assumption | EUR/MWh |   6.7   |
+| 2030NEPC   | oil       | NEP2019        | EUR/MWh |  48.3   |
+| 2030NEPC   | uranium   | TYNDP2018      | EUR/MWh |   1.692 |
+| 2030NEPC   | waste     | IRENA2015      | EUR/MWh |   6.7   |
+| 2030ST     | biomass   | HeatRoadMap    | EUR/MWh |  30.32  |
+| 2030ST     | co2       | TYNDP2018      | EUR/t   |  84.3   |
+| 2030ST     | coal      | TYNDP2018      | EUR/MWh |   9.72  |
+| 2030ST     | gas       | TYNDP2018      | EUR/MWh |  31.68  |
+| 2030ST     | lignite   | TYNDP2018      | EUR/MWh |   3.96  |
+| 2030ST     | mixed     | Own Assumption | EUR/MWh |   6.7   |
+| 2030ST     | oil       | TYNDP2018      | EUR/MWh |  82.84  |
+| 2030ST     | uranium   | TYNDP2018      | EUR/MWh |   1.692 |
+| 2030ST     | waste     | Own Assumption | EUR/MWh |   6.7   |
+| 2040DG     | biomass   | HeatRoadMap    | EUR/MWh |  30.32  |
+| 2040DG     | co2       | TYNDP2018      | EUR/t   |  80     |
+| 2040DG     | coal      | TYNDP2018      | EUR/MWh |  10.08  |
+| 2040DG     | gas       | TYNDP2018      | EUR/MWh |  35.28  |
+| 2040DG     | lignite   | TYNDP2018      | EUR/MWh |   3.96  |
+| 2040DG     | mixed     | Own Assumption | EUR/MWh |   6.7   |
+| 2040DG     | oil       | TYNDP2018      | EUR/MWh |  87.84  |
+| 2040DG     | uranium   | TYNDP2018      | EUR/MWh |   1.692 |
+| 2040DG     | waste     | Own Assumption | EUR/MWh |   6.7   |
+| 2040GCA    | biomass   | HeatRoadMap    | EUR/MWh |  30.32  |
+| 2040GCA    | co2       | TYNDP2018      | EUR/t   | 126     |
+| 2040GCA    | coal      | TYNDP2018      | EUR/MWh |   6.48  |
+| 2040GCA    | gas       | TYNDP2018      | EUR/MWh |  30.24  |
+| 2040GCA    | lignite   | TYNDP2018      | EUR/MWh |   3.96  |
+| 2040GCA    | mixed     | Own Assumption | EUR/MWh |   6.7   |
+| 2040GCA    | oil       | TYNDP2018      | EUR/MWh |  50.22  |
+| 2040GCA    | uranium   | TYNDP2018      | EUR/MWh |   1.692 |
+| 2040GCA    | waste     | Own Assumption | EUR/MWh |   6.7   |
+| 2040ST     | biomass   | HeatRoadMap    | EUR/MWh |  30.32  |
+| 2040ST     | co2       | TYNDP2018      | EUR/t   |  45     |
+| 2040ST     | coal      | TYNDP2018      | EUR/MWh |   9     |
+| 2040ST     | gas       | TYNDP2018      | EUR/MWh |  19.8   |
+| 2040ST     | lignite   | TYNDP2018      | EUR/MWh |   3.96  |
+| 2040ST     | mixed     | Own Assumption | EUR/MWh |   6.7   |
+| 2040ST     | oil       | TYNDP2018      | EUR/MWh |  61.56  |
+| 2040ST     | uranium   | TYNDP2018      | EUR/MWh |   1.692 |
+| 2040ST     | waste     | Own Assumption | EUR/MWh |   6.7   |
+| 2050ZNES   | biomass   | HeatRoadMap    | EUR/MWh |  34.89  |
+| 2050ZNES   | co2       | Own Assumption | EUR/t   | 150     |
+| 2050ZNES   | coal      | HeatRoadMap    | EUR/MWh |   7.97  |
+| 2050ZNES   | gas       | HeatRoadMap    | EUR/MWh |  43.72  |
+| 2050ZNES   | lignite   | Own Assumption | EUR/MWh |   6     |
+| 2050ZNES   | mixed     | Own Assumption | EUR/MWh |   6.7   |
+| 2050ZNES   | oil       | HeatRoadMap    | EUR/MWh |  47.63  |
+| 2050ZNES   | uranium   | Own Assumption | EUR/MWh |   1.692 |
+| 2050ZNES   | waste     | Own Assumption | EUR/MWh |  30     |
+
 
 
 \newpage
 ## Technical parameters
 
-|   year | parameter    | carrier   | tech     |      value | unit      | source                    |
-|-------:|:-------------|:----------|:---------|-----------:|:----------|:--------------------------|
-|   2030 | capex        | gas       | ccgt     |  800       | Euro/kW   | DIW                       |
-|   2030 | capex        | gas       | ocgt     |  400       | Euro/kW   | DIW                       |
-|   2030 | capex        | lithium   | battery  |  785       | Euro/kW   | IWES                      |
-|   2030 | capex        | solar     | pv       |  600       | Euro/kW   | DIW                       |
-|   2030 | capex        | wind      | offshore | 2506       | Euro/kW   | DIW                       |
-|   2030 | capex        | wind      | onshore  | 1182       | Euro/kW   | DIW                       |
-|   2030 | efficiency   | biomass   | st       |    0.35    | per unit  | DIW                       |
-|   2030 | efficiency   | cavern    | acaes    |    0.7     | per unit  | roundtrip;ZNES            |
-|   2030 | efficiency   | coal      | st       |    0.4     | per unit  | TYNDP2018                 |
-|   2030 | efficiency   | gas       | ccgt     |    0.5     | per unit  | TYNDP2018                 |
-|   2030 | efficiency   | gas       | ocgt     |    0.38    | per unit  | TYNDP2018                 |
-|   2030 | efficiency   | hydro     | phs      |    0.75    | per unit  | roundtrip; DIW            |
-|   2030 | efficiency   | hydro     | ror      |    0.9     | per unit  | DIW                       |
-|   2030 | efficiency   | hydro     | rsv      |    0.9     | per unit  | DIW                       |
-|   2030 | efficiency   | hydrogen  | storage  |    0.4     | per unit  | roundtrip;ZNES            |
-|   2030 | efficiency   | lignite   | st       |    0.4     | per unit  | TYNDP2018                 |
-|   2030 | efficiency   | lithium   | battery  |    0.85    | per unit  | roundtrip;Own assumption  |
-|   2030 | efficiency   | mixed     | st       |    0.26    | per unit  | Own assumption            |
-|   2030 | efficiency   | oil       | ocgt     |    0.35    | per unit  | TYNDP2018                 |
-|   2030 | efficiency   | uranium   | st       |    0.33    | per unit  | TYNDP2018                 |
-|   2030 | efficiency   | waste     | st       |    0.26    | per unit  | Own assumption            |
-|   2030 | max_hours    | cavern    | acaes    |    3       | h         | ZNES                      |
-|   2030 | max_hours    | hydro     | phs      |    8       | h         | Plessmann                 |
-|   2030 | max_hours    | hydrogen  | storage  |  168       | h         | eGo                       |
-|   2030 | max_hours    | lithium   | battery  |    6.5     | h         | Plessmann                 |
-|   2030 | max_hours    | porous    | acaes    |  300       | h         | Own assumption            |
-|   2040 | efficiency   | biomass   | st       |    0.4185  | per unit  | Own assumption            |
-|   2040 | efficiency   | cavern    | acaes    |    0.7     | per unit  | roundtrip; ZNES           |
-|   2040 | efficiency   | coal      | st       |    0.425   | per unit  | Own assumption            |
-|   2040 | efficiency   | gas       | ccgt     |    0.53475 | per unit  | Own assumption            |
-|   2040 | efficiency   | gas       | ocgt     |    0.373   | per unit  | Own assumption            |
-|   2040 | efficiency   | hydro     | phs      |    0.75    | per unit  | roundtrip; DIW            |
-|   2040 | efficiency   | hydro     | ror      |    0.9     | per unit  | DIW                       |
-|   2040 | efficiency   | hydro     | rsv      |    0.9     | per unit  | DIW                       |
-|   2040 | efficiency   | hydrogen  | storage  |    0.4     | per unit  | roundtrip;ZNES            |
-|   2040 | efficiency   | lignite   | st       |    0.4     | per unit  | Own assumption            |
-|   2040 | efficiency   | lithium   | battery  |    0.885   | per unit  | Own assumption            |
-|   2040 | efficiency   | mixed     | st       |    0.28    | per unit  | Own assumption            |
-|   2040 | efficiency   | oil       | ocgt     |    0.373   | per unit  | Own assumption            |
-|   2040 | efficiency   | porous    | acaes    |    0.57    | per unit  | roundtrip; Own assumption |
-|   2040 | efficiency   | uranium   | st       |    0.335   | per unit  | Own assumption            |
-|   2040 | efficiency   | waste     | st       |    0.26    | per unit  | Own assumption            |
-|   2040 | max_hours    | cavern    | acaes    |    3       | h         | ZNES                      |
-|   2040 | max_hours    | hydro     | phs      |    8       | h         | Plessmann                 |
-|   2040 | max_hours    | hydrogen  | storage  |  168       | h         | eGo                       |
-|   2040 | max_hours    | lithium   | battery  |    6.5     | h         | Plessmann                 |
-|   2040 | max_hours    | porous    | acaes    |  300       | h         | Own assumption            |
-|   2050 | avf          | biomass   | st       |    0.9     | per unit  | Own assumption            |
-|   2050 | avf          | coal      | st       |    0.85    | per unit  | PRIMES                    |
-|   2050 | avf          | gas       | ccgt     |    0.85    | per unit  | PRIMES                    |
-|   2050 | avf          | gas       | ocgt     |    0.96    | per unit  | PRIMES                    |
-|   2050 | avf          | hydro     | phs      |    1       | per unit  | Own assumption            |
-|   2050 | avf          | hydro     | ror      |    1       | per unit  | Own assumption            |
-|   2050 | avf          | hydro     | rsv      |    1       | per unit  | Own assumption            |
-|   2050 | avf          | lignite   | st       |    0.85    | per unit  | PRIMES                    |
-|   2050 | avf          | lithium   | battery  |    1       | per unit  | Own assumption            |
-|   2050 | avf          | mixed     | st       |    0.9     | per unit  | Own assumption            |
-|   2050 | avf          | oil       | ocgt     |    0.9     | per unit  | PRIMES                    |
-|   2050 | avf          | porous    | acaes    |    1       | per unit  | Own assumption            |
-|   2050 | avf          | solar     | pv       |    1       | per unit  | Own assumption            |
-|   2050 | avf          | uranium   | st       |    0.9     | per unit  | Own assumption            |
-|   2050 | avf          | waste     | st       |    0.9     | per unit  | Own assumption            |
-|   2050 | avf          | wind      | offshore |    1       | per unit  | Own assumption            |
-|   2050 | avf          | wind      | onshore  |    1       | per unit  | Own assumption            |
-|   2050 | capex        | biomass   | st       | 1951       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | coal      | st       | 1300       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | gas       | ccgt     |  800       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | gas       | ocgt     |  400       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | hydro     | phs      | 2000       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | hydro     | ror      | 3000       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | hydro     | rsv      | 2000       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | lignite   | st       | 1500       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | oil       | ocgt     |  400       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | solar     | pv       |  425       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | wind      | offshore | 2093       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex        | wind      | onshore  | 1075       | Euro/kW   | DIW, p. 75                |
-|   2050 | capex_energy | cavern    | acaes    |   40       | Euro/kWh  | Schill2018                |
-|   2050 | capex_energy | hydrogen  | storage  |    0.2     | Euro/kWh  | Schill2018                |
-|   2050 | capex_energy | lithium   | battery  |  187       | Euro/kWh  | Schill2018                |
-|   2050 | capex_energy | redox     | battery  |   70       | Euro/kWh  | Schill2018                |
-|   2050 | capex_power  | cavern    | acaes    |  750       | Euro/kW   | Schill2018                |
-|   2050 | capex_power  | hydrogen  | storage  | 1000       | Euro/kW   | Schill2018                |
-|   2050 | capex_power  | lithium   | battery  |   35       | Euro/kWh  | Schill2018                |
-|   2050 | capex_power  | redox     | battery  |  600       | Euro/kW   | Schill2018                |
-|   2050 | efficiency   | biomass   | st       |    0.487   | per unit  | DIW                       |
-|   2050 | efficiency   | cavern    | acaes    |    0.7     | per unit  | roundtrip;ZNES            |
-|   2050 | efficiency   | coal      | st       |    0.45    | per unit  | DIW                       |
-|   2050 | efficiency   | gas       | ccgt     |    0.5695  | per unit  | Avg; DIW                  |
-|   2050 | efficiency   | gas       | ocgt     |    0.366   | per unit  | Avg; DIW                  |
-|   2050 | efficiency   | hydro     | phs      |    0.75    | per unit  | roundtrip; DIW            |
-|   2050 | efficiency   | hydro     | ror      |    0.9     | per unit  | DIW                       |
-|   2050 | efficiency   | hydro     | rsv      |    0.9     | per unit  | DIW                       |
-|   2050 | efficiency   | hydrogen  | storage  |    0.4     | per unit  | roundtrip;ZNES            |
-|   2050 | efficiency   | lignite   | st       |    0.4     | per unit  | Avg; DIW                  |
-|   2050 | efficiency   | lithium   | battery  |    0.92    | per unit  | roundtrip; IWES           |
-|   2050 | efficiency   | mixed     | st       |    0.3     | per unit  | Own assumption            |
-|   2050 | efficiency   | oil       | ocgt     |    0.396   | per unit  | DIW                       |
-|   2050 | efficiency   | porous    | acaes    |    0.57    | per unit  | roundtrip; Own assumption |
-|   2050 | efficiency   | redox     | battery  |    0.75    | per unit  | roundtrip;ZNES            |
-|   2050 | efficiency   | uranium   | st       |    0.34    | per unit  | DIW                       |
-|   2050 | efficiency   | waste     | st       |    0.26    | per unit  | Own assumption            |
-|   2050 | fom          | biomass   | st       |  100       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | cavern    | acaes    |   10       | Euro/kWha | Schill2018                |
-|   2050 | fom          | coal      | st       |   25       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | gas       | ccgt     |   20       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | gas       | ocgt     |   15       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | hydro     | phs      |   20       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | hydro     | ror      |   60       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | hydro     | rsv      |   20       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | hydrogen  | storage  |   10       | Euro/kWha | Schill2018                |
-|   2050 | fom          | lignite   | st       |   30       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | lithium   | battery  |   10       | Euro/kWha | Schill2018                |
-|   2050 | fom          | oil       | ocgt     |    6       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | redox     | battery  |   10       | Euro/kWha | Schill2018                |
-|   2050 | fom          | solar     | pv       |   25       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | wind      | offshore |   80       | Euro/kWa  | DIW, p.78                 |
-|   2050 | fom          | wind      | onshore  |   35       | Euro/kWa  | DIW, p.78                 |
-|   2050 | lifetime     | biomass   | st       |   30       | a         | DIW, p. 72                |
-|   2050 | lifetime     | cavern    | acaes    |   30       | a         | Schill2018                |
-|   2050 | lifetime     | coal      | st       |   40       | a         | DIW, p. 72                |
-|   2050 | lifetime     | gas       | ccgt     |   30       | a         | DIW, p. 72                |
-|   2050 | lifetime     | gas       | ocgt     |   30       | a         | DIW, p. 72                |
-|   2050 | lifetime     | hydro     | phs      |   50       | a         | DIW, p. 72                |
-|   2050 | lifetime     | hydro     | ror      |   50       | a         | DIW, p. 72                |
-|   2050 | lifetime     | hydro     | rsv      |   50       | a         | DIW, p. 72                |
-|   2050 | lifetime     | hydrogen  | storage  |   22.5     | a         | Schill2018                |
-|   2050 | lifetime     | lignite   | st       |   40       | a         | DIW, p. 72                |
-|   2050 | lifetime     | lithium   | battery  |   10       | a         | Plessmann, p. 90          |
-|   2050 | lifetime     | oil       | ocgt     |   40       | a         | DIW, p. 72                |
-|   2050 | lifetime     | redox     | battery  |   25       | a         | Schill2018                |
-|   2050 | lifetime     | solar     | pv       |   25       | a         | DIW, p. 72                |
-|   2050 | lifetime     | wind      | offshore |   25       | a         | DIW, p. 72                |
-|   2050 | lifetime     | wind      | onshore  |   25       | a         | DIW, p. 72                |
-|   2050 | max_hours    | cavern    | acaes    |    3       | h         | ZNES                      |
-|   2050 | max_hours    | hydro     | phs      |    8       | h         | Plessmann, p. 90          |
-|   2050 | max_hours    | hydrogen  | storage  |  168       | h         | eGo                       |
-|   2050 | max_hours    | lithium   | battery  |    6.5     | h         | Plessmann, p. 90          |
-|   2050 | max_hours    | porous    | acaes    |  300       | h         | Own assumption            |
-|   2050 | max_hours    | redox     | battery  |    3.3     | h         | ZNES                      |
-|   2050 | vom          | biomass   | st       |   10       | Euro/Mwh  | Own assumption            |
-|   2050 | vom          | cavern    | acaes    |    1       | Euro/Mwh  | Schill2018                |
-|   2050 | vom          | coal      | st       |    6       | Euro/Mwh  | DIW, p. 78                |
-|   2050 | vom          | gas       | ccgt     |    4       | Euro/Mwh  | DIW, p. 78                |
-|   2050 | vom          | gas       | ocgt     |    3       | Euro/Mwh  | DIW, p. 78                |
-|   2050 | vom          | hydro     | phs      |    0       | Euro/Mwh  | DIW, p. 78                |
-|   2050 | vom          | hydro     | ror      |    0       | Euro/Mwh  | DIW, p. 78                |
-|   2050 | vom          | hydro     | rsv      |    0       | Euro/Mwh  | DIW, p. 78                |
-|   2050 | vom          | hydrogen  | storage  |    1       | Euro/Mwh  | Schill2018                |
-|   2050 | vom          | lignite   | st       |    7       | Euro/Mwh  | DIW, p. 78                |
-|   2050 | vom          | lithium   | battery  |    0       | Euro/Mwh  | Plessmann, p. 90          |
-|   2050 | vom          | mixed     | st       |    5       | Euro/Mwh  | Own assumption            |
-|   2050 | vom          | oil       | ocgt     |    3       | Euro/Mwh  | DIW, p. 78                |
-|   2050 | vom          | redox     | battery  |    1       | Euro/Mwh  | Schill2018                |
-|   2050 | vom          | solar     | pv       |    0       | Euro/Mwh  | Plessmann                 |
-|   2050 | vom          | uranium   | st       |    8.5     | Euro/Mwh  | DIW, p. 78, AVG           |
-|   2050 | vom          | waste     | st       |   10       | Euro/Mwh  | Own assumption            |
-|   2050 | vom          | wind      | offshore |    0       | Euro/Mwh  | Plessmann                 |
-|   2050 | vom          | wind      | onshore  |    0       | Euro/Mwh  | Plessmann                 |
+|   year | parameter    | carrier   | tech     | source                | unit      |      value |
+|-------:|:-------------|:----------|:---------|:----------------------|:----------|-----------:|
+|   2030 | capex        | gas       | ccgt     | DIW                   | Euro/kW   |  800       |
+|   2030 | capex        | gas       | ocgt     | DIW                   | Euro/kW   |  400       |
+|   2030 | capex        | lithium   | battery  | IWES                  | Euro/kW   |  785       |
+|   2030 | capex        | solar     | pv       | DIW                   | Euro/kW   |  600       |
+|   2030 | capex        | wind      | offshore | DIW                   | Euro/kW   | 2506       |
+|   2030 | capex        | wind      | onshore  | DIW                   | Euro/kW   | 1182       |
+|   2030 | capex_energy | cavern    | acaes    | IWES                  | Euro/kWh  |   40       |
+|   2030 | capex_energy | hydrogen  | storage  | IWES                  | Euro/kWh  |    0.2     |
+|   2030 | capex_energy | lithium   | battery  | IWES                  | Euro/kWh  |  300       |
+|   2030 | capex_energy | redox     | battery  | IWES                  | Euro/kWh  |  150       |
+|   2030 | capex_power  | cavern    | acaes    | IWES                  | Euro/kW   |  825       |
+|   2030 | capex_power  | hydrogen  | storage  | IWES                  | Euro/kW   | 1550       |
+|   2030 | capex_power  | lithium   | battery  | IWES                  | Euro/kW   |   65       |
+|   2030 | capex_power  | redox     | battery  | IWES                  | Euro/kW   | 1000       |
+|   2030 | efficiency   | biomass   | st       | DIW                   | per unit  |    0.35    |
+|   2030 | efficiency   | cavern    | acaes    | IWES                  | per unit  |    0.7     |
+|   2030 | efficiency   | coal      | st       | TYNDP2018             | per unit  |    0.4     |
+|   2030 | efficiency   | gas       | ccgt     | TYNDP2018             | per unit  |    0.5     |
+|   2030 | efficiency   | gas       | ocgt     | TYNDP2018             | per unit  |    0.38    |
+|   2030 | efficiency   | hydro     | phs      | roundtrip; DIW        | per unit  |    0.75    |
+|   2030 | efficiency   | hydro     | ror      | DIW                   | per unit  |    0.9     |
+|   2030 | efficiency   | hydro     | rsv      | DIW                   | per unit  |    0.9     |
+|   2030 | efficiency   | hydrogen  | storage  | IWES                  | per unit  |    0.32    |
+|   2030 | efficiency   | lignite   | st       | TYNDP2018             | per unit  |    0.4     |
+|   2030 | efficiency   | lithium   | battery  | IWES                  | per unit  |    0.9     |
+|   2030 | efficiency   | mixed     | st       | Own assumption        | per unit  |    0.26    |
+|   2030 | efficiency   | oil       | ocgt     | TYNDP2018             | per unit  |    0.35    |
+|   2030 | efficiency   | porous    | acaes    | Own assumption (2050) | per unit  |    0.5     |
+|   2030 | efficiency   | redox     | battery  | IWES                  | per unit  |    0.74    |
+|   2030 | efficiency   | uranium   | st       | TYNDP2018             | per unit  |    0.33    |
+|   2030 | efficiency   | waste     | st       | Own assumption        | per unit  |    0.26    |
+|   2030 | fom          | cavern    | acaes    | Own assumption (2050) | Euro/kWha |   10       |
+|   2030 | fom          | hydrogen  | storage  | Own assumption (2050) | Euro/kWha |   10       |
+|   2030 | fom          | lithium   | battery  | Own assumption (2050) | Euro/kWha |   10       |
+|   2030 | fom          | redox     | battery  | Own assumption (2050) | Euro/kWha |   10       |
+|   2030 | lifetime     | cavern    | acaes    | IWES                  | a         |   30       |
+|   2030 | lifetime     | hydrogen  | storage  | Own assumption        | a         |   22.5     |
+|   2030 | lifetime     | lithium   | battery  | IWES                  | a         |   12       |
+|   2030 | lifetime     | redox     | battery  | IWES                  | a         |   25       |
+|   2030 | max_hours    | cavern    | acaes    | Own assumption (2050) | h         |    7       |
+|   2030 | max_hours    | hydro     | phs      | Own assumption (2050) | h         |    8       |
+|   2030 | max_hours    | hydrogen  | storage  | Own assumption (2050) | h         |  168       |
+|   2030 | max_hours    | lithium   | battery  | Own assumption (2050) | h         |    6.5     |
+|   2030 | max_hours    | porous    | acaes    | Own assumption (2050) | h         |  300       |
+|   2030 | max_hours    | redox     | battery  | Own assumption (2050) | h         |    3.3     |
+|   2030 | vom          | cavern    | acaes    | Own assumption (2050) | Euro/Mwh  |    1       |
+|   2030 | vom          | hydrogen  | storage  | Own assumption (2050) | Euro/Mwh  |    1       |
+|   2030 | vom          | lithium   | battery  | Own assumption (2050) | Euro/Mwh  |    1       |
+|   2030 | vom          | redox     | battery  | Own assumption (2050) | Euro/Mwh  |    1       |
+|   2040 | capex_energy | cavern    | acaes    | Own assumption (2050) | Euro/kWh  |   40       |
+|   2040 | capex_energy | hydrogen  | storage  | Own assumption (2050) | Euro/kWh  |    0.2     |
+|   2040 | capex_energy | lithium   | battery  | Own assumption (2050) | Euro/kWh  |  187       |
+|   2040 | capex_energy | redox     | battery  | Own assumption (2050) | Euro/kWh  |   70       |
+|   2040 | capex_power  | cavern    | acaes    | Own assumption (2050) | Euro/kW   |  750       |
+|   2040 | capex_power  | hydrogen  | storage  | IWES 2050             | Euro/kW   | 1400       |
+|   2040 | capex_power  | lithium   | battery  | Own assumption (2050) | Euro/kWh  |   35       |
+|   2040 | capex_power  | redox     | battery  | Own assumption (2050) | Euro/kW   |  600       |
+|   2040 | efficiency   | biomass   | st       | Own assumption        | per unit  |    0.4185  |
+|   2040 | efficiency   | cavern    | acaes    | Own assumption (2050) | per unit  |    0.73    |
+|   2040 | efficiency   | coal      | st       | Own assumption        | per unit  |    0.425   |
+|   2040 | efficiency   | gas       | ccgt     | Own assumption        | per unit  |    0.53475 |
+|   2040 | efficiency   | gas       | ocgt     | Own assumption        | per unit  |    0.373   |
+|   2040 | efficiency   | hydro     | phs      | roundtrip; DIW        | per unit  |    0.75    |
+|   2040 | efficiency   | hydro     | ror      | DIW                   | per unit  |    0.9     |
+|   2040 | efficiency   | hydro     | rsv      | DIW                   | per unit  |    0.9     |
+|   2040 | efficiency   | hydrogen  | storage  | Own assumption (2050) | per unit  |    0.46    |
+|   2040 | efficiency   | lignite   | st       | Own assumption        | per unit  |    0.4     |
+|   2040 | efficiency   | lithium   | battery  | Own assumption (2050) | per unit  |    0.92    |
+|   2040 | efficiency   | mixed     | st       | Own assumption        | per unit  |    0.28    |
+|   2040 | efficiency   | oil       | ocgt     | Own assumption        | per unit  |    0.373   |
+|   2040 | efficiency   | porous    | acaes    | Own assumption (2050) | per unit  |    0.56    |
+|   2040 | efficiency   | redox     | battery  | Own assumption (2050) | per unit  |    0.8     |
+|   2040 | efficiency   | uranium   | st       | Own assumption        | per unit  |    0.335   |
+|   2040 | efficiency   | waste     | st       | Own assumption        | per unit  |    0.26    |
+|   2040 | fom          | cavern    | acaes    | Own assumption (2050) | Euro/kWha |   10       |
+|   2040 | fom          | hydrogen  | storage  | Own assumption (2050) | Euro/kWha |   10       |
+|   2040 | fom          | lithium   | battery  | Own assumption (2050) | Euro/kWha |   10       |
+|   2040 | fom          | redox     | battery  | Own assumption (2050) | Euro/kWha |   10       |
+|   2040 | lifetime     | cavern    | acaes    | Own assumption (2050) | a         |   30       |
+|   2040 | lifetime     | hydrogen  | storage  | Own assumption (2050) | a         |   22.5     |
+|   2040 | lifetime     | lithium   | battery  | Own assumption (2050) | a         |   20       |
+|   2040 | lifetime     | redox     | battery  | Own assumption (2050) | a         |   25       |
+|   2040 | max_hours    | cavern    | acaes    | Own assumption (2050) | h         |    7       |
+|   2040 | max_hours    | hydro     | phs      | Own assumption (2050) | h         |    8       |
+|   2040 | max_hours    | hydrogen  | storage  | Own assumption (2050) | h         |  168       |
+|   2040 | max_hours    | lithium   | battery  | Own assumption (2050) | h         |    6.5     |
+|   2040 | max_hours    | porous    | acaes    | Own assumption (2050) | h         |  300       |
+|   2040 | max_hours    | redox     | battery  | Own assumption (2050) | h         |    3.3     |
+|   2040 | vom          | cavern    | acaes    | Own assumption (2050) | Euro/Mwh  |    1       |
+|   2040 | vom          | hydrogen  | storage  | Own assumption (2050) | Euro/Mwh  |    1       |
+|   2040 | vom          | lithium   | battery  | Own assumption (2050) | Euro/Mwh  |    1       |
+|   2040 | vom          | redox     | battery  | Own assumption (2050) | Euro/Mwh  |    1       |
+|   2050 | avf          | biomass   | st       | Own assumption        | per unit  |    0.9     |
+|   2050 | avf          | coal      | st       | PRIMES                | per unit  |    0.85    |
+|   2050 | avf          | gas       | ccgt     | PRIMES                | per unit  |    0.85    |
+|   2050 | avf          | gas       | ocgt     | PRIMES                | per unit  |    0.96    |
+|   2050 | avf          | hydro     | phs      | Own assumption        | per unit  |    1       |
+|   2050 | avf          | hydro     | ror      | Own assumption        | per unit  |    1       |
+|   2050 | avf          | hydro     | rsv      | Own assumption        | per unit  |    1       |
+|   2050 | avf          | lignite   | st       | PRIMES                | per unit  |    0.85    |
+|   2050 | avf          | lithium   | battery  | Own assumption        | per unit  |    1       |
+|   2050 | avf          | mixed     | st       | Own assumption        | per unit  |    0.9     |
+|   2050 | avf          | oil       | ocgt     | PRIMES                | per unit  |    0.9     |
+|   2050 | avf          | porous    | acaes    | Own assumption        | per unit  |    1       |
+|   2050 | avf          | solar     | pv       | Own assumption        | per unit  |    1       |
+|   2050 | avf          | uranium   | st       | Own assumption        | per unit  |    0.9     |
+|   2050 | avf          | waste     | st       | Own assumption        | per unit  |    0.9     |
+|   2050 | avf          | wind      | offshore | Own assumption        | per unit  |    1       |
+|   2050 | avf          | wind      | onshore  | Own assumption        | per unit  |    1       |
+|   2050 | capex        | biomass   | st       | DIW, p. 75            | Euro/kW   | 1951       |
+|   2050 | capex        | coal      | st       | DIW, p. 75            | Euro/kW   | 1300       |
+|   2050 | capex        | gas       | ccgt     | DIW, p. 75            | Euro/kW   |  800       |
+|   2050 | capex        | gas       | ocgt     | DIW, p. 75            | Euro/kW   |  400       |
+|   2050 | capex        | hydro     | phs      | DIW, p. 75            | Euro/kW   | 2000       |
+|   2050 | capex        | hydro     | ror      | DIW, p. 75            | Euro/kW   | 3000       |
+|   2050 | capex        | hydro     | rsv      | DIW, p. 75            | Euro/kW   | 2000       |
+|   2050 | capex        | lignite   | st       | DIW, p. 75            | Euro/kW   | 1500       |
+|   2050 | capex        | oil       | ocgt     | DIW, p. 75            | Euro/kW   |  400       |
+|   2050 | capex        | solar     | pv       | DIW, p. 75            | Euro/kW   |  425       |
+|   2050 | capex        | wind      | offshore | DIW, p. 75            | Euro/kW   | 2093       |
+|   2050 | capex        | wind      | onshore  | DIW, p. 75            | Euro/kW   | 1075       |
+|   2050 | capex_energy | cavern    | acaes    | Schill2018            | Euro/kWh  |   40       |
+|   2050 | capex_energy | hydrogen  | storage  | Schill2018            | Euro/kWh  |    0.2     |
+|   2050 | capex_energy | lithium   | battery  | Schill2018            | Euro/kWh  |  187       |
+|   2050 | capex_energy | redox     | battery  | Schill2018            | Euro/kWh  |   70       |
+|   2050 | capex_power  | cavern    | acaes    | Schill2018            | Euro/kW   |  750       |
+|   2050 | capex_power  | hydrogen  | storage  | Schill2018            | Euro/kW   | 1000       |
+|   2050 | capex_power  | lithium   | battery  | Schill2018            | Euro/kWh  |   35       |
+|   2050 | capex_power  | redox     | battery  | Schill2018            | Euro/kW   |  600       |
+|   2050 | efficiency   | biomass   | st       | DIW                   | per unit  |    0.487   |
+|   2050 | efficiency   | cavern    | acaes    | roundtrip;Schill2018  | per unit  |    0.73    |
+|   2050 | efficiency   | coal      | st       | DIW                   | per unit  |    0.45    |
+|   2050 | efficiency   | gas       | ccgt     | Avg; DIW              | per unit  |    0.5695  |
+|   2050 | efficiency   | gas       | ocgt     | Avg; DIW              | per unit  |    0.366   |
+|   2050 | efficiency   | hydro     | phs      | roundtrip; DIW        | per unit  |    0.75    |
+|   2050 | efficiency   | hydro     | ror      | DIW                   | per unit  |    0.9     |
+|   2050 | efficiency   | hydro     | rsv      | DIW                   | per unit  |    0.9     |
+|   2050 | efficiency   | hydrogen  | storage  | roundtrip;Schill2018  | per unit  |    0.46    |
+|   2050 | efficiency   | lignite   | st       | Avg; DIW              | per unit  |    0.4     |
+|   2050 | efficiency   | lithium   | battery  | roundtrip; Schill2018 | per unit  |    0.92    |
+|   2050 | efficiency   | mixed     | st       | Own assumption        | per unit  |    0.3     |
+|   2050 | efficiency   | oil       | ocgt     | DIW                   | per unit  |    0.396   |
+|   2050 | efficiency   | porous    | acaes    | Own assumption        | per unit  |    0.56    |
+|   2050 | efficiency   | redox     | battery  | roundtrip;Schill2018  | per unit  |    0.8     |
+|   2050 | efficiency   | uranium   | st       | DIW                   | per unit  |    0.34    |
+|   2050 | efficiency   | waste     | st       | Own assumption        | per unit  |    0.26    |
+|   2050 | fom          | biomass   | st       | DIW, p.78             | Euro/kWa  |  100       |
+|   2050 | fom          | cavern    | acaes    | Schill2018            | Euro/kWha |   10       |
+|   2050 | fom          | coal      | st       | DIW, p.78             | Euro/kWa  |   25       |
+|   2050 | fom          | gas       | ccgt     | DIW, p.78             | Euro/kWa  |   20       |
+|   2050 | fom          | gas       | ocgt     | DIW, p.78             | Euro/kWa  |   15       |
+|   2050 | fom          | hydro     | phs      | DIW, p.78             | Euro/kWa  |   20       |
+|   2050 | fom          | hydro     | ror      | DIW, p.78             | Euro/kWa  |   60       |
+|   2050 | fom          | hydro     | rsv      | DIW, p.78             | Euro/kWa  |   20       |
+|   2050 | fom          | hydrogen  | storage  | Schill2018            | Euro/kWha |   10       |
+|   2050 | fom          | lignite   | st       | DIW, p.78             | Euro/kWa  |   30       |
+|   2050 | fom          | lithium   | battery  | Schill2018            | Euro/kWha |   10       |
+|   2050 | fom          | oil       | ocgt     | DIW, p.78             | Euro/kWa  |    6       |
+|   2050 | fom          | redox     | battery  | Schill2018            | Euro/kWha |   10       |
+|   2050 | fom          | solar     | pv       | DIW, p.78             | Euro/kWa  |   25       |
+|   2050 | fom          | wind      | offshore | DIW, p.78             | Euro/kWa  |   80       |
+|   2050 | fom          | wind      | onshore  | DIW, p.78             | Euro/kWa  |   35       |
+|   2050 | lifetime     | biomass   | st       | DIW, p. 72            | a         |   30       |
+|   2050 | lifetime     | cavern    | acaes    | Schill2018            | a         |   30       |
+|   2050 | lifetime     | coal      | st       | DIW, p. 72            | a         |   40       |
+|   2050 | lifetime     | gas       | ccgt     | DIW, p. 72            | a         |   30       |
+|   2050 | lifetime     | gas       | ocgt     | DIW, p. 72            | a         |   30       |
+|   2050 | lifetime     | hydro     | phs      | DIW, p. 72            | a         |   50       |
+|   2050 | lifetime     | hydro     | ror      | DIW, p. 72            | a         |   50       |
+|   2050 | lifetime     | hydro     | rsv      | DIW, p. 72            | a         |   50       |
+|   2050 | lifetime     | hydrogen  | storage  | Schill2018            | a         |   22.5     |
+|   2050 | lifetime     | lignite   | st       | DIW, p. 72            | a         |   40       |
+|   2050 | lifetime     | lithium   | battery  | Schill2018            | a         |   20       |
+|   2050 | lifetime     | oil       | ocgt     | DIW, p. 72            | a         |   40       |
+|   2050 | lifetime     | redox     | battery  | Schill2018            | a         |   25       |
+|   2050 | lifetime     | solar     | pv       | DIW, p. 72            | a         |   25       |
+|   2050 | lifetime     | wind      | offshore | DIW, p. 72            | a         |   25       |
+|   2050 | lifetime     | wind      | onshore  | DIW, p. 72            | a         |   25       |
+|   2050 | max_hours    | cavern    | acaes    | Wolf2011              | h         |    7       |
+|   2050 | max_hours    | hydro     | phs      | Plessmann, p. 90      | h         |    8       |
+|   2050 | max_hours    | hydrogen  | storage  | eGo                   | h         |  168       |
+|   2050 | max_hours    | lithium   | battery  | Plessmann, p. 90      | h         |    6.5     |
+|   2050 | max_hours    | porous    | acaes    | Own assumption        | h         |  300       |
+|   2050 | max_hours    | redox     | battery  | ZNES                  | h         |    3.3     |
+|   2050 | vom          | biomass   | st       | Own assumption        | Euro/Mwh  |   10       |
+|   2050 | vom          | cavern    | acaes    | Schill2018            | Euro/Mwh  |    1       |
+|   2050 | vom          | coal      | st       | DIW, p. 78            | Euro/Mwh  |    6       |
+|   2050 | vom          | gas       | ccgt     | DIW, p. 78            | Euro/Mwh  |    4       |
+|   2050 | vom          | gas       | ocgt     | DIW, p. 78            | Euro/Mwh  |    3       |
+|   2050 | vom          | hydro     | phs      | DIW, p. 78            | Euro/Mwh  |    0       |
+|   2050 | vom          | hydro     | ror      | DIW, p. 78            | Euro/Mwh  |    0       |
+|   2050 | vom          | hydro     | rsv      | DIW, p. 78            | Euro/Mwh  |    0       |
+|   2050 | vom          | hydrogen  | storage  | Schill2018            | Euro/Mwh  |    1       |
+|   2050 | vom          | lignite   | st       | DIW, p. 78            | Euro/Mwh  |    7       |
+|   2050 | vom          | lithium   | battery  | Schill2018            | Euro/Mwh  |    1       |
+|   2050 | vom          | mixed     | st       | Own assumption        | Euro/Mwh  |    5       |
+|   2050 | vom          | oil       | ocgt     | DIW, p. 78            | Euro/Mwh  |    3       |
+|   2050 | vom          | redox     | battery  | Schill2018            | Euro/Mwh  |    1       |
+|   2050 | vom          | solar     | pv       | Plessmann             | Euro/Mwh  |    0       |
+|   2050 | vom          | uranium   | st       | DIW, p. 78, AVG       | Euro/Mwh  |    8.5     |
+|   2050 | vom          | waste     | st       | Own assumption        | Euro/Mwh  |   10       |
+|   2050 | vom          | wind      | offshore | Plessmann             | Euro/Mwh  |    0       |
+|   2050 | vom          | wind      | onshore  | Plessmann             | Euro/Mwh  |    0       |
+
 
 \newpage
 ## Installed capacities
@@ -717,80 +785,137 @@ Figure \ref{supply_demand} shows the energy supply and demand for each scenario.
 The table show the installed capacities for path towards 100% renewable energy supply
 fomr 2030 to 2050.
 
-| scenario     | name             | AT   | BE   | CH   | CZ   | DE    | DK   | FR    | LU   | NL   | NO   | PL   | SE   |
-|:-------------|:-----------------|:-----|:-----|:-----|:-----|:------|:-----|:------|:-----|:-----|:-----|:-----|:-----|
-| 2030NEPC     | biomass-st       | 0.6  | 1.3  | 1.3  | 1.2  | 6.0   | 1.9  | 3.6   | 0.1  | 0.5  | 0.1  | 1.8  | 4.5  |
-| 2030NEPC     | lithium-battery  | -    | -    | -    | -    | 12.5  | -    | -     | -    | -    | -    | -    | -    |
-| 2030NEPC     | hydrogen-storage | -    | -    | -    | -    | 3.0   | -    | -     | -    | -    | -    | -    | -    |
-| 2030NEPC     | wind-offshore    | -    | 2.3  | -    | -    | 17.0  | 2.9  | 7.0   | -    | 11.5 | -    | 2.2  | 0.2  |
-| 2030NEPC     | hydro-phs        | 6.1  | 1.2  | 4.6  | 1.0  | 9.8   | -    | 5.5   | 1.0  | -    | 1.1  | 1.5  | -    |
-| 2030NEPC     | mixed-st         | 1.0  | 1.2  | 1.0  | 1.5  | 4.1   | 0.1  | -     | 0.1  | 3.5  | -    | 7.3  | 0.4  |
-| 2030NEPC     | gas-ocgt         | 1.4  | 2.2  | -    | 0.5  | 10.0  | 0.1  | 3.9   | -    | 2.6  | 0.1  | 2.0  | -    |
-| 2030NEPC     | lignite-st       | -    | -    | -    | 4.8  | 9.0   | -    | -     | -    | -    | -    | 7.4  | -    |
-| 2030NEPC     | gas-ccgt         | 2.7  | 4.2  | -    | 0.9  | 23.4  | 0.3  | 7.6   | -    | 5.0  | 0.3  | 3.8  | -    |
-| 2030NEPC     | wind-onshore     | 5.0  | 3.3  | 0.4  | 1.0  | 85.5  | 5.6  | 36.3  | 0.2  | 6.7  | 3.3  | 9.2  | 10.8 |
-| 2030NEPC     | uranium-st       | -    | -    | 1.2  | 4.1  | -     | -    | 37.6  | -    | 0.5  | -    | 3.0  | 6.9  |
-| 2030NEPC     | oil-ocgt         | 0.2  | -    | -    | -    | 0.9   | 0.8  | 1.5   | -    | -    | -    | -    | -    |
-| 2030NEPC     | coal-st          | -    | -    | -    | 0.3  | 8.1   | 0.4  | -     | -    | 4.6  | -    | 13.8 | 0.1  |
-| 2030NEPC     | solar-pv         | 4.5  | 5.1  | 5.6  | 3.5  | 104.5 | 2.9  | 31.5  | 0.2  | 11.4 | 0.4  | 2.4  | 1.7  |
-| 2030NEPC     | other-res        | -    | -    | -    | -    | 1.3   | -    | -     | -    | -    | -    | -    | -    |
-| 2030NEPC     | cavern-acaes     | -    | -    | -    | -    | 1.0   | -    | -     | -    | -    | -    | -    | -    |
-| 2040GCA      | gas-ccgt         | 2.0  | 3.3  | -    | 0.7  | 10.4  | -    | 5.9   | -    | 5.0  | -    | 1.8  | -    |
-| 2040GCA      | wind-offshore    | -    | 8.3  | -    | -    | 33.5  | 7.8  | 20.0  | -    | 23.4 | 0.4  | 7.0  | 1.3  |
-| 2040GCA      | biomass-st       | 0.6  | 1.3  | 1.3  | 1.2  | 6.0   | 1.9  | 3.6   | 0.1  | 0.5  | 0.1  | 1.8  | 4.3  |
-| 2040GCA      | solar-pv         | 5.6  | 22.0 | 12.6 | 5.2  | 141.0 | 7.5  | 60.0  | 1.1  | 46.0 | 3.0  | 42.5 | 6.7  |
-| 2040GCA      | hydrogen-storage | -    | -    | -    | -    | 5.0   | -    | -     | -    | -    | -    | -    | -    |
-| 2040GCA      | lithium-battery  | -    | -    | -    | -    | 12.5  | -    | -     | -    | -    | -    | -    | -    |
-| 2040GCA      | wind-onshore     | 5.5  | 7.7  | 2.6  | 1.3  | 81.6  | 7.2  | 49.0  | 0.2  | 7.4  | 10.0 | 32.9 | 17.4 |
-| 2040GCA      | coal-st          | -    | -    | -    | 0.3  | 8.3   | -    | -     | -    | 3.4  | -    | 8.3  | -    |
-| 2040GCA      | hydro-phs        | 6.1  | 1.9  | 6.7  | 1.1  | 10.2  | -    | 5.5   | 1.0  | 2.5  | 1.1  | 2.3  | -    |
-| 2040GCA      | gas-ocgt         | 1.0  | 1.7  | -    | 0.3  | 20.1  | -    | 3.0   | -    | 2.6  | -    | 0.9  | -    |
-| 2040GCA      | cavern-acaes     | -    | -    | -    | -    | 2.0   | -    | -     | -    | -    | -    | -    | -    |
-| 2040GCA      | uranium-st       | -    | -    | -    | 3.3  | -     | -    | 37.6  | -    | -    | -    | 7.5  | 3.7  |
-| 2040GCA      | other-res        | -    | -    | -    | -    | 1.3   | -    | -     | -    | -    | -    | -    | -    |
-| 2040GCA      | oil-ocgt         | 0.2  | -    | -    | 0.2  | 0.2   | 0.3  | 1.0   | -    | -    | -    | 3.9  | -    |
-| 2040GCA      | mixed-st         | 1.0  | 1.7  | 1.0  | 1.5  | 10.3  | 0.1  | -     | 0.1  | 3.5  | -    | 7.3  | 0.4  |
-| 2040GCA      | lignite-st       | -    | -    | -    | 1.3  | -     | -    | -     | -    | -    | -    | 1.9  | -    |
-| 2050ANGUS    | other-res        | -    | -    | -    | -    | 1.3   | -    | -     | -    | -    | -    | -    | -    |
-| 2050ANGUS    | mixed-st         | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
-| 2050ANGUS    | redox-battery    | -    | -    | -    | -    | -     | 0.1  | 0.1   | -    | -    | -    | -    | -    |
-| 2050ANGUS    | lithium-battery  | 0.2  | 0.3  | 0.3  | 2.5  | 15.6  | 0.9  | 3.4   | 0.1  | 1.3  | -    | 4.5  | 3.2  |
-| 2050ANGUS    | oil-ocgt         | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
-| 2050ANGUS    | hydrogen-storage | -    | 1.8  | -    | 0.2  | 10.1  | 5.0  | 26.0  | 0.6  | 7.6  | -    | 0.3  | -    |
-| 2050ANGUS    | gas-ccgt         | 1.0  | 1.6  | 1.3  | 1.2  | 8.6   | 0.7  | 10.6  | 0.2  | 2.0  | -    | 2.0  | -    |
-| 2050ANGUS    | biomass-st       | 3.5  | 4.8  | 1.2  | 5.0  | 27.8  | 3.8  | 28.2  | -    | 4.0  | 0.5  | 14.2 | 5.5  |
-| 2050ANGUS    | wind-onshore     | 6.9  | 10.9 | 1.4  | 10.2 | 98.3  | 18.7 | 124.2 | 0.7  | 15.0 | 12.2 | 81.9 | 24.2 |
-| 2050ANGUS    | cavern-acaes     | -    | 0.4  | -    | 0.9  | 3.4   | 0.2  | 0.2   | 0.1  | 1.7  | -    | 1.7  | -    |
-| 2050ANGUS    | coal-st          | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
-| 2050ANGUS    | lignite-st       | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
-| 2050ANGUS    | gas-ocgt         | 0.5  | 0.8  | 0.7  | 0.6  | 4.4   | 0.3  | 5.4   | 0.1  | 1.0  | -    | 1.0  | -    |
-| 2050ANGUS    | solar-pv         | 12.1 | 24.1 | 15.0 | 13.0 | 150.0 | 2.0  | 103.1 | 1.0  | 22.2 | 5.4  | 24.2 | 8.9  |
-| 2050ANGUS    | hydro-phs        | 10.7 | 2.3  | 5.4  | 1.8  | 12.8  | -    | 13.4  | 1.7  | -    | 17.3 | 3.8  | -    |
-| 2050ANGUS    | wind-offshore    | -    | 3.0  | -    | -    | 33.8  | 25.6 | -     | -    | 15.9 | 3.0  | -    | 3.0  |
-| 2050ZNES     | solar-pv         | 12.1 | 24.1 | 15.0 | 13.0 | 98.6  | 2.0  | 103.1 | 1.0  | 22.2 | 5.4  | 24.2 | 8.9  |
-| 2050ZNES     | wind-offshore    | -    | 3.0  | -    | -    | 27.2  | 25.6 | -     | -    | 15.9 | 3.0  | -    | 3.0  |
-| 2050ZNES     | lignite-st       | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
-| 2050ZNES     | other-res        | -    | -    | -    | -    | 1.3   | -    | -     | -    | -    | -    | -    | -    |
-| 2050ZNES     | oil-ocgt         | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
-| 2050ZNES     | mixed-st         | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
-| 2050ZNES     | lithium-battery  | 0.2  | 0.3  | 0.3  | 2.5  | 15.6  | 0.9  | 3.4   | 0.1  | 1.3  | -    | 4.5  | 3.2  |
-| 2050ZNES     | hydrogen-storage | -    | 1.8  | -    | 0.2  | 10.1  | 5.0  | 26.0  | 0.6  | 7.6  | -    | 0.3  | -    |
-| 2050ZNES     | hydro-phs        | 10.7 | 2.3  | 5.4  | 1.8  | 12.8  | -    | 13.4  | 1.7  | -    | 17.3 | 3.8  | -    |
-| 2050ZNES     | gas-ocgt         | 0.5  | 0.8  | 0.7  | 0.6  | 4.4   | 0.3  | 5.4   | 0.1  | 1.0  | -    | 1.0  | -    |
-| 2050ZNES     | gas-ccgt         | 1.0  | 1.6  | 1.3  | 1.2  | 8.6   | 0.7  | 10.6  | 0.2  | 2.0  | -    | 2.0  | -    |
-| 2050ZNES     | coal-st          | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
-| 2050ZNES     | cavern-acaes     | -    | 0.4  | -    | 0.9  | 3.4   | 0.2  | 0.2   | 0.1  | 1.7  | -    | 1.7  | -    |
-| 2050ZNES     | biomass-st       | 3.5  | 4.8  | 1.2  | 5.0  | 27.8  | 3.8  | 28.2  | -    | 4.0  | 0.5  | 14.2 | 5.5  |
-| 2050ZNES     | redox-battery    | -    | -    | -    | -    | -     | 0.1  | 0.1   | -    | -    | -    | -    | -    |
-| 2050ZNES     | wind-onshore     | 6.9  | 10.9 | 1.4  | 10.2 | 98.3  | 18.7 | 124.2 | 0.7  | 15.0 | 12.2 | 81.9 | 24.2 |
+| scenario   | name             | AT   | BE   | CH   | CZ   | DE    | DK   | FR    | LU   | NL   | NO   | PL   | SE   |
+|:-----------|:-----------------|:-----|:-----|:-----|:-----|:------|:-----|:------|:-----|:-----|:-----|:-----|:-----|
+| 2030DG     | biomass-st       | 0.6  | 1.3  | 1.3  | 1.2  | 6.6   | 1.9  | 3.6   | 0.1  | 0.5  | 0.1  | 1.8  | 4.5  |
+| 2030DG     | uranium-st       | -    | -    | 1.2  | 4.1  | -     | -    | 37.6  | -    | 0.5  | -    | 3.0  | 6.9  |
+| 2030DG     | wind-offshore    | -    | 2.3  | -    | -    | 15.0  | 2.9  | 7.0   | -    | 11.5 | -    | 2.2  | 0.2  |
+| 2030DG     | coal-st          | -    | -    | -    | -    | 14.7  | 0.4  | -     | -    | 4.6  | -    | 13.8 | -    |
+| 2030DG     | hydro-phs        | 6.1  | 1.2  | 4.6  | 1.0  | 9.8   | -    | 5.5   | 1.0  | -    | 1.1  | 1.5  | -    |
+| 2030DG     | lignite-st       | -    | -    | -    | 4.8  | 9.4   | -    | -     | -    | -    | -    | 7.4  | -    |
+| 2030DG     | lithium-battery  | 0.1  | 0.1  | 0.1  | 0.8  | 5.2   | 0.3  | 1.1   | -    | 0.4  | -    | 1.5  | 1.1  |
+| 2030DG     | oil-ocgt         | 0.2  | 0.5  | -    | -    | 0.8   | 0.8  | 6.4   | -    | -    | -    | 1.0  | -    |
+| 2030DG     | gas-ccgt         | 2.6  | 4.2  | -    | 0.7  | 19.2  | -    | 5.9   | -    | 5.0  | 0.3  | 1.8  | -    |
+| 2030DG     | mixed-st         | 1.0  | 1.2  | 1.0  | 1.5  | 10.3  | 0.1  | -     | 0.1  | 3.5  | -    | 7.3  | 0.4  |
+| 2030DG     | gas-ocgt         | 1.3  | 2.2  | -    | 0.3  | 9.9   | -    | 3.0   | -    | 2.6  | 0.1  | 0.9  | -    |
+| 2030DG     | solar-pv         | 7.8  | 6.9  | 9.4  | 7.0  | 94.6  | 5.1  | 41.6  | 0.4  | 14.1 | 3.0  | 24.9 | 5.4  |
+| 2030DG     | wind-onshore     | 5.0  | 3.3  | 0.4  | 1.0  | 58.5  | 5.6  | 36.3  | 0.2  | 6.7  | 3.3  | 9.2  | 10.8 |
+| 2030NEPC   | lignite-st       | -    | -    | -    | 4.8  | 8.9   | -    | -     | -    | -    | -    | 7.4  | -    |
+| 2030NEPC   | biomass-st       | 0.6  | 1.3  | 1.3  | 1.2  | 6.0   | 1.9  | 3.6   | 0.1  | 0.5  | 0.1  | 1.8  | 4.5  |
+| 2030NEPC   | gas-ccgt         | 2.7  | 4.2  | -    | 0.9  | 20.2  | 0.3  | 7.6   | -    | 5.0  | 0.3  | 3.8  | -    |
+| 2030NEPC   | lithium-battery  | 0.1  | 0.1  | 0.1  | 0.8  | 12.5  | 0.3  | 1.1   | -    | 0.4  | -    | 1.5  | 1.1  |
+| 2030NEPC   | gas-ocgt         | 1.4  | 2.2  | -    | 0.5  | 6.0   | 0.1  | 3.9   | -    | 2.6  | 0.1  | 2.0  | -    |
+| 2030NEPC   | mixed-st         | 1.0  | 1.2  | 1.0  | 1.5  | 3.5   | 0.1  | -     | 0.1  | 3.5  | -    | 7.3  | 0.4  |
+| 2030NEPC   | wind-offshore    | -    | 2.3  | -    | -    | 17.0  | 2.9  | 7.0   | -    | 11.5 | -    | 2.2  | 0.2  |
+| 2030NEPC   | other-res        | -    | -    | -    | -    | 1.3   | -    | -     | -    | -    | -    | -    | -    |
+| 2030NEPC   | hydro-phs        | 6.1  | 1.2  | 4.6  | 1.0  | 9.8   | -    | 5.5   | 1.0  | -    | 1.1  | 1.5  | -    |
+| 2030NEPC   | coal-st          | -    | -    | -    | 0.3  | 8.1   | 0.4  | -     | -    | 4.6  | -    | 13.8 | 0.1  |
+| 2030NEPC   | chp-must-run     | -    | -    | -    | -    | 8.3   | -    | -     | -    | -    | -    | -    | -    |
+| 2030NEPC   | wind-onshore     | 5.0  | 3.3  | 0.4  | 1.0  | 85.5  | 5.6  | 36.3  | 0.2  | 6.7  | 3.3  | 9.2  | 10.8 |
+| 2030NEPC   | uranium-st       | -    | -    | 1.2  | 4.1  | -     | -    | 37.6  | -    | 0.5  | -    | 3.0  | 6.9  |
+| 2030NEPC   | hydrogen-storage | -    | -    | -    | -    | 3.0   | -    | -     | -    | -    | -    | -    | -    |
+| 2030NEPC   | cavern-acaes     | -    | -    | -    | -    | 1.0   | -    | -     | -    | -    | -    | -    | -    |
+| 2030NEPC   | oil-ocgt         | 0.2  | -    | -    | -    | 0.5   | 0.8  | 1.5   | -    | -    | -    | -    | -    |
+| 2030NEPC   | solar-pv         | 4.5  | 5.1  | 5.6  | 3.5  | 104.5 | 2.9  | 31.5  | 0.2  | 11.4 | 0.4  | 2.4  | 1.7  |
+| 2030ST     | wind-onshore     | 5.0  | 3.3  | 0.4  | 1.0  | 58.5  | 5.6  | 36.3  | 0.2  | 6.7  | 3.3  | 9.2  | 10.8 |
+| 2030ST     | wind-offshore    | -    | 2.3  | -    | -    | 15.0  | 2.9  | 7.0   | -    | 11.5 | -    | 2.2  | 0.2  |
+| 2030ST     | hydro-phs        | 6.1  | 1.2  | 4.6  | 1.0  | 9.8   | -    | 5.5   | 1.0  | -    | 1.1  | 1.5  | -    |
+| 2030ST     | gas-ocgt         | 1.4  | 2.2  | -    | 0.5  | 10.5  | 0.1  | 3.9   | -    | 2.6  | 0.1  | 2.0  | -    |
+| 2030ST     | oil-ocgt         | 0.2  | -    | -    | -    | 0.8   | 0.8  | 1.5   | -    | -    | -    | -    | -    |
+| 2030ST     | lignite-st       | -    | -    | -    | 4.8  | 9.4   | -    | -     | -    | -    | -    | 7.4  | -    |
+| 2030ST     | lithium-battery  | 0.1  | 0.1  | 0.1  | 0.8  | 5.2   | 0.3  | 1.1   | -    | 0.4  | -    | 1.5  | 1.1  |
+| 2030ST     | mixed-st         | 1.0  | 1.2  | 1.0  | 1.5  | 10.3  | 0.1  | -     | 0.1  | 3.5  | -    | 7.3  | 0.4  |
+| 2030ST     | gas-ccgt         | 2.7  | 4.2  | -    | 0.9  | 20.5  | 0.3  | 7.6   | -    | 5.0  | 0.3  | 3.8  | -    |
+| 2030ST     | biomass-st       | 0.6  | 1.3  | 1.3  | 1.2  | 6.6   | 1.9  | 3.6   | 0.1  | 0.5  | 0.1  | 1.8  | 4.5  |
+| 2030ST     | solar-pv         | 4.5  | 5.1  | 5.6  | 3.5  | 66.3  | 2.9  | 31.5  | 0.2  | 11.4 | 0.4  | 2.4  | 1.7  |
+| 2030ST     | coal-st          | -    | -    | -    | 0.3  | 14.7  | 0.4  | -     | -    | 4.6  | -    | 13.8 | 0.1  |
+| 2030ST     | uranium-st       | -    | -    | 1.2  | 4.1  | -     | -    | 37.6  | -    | 0.5  | -    | 3.0  | 6.9  |
+| 2040DG     | wind-offshore    | -    | 3.3  | -    | -    | 26.0  | 3.6  | 11.7  | -    | 14.7 | -    | 4.9  | 0.2  |
+| 2040DG     | cavern-acaes     | -    | 0.3  | -    | 0.6  | 2.3   | 0.1  | 0.2   | 0.1  | 1.1  | -    | 1.1  | -    |
+| 2040DG     | hydro-phs        | 6.1  | 1.9  | 6.7  | 1.1  | 10.2  | -    | 5.5   | 1.0  | 2.5  | 1.1  | 2.3  | -    |
+| 2040DG     | oil-ocgt         | 0.2  | -    | -    | -    | 0.2   | 0.3  | 1.0   | -    | -    | -    | 4.0  | -    |
+| 2040DG     | mixed-st         | 1.0  | 1.7  | 1.0  | 1.5  | 10.3  | 0.1  | -     | 0.1  | 3.5  | -    | 7.3  | 0.4  |
+| 2040DG     | lignite-st       | -    | -    | -    | 3.9  | 9.0   | -    | -     | -    | -    | -    | 1.9  | -    |
+| 2040DG     | lithium-battery  | 0.2  | 0.2  | 0.2  | 1.6  | 10.3  | 0.6  | 2.3   | 0.1  | 0.9  | -    | 3.0  | 2.1  |
+| 2040DG     | solar-pv         | 17.8 | 14.9 | 19.3 | 15.9 | 140.4 | 7.4  | 74.1  | 0.7  | 17.8 | 6.3  | 63.2 | 11.3 |
+| 2040DG     | uranium-st       | -    | -    | -    | 2.1  | -     | -    | 37.6  | -    | -    | -    | 3.0  | 3.7  |
+| 2040DG     | gas-ocgt         | 1.3  | 1.9  | -    | 0.3  | 9.4   | -    | 3.0   | -    | 2.6  | -    | 2.0  | -    |
+| 2040DG     | wind-onshore     | 5.5  | 12.3 | 2.6  | 1.3  | 66.2  | 9.0  | 54.1  | 0.4  | 8.4  | 6.8  | 12.6 | 14.4 |
+| 2040DG     | gas-ccgt         | 2.6  | 3.6  | -    | 0.7  | 18.3  | -    | 5.9   | -    | 5.0  | -    | 3.9  | -    |
+| 2040DG     | biomass-st       | 0.6  | 1.3  | 1.3  | 1.2  | 6.6   | 1.9  | 3.6   | 0.1  | 0.5  | 0.1  | 1.8  | 4.5  |
+| 2040DG     | coal-st          | -    | -    | -    | -    | 8.8   | -    | -     | -    | 4.6  | -    | 8.3  | -    |
+| 2040DG     | hydrogen-storage | -    | 1.2  | -    | 0.1  | 6.7   | 3.3  | 17.2  | 0.4  | 5.0  | -    | 0.2  | -    |
+| 2040GCA    | wind-offshore    | -    | 8.3  | -    | -    | 33.8  | 7.8  | 20.0  | -    | 23.4 | 0.4  | 7.0  | 1.3  |
+| 2040GCA    | uranium-st       | -    | -    | -    | 3.3  | -     | -    | 37.6  | -    | -    | -    | 7.5  | 3.7  |
+| 2040GCA    | wind-onshore     | 5.5  | 7.7  | 2.6  | 1.3  | 81.6  | 7.2  | 49.0  | 0.2  | 7.4  | 10.0 | 32.9 | 17.4 |
+| 2040GCA    | gas-ocgt         | 1.0  | 1.7  | -    | 0.3  | 10.4  | -    | 3.0   | -    | 2.6  | -    | 0.9  | -    |
+| 2040GCA    | lignite-st       | -    | -    | -    | 1.3  | -     | -    | -     | -    | -    | -    | 1.9  | -    |
+| 2040GCA    | hydrogen-storage | -    | 1.2  | -    | 0.1  | 6.7   | 3.3  | 17.2  | 0.4  | 5.0  | -    | 0.2  | -    |
+| 2040GCA    | hydro-phs        | 6.1  | 1.9  | 6.7  | 1.1  | 10.2  | -    | 5.5   | 1.0  | 2.5  | 1.1  | 2.3  | -    |
+| 2040GCA    | biomass-st       | 0.6  | 1.3  | 1.3  | 1.2  | 6.6   | 1.9  | 3.6   | 0.1  | 0.5  | 0.1  | 1.8  | 4.3  |
+| 2040GCA    | cavern-acaes     | -    | 0.3  | -    | 0.6  | 2.3   | 0.1  | 0.2   | 0.1  | 1.1  | -    | 1.1  | -    |
+| 2040GCA    | solar-pv         | 5.6  | 22.0 | 12.6 | 5.2  | 141.0 | 7.5  | 60.0  | 1.1  | 46.0 | 3.0  | 42.5 | 6.7  |
+| 2040GCA    | lithium-battery  | 0.2  | 0.2  | 0.2  | 1.6  | 10.3  | 0.6  | 2.3   | 0.1  | 0.9  | -    | 3.0  | 2.1  |
+| 2040GCA    | mixed-st         | 1.0  | 1.7  | 1.0  | 1.5  | 10.3  | 0.1  | -     | 0.1  | 3.5  | -    | 7.3  | 0.4  |
+| 2040GCA    | oil-ocgt         | 0.2  | -    | -    | 0.2  | 0.2   | 0.3  | 1.0   | -    | -    | -    | 3.9  | -    |
+| 2040GCA    | coal-st          | -    | -    | -    | 0.3  | 8.3   | -    | -     | -    | 3.4  | -    | 8.3  | -    |
+| 2040GCA    | gas-ccgt         | 2.0  | 3.3  | -    | 0.7  | 20.1  | -    | 5.9   | -    | 5.0  | -    | 1.8  | -    |
+| 2040ST     | mixed-st         | 1.0  | 1.7  | 1.0  | 1.5  | 10.3  | 0.1  | -     | 0.1  | 3.5  | -    | 7.3  | 0.4  |
+| 2040ST     | solar-pv         | 5.6  | 5.7  | 9.9  | 5.2  | 75.0  | 4.0  | 41.4  | 0.2  | 15.2 | 1.2  | 5.4  | 2.3  |
+| 2040ST     | oil-ocgt         | 0.2  | 2.7  | -    | 2.6  | 6.1   | 2.5  | 1.3   | 0.7  | 2.9  | -    | 5.3  | 1.7  |
+| 2040ST     | uranium-st       | -    | -    | -    | 2.1  | -     | -    | 37.6  | -    | -    | -    | 3.0  | 3.7  |
+| 2040ST     | wind-onshore     | 5.5  | 5.0  | 1.0  | 1.3  | 63.7  | 9.0  | 48.0  | 0.2  | 7.5  | 4.5  | 12.0 | 15.7 |
+| 2040ST     | biomass-st       | 0.6  | 1.3  | 1.3  | 1.2  | 6.6   | 1.0  | 3.6   | 0.1  | 0.5  | 0.1  | 1.8  | 4.5  |
+| 2040ST     | hydrogen-storage | -    | 1.2  | -    | 0.1  | 6.7   | 3.3  | 17.2  | 0.4  | 5.0  | -    | 0.2  | -    |
+| 2040ST     | cavern-acaes     | -    | 0.3  | -    | 0.6  | 2.3   | 0.1  | 0.2   | 0.1  | 1.1  | -    | 1.1  | -    |
+| 2040ST     | lithium-battery  | 0.2  | 0.2  | 0.2  | 1.6  | 10.3  | 0.6  | 2.3   | 0.1  | 0.9  | -    | 3.0  | 2.1  |
+| 2040ST     | wind-offshore    | -    | 3.8  | -    | -    | 26.6  | 4.4  | 10.5  | -    | 14.7 | -    | 5.0  | 0.2  |
+| 2040ST     | gas-ocgt         | 1.2  | 1.7  | -    | 0.3  | 10.4  | -    | 3.0   | -    | 2.6  | 0.1  | 5.5  | -    |
+| 2040ST     | lignite-st       | -    | -    | -    | 2.1  | 4.3   | -    | -     | -    | -    | -    | 1.9  | -    |
+| 2040ST     | hydro-phs        | 6.1  | 1.9  | 6.7  | 1.1  | 10.2  | -    | 5.5   | 1.0  | 2.5  | 1.1  | 2.3  | -    |
+| 2040ST     | coal-st          | -    | -    | -    | -    | 8.3   | -    | -     | -    | 3.4  | -    | 8.3  | -    |
+| 2040ST     | gas-ccgt         | 2.4  | 3.4  | -    | 0.7  | 20.1  | -    | 5.9   | -    | 5.0  | 0.3  | 10.7 | -    |
+| 2050NB     | oil-ocgt         | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050NB     | lithium-battery  | 0.2  | 0.3  | 0.3  | 2.5  | 15.6  | 0.9  | 3.4   | 0.1  | 1.3  | -    | 4.5  | 3.2  |
+| 2050NB     | biomass-st       | 3.5  | 4.8  | 1.2  | 5.0  | -     | 3.8  | 28.2  | -    | 4.0  | 0.5  | 14.2 | 5.5  |
+| 2050NB     | wind-onshore     | 6.9  | 10.9 | 1.4  | 10.2 | 165.0 | 18.7 | 124.2 | 0.7  | 15.0 | 12.2 | 81.9 | 24.2 |
+| 2050NB     | mixed-st         | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050NB     | cavern-acaes     | -    | 0.4  | -    | 0.9  | 3.4   | 0.2  | 0.2   | 0.1  | 1.7  | -    | 1.7  | -    |
+| 2050NB     | solar-pv         | 12.1 | 24.1 | 15.0 | 13.0 | 248.0 | 2.0  | 103.1 | 1.0  | 22.2 | 5.4  | 24.2 | 8.9  |
+| 2050NB     | wind-offshore    | -    | 3.0  | -    | -    | 33.5  | 25.6 | -     | -    | 15.9 | 3.0  | -    | 3.0  |
+| 2050NB     | coal-st          | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050NB     | lignite-st       | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050NB     | gas-ccgt         | 1.0  | 1.6  | 1.3  | 1.2  | 8.6   | 0.7  | 10.6  | 0.2  | 2.0  | -    | 2.0  | -    |
+| 2050NB     | hydro-phs        | 10.7 | 2.3  | 5.4  | 1.8  | 12.8  | -    | 13.4  | 1.7  | -    | 17.3 | 3.8  | -    |
+| 2050NB     | other-res        | -    | -    | -    | -    | 1.2   | -    | -     | -    | -    | -    | -    | -    |
+| 2050NB     | redox-battery    | -    | -    | -    | -    | 0.9   | 0.1  | 0.1   | -    | -    | -    | -    | -    |
+| 2050NB     | gas-ocgt         | 0.5  | 0.8  | 0.7  | 0.6  | 4.4   | 0.3  | 5.4   | 0.1  | 1.0  | -    | 1.0  | -    |
+| 2050NB     | hydrogen-storage | -    | 1.8  | -    | 0.2  | 10.1  | 5.0  | 26.0  | 0.6  | 7.6  | -    | 0.3  | -    |
+| 2050REF    | wind-offshore    | -    | 3.0  | -    | -    | 33.5  | 25.6 | -     | -    | 15.9 | 3.0  | -    | 3.0  |
+| 2050REF    | lignite-st       | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050REF    | solar-pv         | 12.1 | 24.1 | 15.0 | 13.0 | 218.0 | 2.0  | 103.1 | 1.0  | 22.2 | 5.4  | 24.2 | 8.9  |
+| 2050REF    | hydrogen-storage | -    | 1.8  | -    | 0.2  | 10.1  | 5.0  | 26.0  | 0.6  | 7.6  | -    | 0.3  | -    |
+| 2050REF    | gas-ccgt         | 1.0  | 1.6  | 1.3  | 1.2  | 8.6   | 0.7  | 10.6  | 0.2  | 2.0  | -    | 2.0  | -    |
+| 2050REF    | wind-onshore     | 6.9  | 10.9 | 1.4  | 10.2 | 150.0 | 18.7 | 124.2 | 0.7  | 15.0 | 12.2 | 81.9 | 24.2 |
+| 2050REF    | lithium-battery  | 0.2  | 0.3  | 0.3  | 2.5  | 15.6  | 0.9  | 3.4   | 0.1  | 1.3  | -    | 4.5  | 3.2  |
+| 2050REF    | coal-st          | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050REF    | gas-ocgt         | 0.5  | 0.8  | 0.7  | 0.6  | 4.4   | 0.3  | 5.4   | 0.1  | 1.0  | -    | 1.0  | -    |
+| 2050REF    | mixed-st         | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050REF    | oil-ocgt         | -    | -    | -    | -    | -     | -    | -     | -    | -    | -    | -    | -    |
+| 2050REF    | cavern-acaes     | -    | 0.4  | -    | 0.9  | 3.4   | 0.2  | 0.2   | 0.1  | 1.7  | -    | 1.7  | -    |
+| 2050REF    | other-res        | -    | -    | -    | -    | 1.2   | -    | -     | -    | -    | -    | -    | -    |
+| 2050REF    | redox-battery    | -    | -    | -    | -    | 0.9   | 0.1  | 0.1   | -    | -    | -    | -    | -    |
+| 2050REF    | biomass-st       | 3.5  | 4.8  | 1.2  | 5.0  | 27.8  | 3.8  | 28.2  | -    | 4.0  | 0.5  | 14.2 | 5.5  |
+| 2050REF    | hydro-phs        | 10.7 | 2.3  | 5.4  | 1.8  | 12.8  | -    | 13.4  | 1.7  | -    | 17.3 | 3.8  | -    |
 
 
+![Installed transmission capacities in 2030](figures/grid-scenario2030DG.pdf){width=100%}
 
-![Installed transmission capacities in 2030](figures/grid-scenarioANGUS2030.pdf){width=100%}
+![Installed transmission capacities in 2040 GCA](figures/grid-scenario2040GCA.pdf){width=100%}
 
-![Installed transmission capacities in 2040](figures/grid-scenarioANGUS2040.pdf){width=100%}
+![Installed transmission capacities in 2040 DG](figures/grid-scenario2040DG.pdf){width=100%}
 
-![Installed transmission capacities in 2050](figures/grid-scenarioANGUS2050.pdf){width=100%}
+![Installed transmission capacities in 2050](figures/grid-scenario2050REF.pdf){width=100%}
 
 \newpage  
 # Data Sources

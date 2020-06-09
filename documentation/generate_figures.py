@@ -440,7 +440,7 @@ scenarios.drop(storages, inplace=True)
 scenarios.drop(storages_cos, inplace=True)
 
 scenarios.sort_index(axis=1, inplace=True)
-
+scenarios = scenarios.drop("decentral_heat-hp")
 # energy plot ----------------------------------------------------------------
 scenarios_plot = scenarios[[c for c in scenarios.columns if not "flex" in c]]
 ax = scenarios_plot.T.plot(
@@ -452,6 +452,7 @@ ax = scenarios_plot.T.plot(
 ax.legend()
 handles, labels = ax.get_legend_handles_labels()
 lgd = {k: v for k, v in dict(zip(handles, labels)).items() if "-cos" not in v}
+
 lgd = ax.legend(
     lgd.keys(),
     lgd.values(),
