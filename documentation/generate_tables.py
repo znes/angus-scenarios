@@ -219,6 +219,7 @@ load = load.set_index(["name", "bus", "scenario"])["amount"]
 load.index = load.index.droplevel(0)
 load = (load.unstack(1) / 1e6).round(2)
 load.index = [i.split("-")[0] for i in load.index]
+load = load[[l for l in load.columns if "S" not in l]]
 print(tabulate(load, tablefmt="pipe", headers="keys"))
 
 

@@ -4,7 +4,7 @@ author: Simon Hilpert and Clemens Wingenbach
 date: June, 2020
 header: Europa Universität Flensburg
 footer: ANGUS II
-geometry: "left=2cm, right=2cm, top=2cm, bottom=2cm"
+geometry: "left=2.5cm, right=2.5cm, top=2cm, bottom=2cm"
 bibliography: angus-literature.bib
 abstract:
 
@@ -248,7 +248,9 @@ corresponding type (i.e. oemof tabular class) and set.
 | electricity | line      | link         | n          | N       |
 
 
-# ANGUS Scenario Assumptions
+\ newpage
+
+# Scenario Assumptions
 
 ## Spatial and temporal resolution
 
@@ -316,6 +318,20 @@ late (GL) and green supreme (GS) scenarios with 57 TWh_th and 95 TWh_th respecti
 The total conventional electricity demand for the different scenarios is given
 in the Table below.
 
+|    |   2030DG |   2030NEPC |   2040DG |   2040GCA |   2050NB |   2050REF |
+|:---|---------:|-----------:|---------:|----------:|---------:|----------:|
+| AT |    80.7  |      76.55 |    91.34 |     80.5  |    84.82 |     84.82 |
+| BE |    88.71 |      88.78 |    92.27 |     91.52 |   121.25 |    121.25 |
+| CH |    58.07 |      58.28 |    62.98 |     57.93 |    77.33 |     77.33 |
+| CZ |    75.87 |      70.86 |    86.57 |     76.43 |    71.76 |     71.76 |
+| DE |   571    |     547    |   601    |    601    |   613    |    613    |
+| DK |    50.21 |      46.96 |    57.88 |     53.78 |    42.67 |     42.67 |
+| FR |   474.66 |     466.74 |   493.5  |    468.62 |   649.45 |    649.45 |
+| LU |    11.07 |      11.05 |    11.59 |      8.26 |     7.38 |      7.38 |
+| NL |   129.79 |     118.53 |   147.85 |    136.61 |   160.72 |    160.72 |
+| NO |   150.66 |     149.93 |   153.63 |    148.09 |   102.02 |    102.02 |
+| PL |   219.3  |     206.68 |   234.79 |    251.3  |   172.22 |    172.22 |
+| SE |   140.38 |     143.04 |   137.34 |    145.84 |   131.56 |    131.56 |
 
 
 
@@ -331,27 +347,6 @@ processes are not modelled.
 * The model only covers the residential hot water and space heating demand.
 *Electric vehicles are modelled without specific profile for charging / discharging but only
 with a constant additional base load.
-
-## Generation capacity
-
-The different scenarios are based on the NEP2019, TYNDP2018 and the e-Highway
-project.
-
-* NEP2030C: Installed capacities in Germany are based on the NEP2019 scenario 2030C. The
-capacities of neighbouring countries are based on the TYNDP2018-2030ST vision. The
-renewable share of produced energy in Germany in this scenario is approx. 68 %.
-* 2040GCA: This scenario is based on the TYNDP2018-GCA vision.
-* 2050REF: The base scenario is the e-Highway 100 % RES scenario. This scenario
-strongly depends on hydro capacity expansion in Norway and also substantial biomass
-capacity/energy.
-
-The installed capacities in Germany are shown in the Figure \ref{installed_capacities}
-below.
-
-![Installed generation capacity in Germany from 2030 to 2050 with different shares of renewables in 2050. \label{installed_capacities}](figures/DE-installed_capacities.pdf){width=100%}
-
-Note that only the scenarios 2030NEPC, 2040GCA, 2050ANGUS-(nb) depict a path towards
-100% renewable energy supply.
 
 ## Renewable Energies
 
@@ -420,6 +415,29 @@ the Restore2050 project is split by the ror-share for each scenario year. For No
 and Sweden the reservoir inflow has been scaled up to match with the e-Highway results.
 Similary, the run of river units for all countries except Sweden and Norway have been
 scaled by a factor of 1.6. The resulting fullloadhours are show in the Table below.
+
+## Generation capacity
+
+The different scenarios are based on the NEP2019, TYNDP2018 and the e-Highway
+project.
+
+* NEP2030C: Installed capacities in Germany are based on the NEP2019 scenario 2030C. The
+capacities of neighbouring countries are based on the TYNDP2018-2030ST vision. The
+renewable share of produced energy in Germany in this scenario is approx. 68 %.
+* 2040GCA: This scenario is based on the TYNDP2018-GCA vision.
+* 2050REF: The base scenario is the e-Highway 100 % RES scenario. This scenario
+strongly depends on hydro capacity expansion in Norway and also substantial biomass
+capacity/energy.
+
+The installed capacities in Germany are shown in the Figure \ref{installed_capacities}
+below.
+
+![Installed generation capacity in Germany from 2030 to 2050 with different shares of renewables in 2050. \label{installed_capacities}](figures/DE-installed_capacities.pdf){width=100%}
+
+Note that only the scenarios 2030NEPC, 2040GCA, 2050 depict a path towards
+100% renewable energy supply. Similarly the 2030DG, 2050DG, 2050 scenarios
+depict a less progressive path. However, both path result in 100% renewable energy
+supply.
 
 \clearpage
 
@@ -946,5 +964,3 @@ on github:
 * [Restore2050 hydro data](https://zenodo.org/record/804244/#.XTcUhfyxUax)
 * [Brown2018 sector coupling data](https://zenodo.org/record/1146666#.XTcTdvyxUaw)
 * [hotmaps biomass data](https://gitlab.com/hotmaps/potential/potential_biomass)
-
-# References
