@@ -7,7 +7,7 @@ from datapackage import Package
 import toml
 from oemof.tabular import datapackage
 import bus, capacity_factors, electricity, grid, biomass, load, hydro, heat, investment
-from fuchur.cli import Scenario
+from oemof.tabular.cli import Scenario
 from prepare import raw_data_path
 
 
