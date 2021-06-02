@@ -82,6 +82,6 @@ tornado==6.0.4
 traitlets==4.3.2
 tsam==1.0.2
 unicodecsv==0.14.1
-urllib3==1.24.1
+urllib3==1.26.5
 wcwidth==0.1.7
 xlrd==1.2.0
