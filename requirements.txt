@@ -22,7 +22,7 @@ geojson==2.4.1
 idna==2.8
 ijson==2.3
 ipykernel==5.2.0
-ipython==7.2.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 isodate==0.6.0
 jdcal==1.4
