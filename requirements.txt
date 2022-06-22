@@ -39,7 +39,7 @@ nbformat==4.4.0
 nbstripout==0.3.6
 networkx==2.2
 nose==1.3.7
-numpy==1.15.4
+numpy==1.22.0
 oemof==0.3.1
 -e git+git@github.com:oemof/oemof-tabular.git@8d2aef38caa99343e5fe249e60772470a92f41f0#egg=oemof.tabular
 openpyxl==2.4.11
